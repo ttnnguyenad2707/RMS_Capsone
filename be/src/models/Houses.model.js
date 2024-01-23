@@ -43,7 +43,7 @@ const Houses = new Schema({
     }, 
     utilities: [{
         type: Schema.ObjectId,
-        ref: "Utilities",
+        ref: "UtilitiesOfHouse",
     }],
     rules: {
         type: [String],

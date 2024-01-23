@@ -3,11 +3,16 @@ import asyncHandler from "../utils/async-handler.js"
 import response from "../utils/response.js";
 
 const UtilitiesController = {
-    addUtilities : asyncHandler(async (req,res,next) => {
-        const utilities = await UtilitiesService.addUtilities(req);
+    addBaseUtilities : asyncHandler(async (req,res,next) => {
+        const utilities = await UtilitiesService.addBaseUtilities(req);
         if (utilities) return res.status(201).json(response.successResponse(201,utilities))
         else return res.status(404).json(response.errorResponse(404))
-    })
+    }),
+    addOtherUtilities:  asyncHandler(async (req,res,next) => {
+        const utilities = await UtilitiesService.addOtherUtilities(req);
+        if (utilities) return res.status(201).json(response.successResponse(201,utilities))
+        else return res.status(404).json(response.errorResponse(404))
+    }),
 }
 
 export default UtilitiesController
