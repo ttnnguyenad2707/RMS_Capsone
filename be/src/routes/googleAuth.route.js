@@ -28,7 +28,7 @@ passport.use(
 GoogleAuthRoute.get("/", passport.authenticate('google', { scope: ['profile', 'email'] }))
 GoogleAuthRoute.get(
     '/callback',
-    passport.authenticate('google', { failureRedirect: '/api/v1/auth/google/error',successRedirect: "/api/v1/auth/google/success" }),
+    passport.authenticate('google', { failureRedirect: '/api/v1/auth/google/error',successRedirect: process.env.CLIENT_URL  }),
     (req, res) => {
         res.redirect('/api/v1/auth/google/success'); // Successful authentication, redirect success.
     });

@@ -1,6 +1,7 @@
 import React from "react";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import { useDispatch, useSelector } from "react-redux";
+import axios from 'axios';
 
 import * as Yup from "yup";
 import {
@@ -13,17 +14,16 @@ import {
 import { ToastContainer, toast } from "react-toastify";
 import TextField from "@mui/material/TextField";
 import "./Login.scss";
-import { loginService, registerService } from "../../services/auth";
+import { loginService } from "../../services/auth";
 import { login } from "../../reduxToolkit/UserSlice";
+import { URL_SERVER } from "../../dataConfig";
 
 const Login = () => {
   const initialValues = {
-    name:"",
     email: "",
     password: "",
   };
-//   const dispatch = useDispatch();
-
+  const dispatch = useDispatch();
 
   const nav = useNavigate();
   const validationSchema = Yup.object({
@@ -41,56 +41,50 @@ const Login = () => {
         "Password must contain at least one lowercase letter, one uppercase letter, and one digit"
       )
       .required("password is required"),
-      name: Yup.string().required("name is required"),
   });
 
   const handleSubmit = async (values) => {
     try {
-       console.log(values);
-      const res = await registerService(values);
-      console.log("res register", res.data.data);
-     
-    //    dispatch(login(res.data.data))
+      //  console.log(values);
+      const res = await loginService(values);
+      console.log("res login", res.data.data);
+
+      dispatch(login(res.data.data));
       toast.success(res.data.message);
 
-      nav("/login");
+      nav("/");
     } catch (error) {
       toast.warning(error.response.data.error);
       console.log(error);
     }
   };
 
+  // const loginWithGoogleHandle =  () => {
+  //   window.open(` ${URL_SERVER}/auth/google/`, "_self");
+  // };
+  const loginWithGoogleHandle = () => {
+    const scope = "email profile"; // Các phạm vi bạn muốn yêu cầu
+
+    const authURL = `${URL_SERVER}/auth/google/?scope=${encodeURIComponent(
+      scope
+    )}`;
+
+    window.open(authURL, "_self");
+    
+  };
+
   return (
     <>
-    
-
       <div className="container">
         <div className=" row justify-content-center">
           <div className="col-10 col-md-6  content">
-            <h1 className=" text-center">Register</h1>
+            <h1 className=" text-center">Login</h1>
             <Formik
               initialValues={initialValues}
               validationSchema={validationSchema}
               onSubmit={handleSubmit}
             >
               <Form>
-              <div className="mb-3">
-                  <Field
-                    // type="email"
-                    label="Name"
-                    className="form-control"
-                     id="name"
-                    variant="outlined"
-                    name="name"
-                    as={TextField}
-                  />
-
-                  <ErrorMessage
-                    name="name"
-                    component="div"
-                    className="text-danger"
-                  />
-                </div>
                 <div className="mb-3">
                   <Field
                     type="email"
@@ -130,31 +124,33 @@ const Login = () => {
                     className=" w-100 my-2 col-md-11 btn btn-dark btn-lg btn-Login m-control-lg "
                     type="submit"
                   >
-                    Register
+                    Login
                   </button>
-                </div>
-                <div className=" justify-content-center text-center mt-3 ">
-                  <button
-                    className=" w-100 my-2 col-md-11 btn btn-danger btn-lg btn-Login m-control-lg "
-                    type="submit"
-                  >
-                    Login with google
-                  </button>
-                </div>
-
-                <div className="my-3">
-                  <p className="font-semibold text-center text-gray-600 text-xl ">
-                    Do not have a account ?
-                    <h5 className="font-semibold text-gray-900 text-xl tracking-[-0.40px] w-auto">
-                      <NavLink to={`/register`} style={{ color: "#e25e3e" }}>
-                        {" "}
-                        Register
-                      </NavLink>
-                    </h5>
-                  </p>
                 </div>
               </Form>
             </Formik>
+            <div className=" justify-content-center text-center mt-3 ">
+              <button
+                className=" w-100 my-2 col-md-11 btn btn-danger btn-lg btn-Login m-control-lg "
+                type="submit"
+                onClick={() => {
+                  loginWithGoogleHandle();
+                }}
+              >
+                Login with google
+              </button>
+            </div>
+            <div className="my-3">
+              <p className="font-semibold text-center text-gray-600 text-xl ">
+                Do not have a account ?
+                <h5 className="font-semibold text-gray-900 text-xl tracking-[-0.40px] w-auto">
+                  <NavLink to={`/register`} style={{ color: "#e25e3e" }}>
+                    {" "}
+                    Register
+                  </NavLink>
+                </h5>
+              </p>
+            </div>
           </div>
         </div>
       </div>
