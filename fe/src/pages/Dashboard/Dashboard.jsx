@@ -118,10 +118,11 @@ export default function Dashboard() {
   console.log("accessToken", accessToken);
 
   useEffect(() => {
-    // if (!accessToken) {
-    //   navigate("/login");
-    //   return;
-    // }
+    if (!accessToken) {
+      navigate("/login");
+      return;
+    }
+    
     getCurrentUser(accessToken)
       .then((res) => {
         console.log("getCurrentUser", res);

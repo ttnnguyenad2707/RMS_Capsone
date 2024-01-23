@@ -1,6 +1,7 @@
 import React from "react";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import { useDispatch, useSelector } from "react-redux";
+import axios from 'axios';
 
 import * as Yup from "yup";
 import {
@@ -58,8 +59,18 @@ const Login = () => {
     }
   };
 
-  const loginWithGoogleHandle =  () => {
-    window.open(` ${URL_SERVER}/auth/google/`, "_self");
+  // const loginWithGoogleHandle =  () => {
+  //   window.open(` ${URL_SERVER}/auth/google/`, "_self");
+  // };
+  const loginWithGoogleHandle = () => {
+    const scope = "email profile"; // Các phạm vi bạn muốn yêu cầu
+
+    const authURL = `${URL_SERVER}/auth/google/?scope=${encodeURIComponent(
+      scope
+    )}`;
+
+    window.open(authURL, "_self");
+    
   };
 
   return (
