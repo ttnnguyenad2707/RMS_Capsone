@@ -16,27 +16,32 @@ import Link from "@mui/material/Link";
 import MenuIcon from "@mui/icons-material/Menu";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import NotificationsIcon from "@mui/icons-material/Notifications";
-// import { mainListItems, secondaryListItems } from "./Components/listItems";
-// import Chart from "./Components/Chart";
-// import Deposits from "./Components/Deposits";
-// import Orders from "./Components/Orders";
+import Icon, {
+  MessageOutlined,
+  BellOutlined,
+  PlusOutlined,
+  DownOutlined,
+  UnorderedListOutlined,
+  UserOutlined,
+} from "@ant-design/icons";
+import MenuItem from "@mui/material/MenuItem";
+
 import { useDispatch, useSelector } from "react-redux";
 import Cookies from "js-cookie";
 import React, { useEffect, useState } from "react";
 // import { login } from "../../reduxToolkit/UserSlice";
 import { Outlet, useNavigate } from "react-router-dom";
 // import { getCurrentUser } from "../../services/auth";
-import {
-  AiOutlinePlus,
-  AiFillDelete,
-  AiFillEdit,
-  AiOutlineLoading3Quarters,
-} from "react-icons/ai";
+import Tooltip from "@mui/material/Tooltip";
+import Avatar from "@mui/material/Avatar";
+import Menu from "@mui/material/Menu";
+import { AiOutlineLoading3Quarters } from "react-icons/ai";
 import { login } from "../reduxToolkit/UserSlice";
-import { getCurrentUser } from "../services/auth";
-import { mainListItems, secondaryListItems } from "../pages/Dashboard/Components/listItems";
-
-
+import { getCurrentUser, logout } from "../services/auth";
+import {
+  mainListItems,
+  secondaryListItems,
+} from "../pages/Dashboard/Components/listItems";
 
 const drawerWidth = 240;
 
@@ -87,11 +92,24 @@ const Drawer = styled(MuiDrawer, {
 // TODO remove, this demo shouldn't need to reset the theme.
 const defaultTheme = createTheme();
 
+const settings = ["Tài khoản", "Cài đặt", "Dashboard", "Đăng Xuất"];
+
 export default function ToolbarHeader() {
   const [open, setOpen] = React.useState(true);
   const toggleDrawer = () => {
     setOpen(!open);
   };
+
+  const [anchorElUser, setAnchorElUser] = React.useState(null);
+
+  const handleOpenUserMenu = (event) => {
+    setAnchorElUser(event.currentTarget);
+  };
+
+  const handleCloseUserMenu = () => {
+    setAnchorElUser(null);
+  };
+
   const [isLoading, setIsLoading] = useState(true);
 
   const navigate = useNavigate();
@@ -109,7 +127,7 @@ export default function ToolbarHeader() {
       navigate("/login");
       return;
     }
-    
+
     getCurrentUser(accessToken)
       .then((res) => {
         console.log("getCurrentUser", res);
@@ -128,6 +146,15 @@ export default function ToolbarHeader() {
       setIsLoading(false);
     }
   }, [userData]);
+  const handleLogout = () => {
+    logout();
+    Cookies.remove("accessToken");
+    navigate("/");
+    window.location.reload();
+  };
+  const handleMenuItemClick = (link) => {
+    navigate(`${link}`);
+  };
 
   return (
     <>
@@ -138,9 +165,23 @@ export default function ToolbarHeader() {
         </div>
       ) : (
         <ThemeProvider theme={defaultTheme}>
-          {/* hello {name} */}
+          <Typography
+            component="h1"
+            variant="h6"
+            color="#5A67BA" // Thay đổi màu sắc thành primary (màu chủ đạo)
+            noWrap
+            sx={{
+              flexGrow: 1,
+              fontSize: "14px", // Thay đổi kích thước chữ thành 18 pixel
+              fontFamily: "Arial, sans-serif", // Thay đổi phông chữ thành Arial và các phông chữ không-serif khác
+              fontWeight: "bold", // Thay đổi độ đậm của chữ thành bold
+            }}
+          >
+            ROOM MANAGEMENT SYSTEM
+          </Typography>
+
           <Box sx={{ display: "flex" }}>
-            <CssBaseline />
+            {/* <CssBaseline /> */}
             {/* header bên trên */}
             <AppBar position="absolute" open={open}>
               <Toolbar
@@ -157,33 +198,91 @@ export default function ToolbarHeader() {
                     marginRight: "36px",
                     ...(open && { display: "none" }),
                   }}
-                > 
+                >
                   <MenuIcon />
                 </IconButton>
-                
+
                 <Typography
-                  component="h1"
+                  component="div"
                   variant="h6"
                   color="inherit"
                   noWrap
-                  sx={{ flexGrow: 1 }}
+                  sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                    flexGrow: 1,
+                  }}
                 >
-                  {/* Dashboard tên */} 
-                  {name}
+                  <div>{name}</div>
                 </Typography>
-                
-                <IconButton color="inherit">
+                <Box sx={{ flexGrow: 0 }}>
+                  <Tooltip title="Open settings">
+                    <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
+                      <Avatar
+                        alt="Remy Sharp"
+                        src="/static/images/avatar/2.jpg"
+                      />
+                    </IconButton>
+                  </Tooltip>
+                  <Menu
+                    sx={{ mt: "45px" }}
+                    id="menu-appbar"
+                    anchorEl={anchorElUser}
+                    anchorOrigin={{
+                      vertical: "top",
+                      horizontal: "right",
+                    }}
+                    keepMounted
+                    transformOrigin={{
+                      vertical: "top",
+                      horizontal: "right",
+                    }}
+                    open={Boolean(anchorElUser)}
+                    onClose={handleCloseUserMenu}
+                  >
+                    {settings.map((setting) => {
+                      if (setting === "Tài khoản") {
+                        return (
+                          <MenuItem
+                            key={setting}
+                            onClick={() => handleMenuItemClick("/profile")}
+                          >
+                            <Typography textAlign="center">
+                              {setting}
+                            </Typography>
+                          </MenuItem>
+                        );
+                      } else if (setting === "Cài đặt") {
+                        return (
+                          <MenuItem key={setting}>
+                            <Typography textAlign="center">
+                              {setting}
+                            </Typography>
+                          </MenuItem>
+                        );
+                      } else if (setting === "Đăng Xuất") {
+                        return (
+                          <MenuItem key={setting} onClick={handleLogout}>
+                            <Typography textAlign="center">
+                              {setting}
+                            </Typography>
+                          </MenuItem>
+                        );
+                      }
+                    })}
+                  </Menu>
+                </Box>
 
-                  
+                <IconButton color="inherit">
                   <Badge badgeContent={4} color="secondary">
                     <NotificationsIcon />
                   </Badge>
                 </IconButton>
               </Toolbar>
-          
-            </AppBar>   {/* header bên trên */}
-          
-          {/* tay trái */}
+            </AppBar>{" "}
+            {/* header bên trên */}
+            {/* tay trái */}
             <Drawer variant="permanent" open={open}>
               <Toolbar
                 sx={{
@@ -203,9 +302,8 @@ export default function ToolbarHeader() {
                 <Divider sx={{ my: 1 }} />
                 {secondaryListItems}
               </List>
-         
-            </Drawer>   {/* tay trái */}
-            
+            </Drawer>{" "}
+            {/* tay trái */}
             {/* nội dung chính */}
             <Box
               component="main"
@@ -221,12 +319,12 @@ export default function ToolbarHeader() {
             >
               <Toolbar />
               {/* bố cục nội dung  */}
-              <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}> 
-                <Grid container spacing={1}> 
-                {/* spacing={number}   <Grid> sẽ chứa các phần tử con và có khoảng cách (spacing)
+              <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
+                <Grid container spacing={1}>
+                  {/* spacing={number}   <Grid> sẽ chứa các phần tử con và có khoảng cách (spacing)
                  là number đơn vị giữa các phần tử con  */}
 
-                 <Outlet></Outlet>
+                  <Outlet></Outlet>
                   {/* Chart
                   <Grid item xs={12} md={8} lg={9}>
                     <Paper
@@ -263,7 +361,8 @@ export default function ToolbarHeader() {
                   </Grid> */}
                 </Grid>
               </Container>
-            </Box>   {/* <Nội dung /> */}
+            </Box>{" "}
+            {/* <Nội dung /> */}
           </Box>
         </ThemeProvider>
       )}

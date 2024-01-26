@@ -25,3 +25,6 @@ export const getCurrentUser = async (token) => {
     },
   });
 };
+export const logout = async () => {
+  return await axios.post(`${URL_SERVER}/auth/logout`)
+}
