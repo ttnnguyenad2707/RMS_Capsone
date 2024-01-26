@@ -9,7 +9,13 @@ import PeopleIcon from '@mui/icons-material/People';
 import BarChartIcon from '@mui/icons-material/BarChart';
 import LayersIcon from '@mui/icons-material/Layers';
 import AssignmentIcon from '@mui/icons-material/Assignment';
-
+import HomeWorkIcon from '@mui/icons-material/HomeWork';
+import MeetingRoomIcon from '@mui/icons-material/MeetingRoom';
+import NewspaperIcon from '@mui/icons-material/Newspaper';
+import SettingsIcon from '@mui/icons-material/Settings';
+import EqualizerIcon from '@mui/icons-material/Equalizer';
+import ManageAccountsIcon from '@mui/icons-material/ManageAccounts';
+import HelpIcon from '@mui/icons-material/Help';
 export const mainListItems = (
   <React.Fragment>
     <ListSubheader component="div" inset>
@@ -23,28 +29,23 @@ export const mainListItems = (
     </ListItemButton>
     <ListItemButton>
       <ListItemIcon>
-        <ShoppingCartIcon />
+        <HomeWorkIcon />
       </ListItemIcon>
       <ListItemText primary="Danh Sách Nhà" />
     </ListItemButton>
     <ListItemButton>
       <ListItemIcon>
-        <PeopleIcon />
+        <MeetingRoomIcon />
       </ListItemIcon>
       <ListItemText primary="Danh Sách Phòng" />
     </ListItemButton>
     <ListItemButton>
       <ListItemIcon>
-        <BarChartIcon />
+        <NewspaperIcon />
       </ListItemIcon>
       <ListItemText primary="Bản Tin" />
     </ListItemButton>
-    {/* <ListItemButton>
-      <ListItemIcon>
-        <LayersIcon />
-      </ListItemIcon>
-      <ListItemText primary="Integrations" />
-    </ListItemButton> */}
+   
   </React.Fragment>
 );
 
@@ -55,25 +56,25 @@ export const secondaryListItems = (
     </ListSubheader>
     <ListItemButton>
       <ListItemIcon>
-        <AssignmentIcon />
+        <SettingsIcon />
       </ListItemIcon>
       <ListItemText primary="Cài Đặt" />
     </ListItemButton>
     <ListItemButton>
       <ListItemIcon>
-        <AssignmentIcon />
+        <EqualizerIcon />
       </ListItemIcon>
       <ListItemText primary="Thống kê tài chính" />
     </ListItemButton>
     <ListItemButton>
       <ListItemIcon>
-        <AssignmentIcon />
+        <ManageAccountsIcon />
       </ListItemIcon>
       <ListItemText primary="Tài khoản" />
     </ListItemButton>
     <ListItemButton>
       <ListItemIcon>
-        <AssignmentIcon />
+        <HelpIcon />
       </ListItemIcon>
       <ListItemText primary="Trợ giúp" />
     </ListItemButton>
