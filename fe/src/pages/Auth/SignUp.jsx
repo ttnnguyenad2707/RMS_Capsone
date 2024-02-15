@@ -144,11 +144,11 @@ const Login = () => {
 
                 <div className="my-3">
                   <p className="font-semibold text-center text-gray-600 text-xl ">
-                    Do not have a account ?
+                    Do you have a account ?
                     <h5 className="font-semibold text-gray-900 text-xl tracking-[-0.40px] w-auto">
-                      <NavLink to={`/register`} style={{ color: "#e25e3e" }}>
+                      <NavLink to={`/login`} style={{ color: "#e25e3e" }}>
                         {" "}
-                        Register
+                        Login
                       </NavLink>
                     </h5>
                   </p>

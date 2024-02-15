@@ -1,5 +1,5 @@
-import DenseTable from "./Component/table";
-import BasicModal from "./Component/popup";
+import DenseTable from "./Component/Table";
+import BasicModal from "./Component/Popup";
 const HousePage = () => {
   return (
     <div>

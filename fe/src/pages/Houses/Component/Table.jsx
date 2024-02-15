@@ -127,27 +127,23 @@ const headCells = [
   {
     id: "address",
     label: "Địa Chỉ",
-    sort: true,
   },
   {
     id: "lender",
     label: "Chủ Sở Hữu",
-    sort: true,
+  
   },
   {
     id: "passPort",
     label: "CMTND",
-    sort: true,
   },
   {
     id: "phoneNumber",
     label: "Số Điện Thoại",
-    sort: true,
   },
   {
     id: "email",
     label: "Email",
-    sort: true,
   },
   {
     id: "action",
