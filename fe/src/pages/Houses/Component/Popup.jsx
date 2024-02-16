@@ -246,7 +246,7 @@ export default function BasicModal() {
   }, [ward]);
 
   const validateInput = (input) => {
-    const pattern = /^[a-zA-Z\s]*$/; // Chỉ chấp nhận chữ cái và khoảng trắng
+    const pattern = /^[a-zA-Z\s]*$/;
 
     return pattern.test(input);
   };
@@ -261,8 +261,6 @@ export default function BasicModal() {
         style={{
           backgroundColor: "#5A67BA",
           fontWeight: "bold",
-          position: "relative",
-          right: "2px",
           margin: "10px",
         }}
       >

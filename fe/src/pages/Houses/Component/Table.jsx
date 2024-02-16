@@ -40,60 +40,84 @@ const list = [
   createData(
     "1",
     "Nguyên",
-    "3 phòng",
-    "3",
-    "3",
+    3,
+    3,
+    3,
     "Hưng",
     "Trần Trung Nguyên",
     "001202999999",
     "0123456789",
     "trantrungnguyenad@gmail.com",
     <div className="d-flex">
-      <Button variant="contained" color="primary">
-        Nút 1
+      <Button
+        variant="contained"
+        sx={{ fontWeight: "bold", margin: "10px" }}
+        color="warning"
+      >
+        Cập Nhật
       </Button>
-      <Button variant="contained" color="secondary">
-        Nút 2
+      <Button
+        variant="contained"
+        sx={{ fontWeight: "bold", margin: "10px" }}
+        color="error"
+      >
+        Xóa
       </Button>
     </div>
   ),
   createData(
     "1",
     "Long",
-    "3 phòng",
-    "3",
-    "3",
+    2,
+    3,
+    3,
     "Hưng",
     "Trần Trung Nguyên",
     "001202999999",
     "0123456789",
     "trantrungnguyenad@gmail.com",
     <div className="d-flex">
-      <Button variant="contained" color="primary">
-        Nút 1
+      <Button
+        variant="contained"
+        sx={{ fontWeight: "bold", margin: "10px" }}
+        color="warning"
+      >
+        Cập Nhật
       </Button>
-      <Button variant="contained" color="secondary">
-        Nút 2
+      <Button
+        variant="contained"
+        sx={{ fontWeight: "bold", margin: "10px" }}
+        color="error"
+      >
+        Xóa
       </Button>
     </div>
   ),
   createData(
     "1",
     "Hải",
-    "3 phòng",
-    "3",
-    "3",
+    5,
+    3,
+    3,
     "Hưng",
     "Trần Trung Nguyên",
     "001202999999",
     "0123456789",
     "trantrungnguyenad@gmail.com",
     <div className="d-flex">
-      <Button variant="contained" color="primary">
-        Nút 1
+      <Button
+        variant="contained"
+        sx={{ fontWeight: "bold", margin: "10px" }}
+        color="warning"
+      >
+        Cập Nhật
       </Button>
-      <Button variant="contained" color="secondary">
-        Nút 2
+      <Button
+        variant="contained"
+        sx={{ fontWeight: "bold", margin: "10px" }}
+        color="error"
+      >
+        Xóa
       </Button>
     </div>
   ),
@@ -131,7 +155,6 @@ const headCells = [
   {
     id: "lender",
     label: "Chủ Sở Hữu",
-  
   },
   {
     id: "passPort",
@@ -152,26 +175,134 @@ const headCells = [
 ];
 export default function BasicTable() {
   const [rows, setRows] = useState([]);
-  const [status,setStatus] = useState([]);
+  const [status, setStatus] = useState([
+    {
+      cellId: "houseName",
+      statusSort: true, // sắp xếp xuôi , false sắp xếp ngược
+    },
+    {
+      cellId: "numberRooms",
+      statusSort: true, // sắp xếp xuôi , false sắp xếp ngược
+    },
+    {
+      cellId: "numberBed",
+      statusSort: true, // sắp xếp xuôi , false sắp xếp ngược
+    },
+    {
+      cellId: "emptyPosition",
+      statusSort: true, // sắp xếp xuôi , false sắp xếp ngược
+    },
+  ]);
   useEffect(() => {
     setRows(list);
   }, []);
   const StyledTableRow = styled(TableRow)(() => ({
     backgroundColor: "#5A67BA",
+    "td, th": {
+      fontWeight: "bold",
+      color: "#ffffff",
+    },
   }));
-  const sortCharacter= (character1,character2 )=> {
-    return character1.toLowerCase().localeCompare(character2.toLowerCase())
-  }
-  const sortCharacterBack= (character1,character2 )=> {
-    return -(character1.toLowerCase().localeCompare(character2.toLowerCase()))
-  }
-  const handleSort = (data) => {
+  const sortCharacter = (character1, character2) => {
+    return character1.toLowerCase().localeCompare(character2.toLowerCase());
+  };
+  const sortCharacterBack = (character1, character2) => {
+    return -character1.toLowerCase().localeCompare(character2.toLowerCase());
+  };
+  const sortNumber = (number1, number2) => {
+    return number1 - number2;
+  };
+  const sortNumberBack = (number1, number2) => {
+    return -number1 - number2;
+  };
+  const handleSort = (cellId) => {
     const sortedRows = rows.slice();
+    console.log(cellId);
+
     // Sắp xếp mảng sao chép
-    sortedRows.sort((a, b) => sortCharacter(a.houseName, b.houseName));
+    switch (cellId) {
+      case "houseName":
+        const updateHouseName = status.map((s) => {
+          if (s.cellId === "houseName") {
+            if (s.statusSort === true) {
+              sortedRows.sort((a, b) =>
+                sortCharacterBack(a.houseName, b.houseName)
+              );
+              s.statusSort = false;
+            } else {
+              sortedRows.sort((a, b) =>
+                sortCharacter(a.houseName, b.houseName)
+              );
+              s.statusSort = true;
+            }
+          }
+          return s;
+        });
+        setStatus(updateHouseName);
+        break;
+      case "numberRooms":
+        const updateNumberRooms = status.map((s) => {
+          if (s.cellId === "numberRooms") {
+            if (s.statusSort === true) {
+              sortedRows.sort((a, b) =>
+                sortNumberBack(a.numberRooms, b.numberRooms)
+              );
+              s.statusSort = false;
+            } else {
+              sortedRows.sort((a, b) =>
+                sortNumber(a.numberRooms, b.numberRooms)
+              );
+              s.statusSort = true;
+            }
+          }
+          return s;
+        });
+        setStatus(updateNumberRooms);
+        break;
+      case "numberBed":
+        const updateNumberBed = status.map((s) => {
+          if (s.cellId === "numberBed") {
+            if (s.statusSort === true) {
+              sortedRows.sort((a, b) =>
+                sortNumberBack(a.numberBed, b.numberBed)
+              );
+              s.statusSort = false;
+            } else {
+              sortedRows.sort((a, b) => sortNumber(a.numberBed, b.numberBed));
+              s.statusSort = true;
+            }
+          }
+          return s;
+        });
+        setStatus(updateNumberBed);
+        break;
+      case "emptyPosition":
+        const updateEmptyPosition = status.map((s) => {
+          if (s.cellId === "emptyPosition") {
+            if (s.statusSort === true) {
+              sortedRows.sort((a, b) =>
+                sortNumberBack(a.emptyPosition, b.emptyPosition)
+              );
+              s.statusSort = false;
+            } else {
+              sortedRows.sort((a, b) =>
+                sortNumber(a.emptyPosition, b.emptyPositions)
+              );
+              s.statusSort = true;
+            }
+          }
+          return s;
+        });
+        setStatus(updateEmptyPosition);
+        break;
+      default:
+        break;
+    }
+
     // Cập nhật state rows
     setRows(sortedRows);
   };
+  console.log(status);
   return (
     <TableContainer component={Paper}>
       <Table sx={{ minWidth: 650 }} aria-label="simple table">
@@ -199,7 +330,11 @@ export default function BasicTable() {
             ? rows.map((row) => (
                 <TableRow
                   key={row.name}
-                  sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
+                  sx={{
+                    "&:last-child td, &:last-child th": {
+                      border: 0,
+                    },
+                  }}
                 >
                   <TableCell align="left">{row.stt}</TableCell>
                   <TableCell align="left">{row.houseName}</TableCell>
