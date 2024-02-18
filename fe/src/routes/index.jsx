@@ -5,6 +5,7 @@ import Login from '../pages/Auth/Login'
 import ToolbarHeader from '../CommonComponents/ToolbarHeader'
 import HousePage from '../pages/Houses/HousePage'
 import Profile from '../pages/Profiles/Profile'
+import RoomsPage from '../pages/Rooms/RoomsPage'
 export const appRoutes = createBrowserRouter([
     {
         path: '',
@@ -34,5 +35,9 @@ export const appRoutes = createBrowserRouter([
   {
     path: "/house",
     element: <HousePage />,
+  },
+  {
+    path: "/rooms",
+    element: <RoomsPage />,
   },
 ]);

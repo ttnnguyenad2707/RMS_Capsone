@@ -295,6 +295,7 @@ export default function BasicModal() {
           <Box sx={stylesBody}>
             <Box sx={{ display: "flex" }}>
               <TextField
+                required
                 id="outlined-basic"
                 label="Tên Nhà"
                 variant="outlined"
@@ -385,6 +386,7 @@ export default function BasicModal() {
             </Box>
             <Box sx={{ mt: "20px" }}>
               <TextField
+                required
                 id="outlined-basic"
                 label="Địa Chỉ"
                 variant="outlined"
@@ -398,6 +400,7 @@ export default function BasicModal() {
             </Box>
             <Box>
               <TextField
+                required
                 id="outlined-basic"
                 label="Tiền Điện Trên 1kwH"
                 variant="outlined"
@@ -406,6 +409,7 @@ export default function BasicModal() {
                 error={errorCostElectric}
               />
               <TextField
+                required
                 id="outlined-basic"
                 label="Tiền Nước Trên 1 Khối"
                 variant="outlined"
