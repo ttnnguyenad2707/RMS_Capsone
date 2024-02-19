@@ -27,16 +27,16 @@ const response =  {
         let successResponse = {};
         switch (statusCode) {
             case 201:
-                successResponse = Object.assign({}, { statusCode, data: data || '', message: message || 'Created' });
+                successResponse = Object.assign({}, { statusCode, message: message || 'Created', data: data || ''});
                 break;
             case 202:
-                successResponse = Object.assign({}, { statusCode, data: data || '', message: message || 'Accepted' });
+                successResponse = Object.assign({}, { statusCode, message: message || 'Accepted', data: data || ''});
                 break;
             case 204:
-                successResponse = Object.assign({}, { statusCode, data: data || '', message: message || 'Updated' });
+                successResponse = Object.assign({}, { statusCode, message: message || 'Updated', data: data || ''});
                 break;
             default:
-                successResponse = Object.assign({}, { statusCode: statusCode || 200, data: data || '', message: message || 'Success' });
+                successResponse = Object.assign({}, { statusCode: statusCode || 200, message: message || 'Success', data: data || ''});
                 break;
         }
         return successResponse;

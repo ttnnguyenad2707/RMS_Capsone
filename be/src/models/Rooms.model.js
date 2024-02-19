@@ -13,7 +13,7 @@ const imageCCCD = Schema ({
 const member = Schema ({
     name: {
         type: String,
-        require,
+        require: true ,
     },
     DOB: {
         type: String,
@@ -34,7 +34,12 @@ const Rooms = Schema ({
 
     },
     status: {
-        type: Boolean,
+        type: String,
+        enum: ["Empty","Full"]
+    },
+    quantityMember : {
+        type: Number,
+        require: true,
 
     },
     members: [member],
