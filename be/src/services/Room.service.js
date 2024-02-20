@@ -37,6 +37,7 @@ const RoomService = {
         try {
             const { houseId } = req.body;
             const { page, limit } = req.query;
+            const {name, status,quantityMember,roomType,area} = req.query;
             const pageNumber = parseInt(page) || 1;
             const limitPerPage = parseInt(limit) || 10;
 
@@ -45,18 +46,37 @@ const RoomService = {
             const totalRooms = await Rooms.countDocuments({ houseId });
             const totalPages = Math.ceil(totalRooms / limitPerPage);
 
-            const data = await Rooms.find({ houseId })
+            const  query = {houseId};
+           
+            if (name){
+                query.name = { $regex: name, $options: 'i'};
+            }
+            if (status){
+                query.status = { $regex: status, $options: 'i'};
+            }
+            if (quantityMember){
+                query.quantityMember =  quantityMember
+            }
+            if (roomType){
+                query.roomType = { $regex: roomType, $options: 'i'};
+            }
+            if (area){
+                query.area =  area
+            }
+            const data = await Rooms.find(query)
                 .skip(skip)
-                .limit(limitPerPage);
+                .limit(limitPerPage)
+                .sort({ createdAt: -1 })
+                .exec();
 
-            return {
-                room: data,
+            return {                
                 pagination: {
                     currentPage: pageNumber,
                     totalPages: totalPages,
                     totalRooms: totalRooms,
                     roomsPerPage: data.length
-                }
+                },
+                room: data
             };
         } catch (error) {
             console.log(error);

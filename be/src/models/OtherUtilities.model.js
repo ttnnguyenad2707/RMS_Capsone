@@ -1,9 +1,9 @@
 import { Schema, model } from "mongoose";
 
 const OtherUtilities = Schema({
-    houseId:{
+    userID : {
         type: Schema.ObjectId,
-        ref: "Houses"
+        ref: "Account"
     },
     name: {
         type: String,

@@ -35,7 +35,7 @@ const Rooms = Schema ({
     },
     status: {
         type: String,
-        enum: ["Empty","Full"]
+        enum: ["Empty","Full","Available"]
     },
     quantityMember : {
         type: Number,

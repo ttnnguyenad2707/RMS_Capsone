@@ -1,20 +1,22 @@
-import BaseUtilities from "../models/BaseUtilities.model.js"
-import OtherUtilities from "../models/OtherUtilities.model.js"
+import DefaultUtilitiesModel from "../models/DefaultUtilities.model.js";
+import OtherUtilitiesModel from "../models/OtherUtilities.model.js";
+import getCurrentUser from "../utils/getCurrentUser.js";
 const UtilitiesService = {
-    addBaseUtilities : async (req) => {
+    addDefaultUtilities : async (req) => {
         const {utilities} = req.body;
-        const data = await BaseUtilities.insertMany(utilities);
+        const data = await DefaultUtilitiesModel.insertMany(utilities);
         return data
     },
     
-    getBaseUtilities : async (req) =>{
-        const data = await BaseUtilities.find();
+    getDefaultUtilities : async (req) =>{
+        const data = await DefaultUtilitiesModel.find();
         return data
     },
 
     addOtherUtilities: async (req) => {
-        const {houseId,name} = req.body;
-        const data = await OtherUtilities.create({houseId,name});
+        const userID = getCurrentUser(req);
+        const {name} = req.body;
+        const data = await OtherUtilitiesModel.create({userID,name});
         return data
     },
 
