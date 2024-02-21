@@ -14,6 +14,17 @@ const RoomController = {
         }
 
     }),
+    addOne: asyncHandler(async (req,res,next) => {
+        try {
+            const room = await RoomService.addOne(req);
+            if (room) return res.status(201).json(response.successResponse(201,room))
+            else res.status(404).json(response.errorResponse(404));
+            
+        } catch (error) {
+            return res.status(500).json(response.errorResponse(500,error.toString()));
+        }
+
+    }),
     getRooms: asyncHandler(async (req,res,next) => {
         try {
             const rooms = await RoomService.getRooms(req);
@@ -38,6 +49,17 @@ const RoomController = {
     updateOne: asyncHandler(async (req,res,next) => {
         try {
             const room = await RoomService.updateOne(req);
+
+            if (room) { return res.status(200).json(response.successResponse(204,room))}
+            else res.status(404).json(response.errorResponse(404));
+            
+        } catch (error) {
+            return res.status(500).json(response.errorResponse(500));
+        }
+    }),
+    deletedOne: asyncHandler(async (req,res,next) => {
+        try {
+            const room = await RoomService.deleteOne(req);
 
             if (room) { return res.status(200).json(response.successResponse(204,room))}
             else res.status(404).json(response.errorResponse(404));

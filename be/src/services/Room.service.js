@@ -1,19 +1,19 @@
 import exceljs from "exceljs";
 import Rooms from "../models/Rooms.model.js";
+import HousesModel from "../models/Houses.model.js";
 
 const RoomService = {
     addRoom: async (req) => {
         try {
             const { houseId } = req.body;
+            const house = await HousesModel.findById(houseId);
             const workbook = new exceljs.Workbook();
             const buffer = req.file.buffer;
-
             await workbook.xlsx.load(buffer);
             const worksheet = workbook.worksheets[0];
-
             const data = [];
             worksheet.eachRow({ includeEmpty: true }, (row, rowNumber) => {
-                if (rowNumber !== 1) {
+                if (rowNumber !== 1 && row.getCell(1).value) {
                     const rowData = {
                         name: row.getCell(1).value,
                         status: row.getCell(2).value,
@@ -23,6 +23,8 @@ const RoomService = {
                         deposit: row.getCell(6).value,
                         area: row.getCell(7).value,
                         houseId: houseId,
+                        utilities: house.utilities,
+                        otherUtilities: house.otherUtilities,
                     };
                     data.push(rowData);
                 }
@@ -31,6 +33,22 @@ const RoomService = {
             return data;
         } catch (error) {
             console.log(error);
+        }
+    },
+    addOne : async(req) => {
+        try {
+            const {houseId} = req.params;
+            const house = await HousesModel.findById(houseId);
+
+            const data = await Rooms.create({
+                houseId,
+                ...req.body,
+                utilities: house.utilities,
+                otherUtilities: house.otherUtilities,
+            });
+            return data
+        } catch (error) {
+            throw error
         }
     },
     getRooms: async (req) => {
@@ -46,7 +64,7 @@ const RoomService = {
             const totalRooms = await Rooms.countDocuments({ houseId });
             const totalPages = Math.ceil(totalRooms / limitPerPage);
 
-            const  query = {houseId};
+            const  query = {houseId,deleted: false};
            
             if (name){
                 query.name = { $regex: name, $options: 'i'};
@@ -102,6 +120,16 @@ const RoomService = {
             const newRoom = await Rooms.findById(roomId);
             return newRoom;
 
+        } catch (error) {
+            throw error
+        }
+    },
+    deleteOne: async (req) => {
+        try {
+            const {roomId} = req.params;
+            await Rooms.findByIdAndUpdate(roomId, {deleted: true, deletedAt: Date.now()})
+            const newData = await Rooms.findById(roomId);
+            return newData
         } catch (error) {
             throw error
         }
