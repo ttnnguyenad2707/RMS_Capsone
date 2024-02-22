@@ -25,6 +25,18 @@ export const getCurrentUser = async (token) => {
     },
   });
 };
+
+// http://localhost:5000/api/v1/account/profile
+
+export const updateUser = async (token,data) => {
+  return await axios.put(`${URL_SERVER}/account/profile`,data, {
+      withCredentials: true,
+      
+      headers: {
+        authorization: `Bearer ${token}`,
+      }
+  })
+}
 export const logout = async () => {
   return await axios.post(`${URL_SERVER}/auth/logout`)
 }
