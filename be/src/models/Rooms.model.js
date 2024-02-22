@@ -29,6 +29,9 @@ const member = Schema ({
 })
 
 const Rooms = Schema ({
+    floor: {
+        type: Number,
+    },
     name: {
         type : String,
 

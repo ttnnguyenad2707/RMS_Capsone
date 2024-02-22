@@ -20,7 +20,9 @@ const RoomService = {
             const hashedPassword = await bcrypt.hash("88888888", salt);
             worksheet.eachRow({ includeEmpty: true }, (row, rowNumber) => {
                 if (rowNumber !== 1 && row.getCell(1).value) {
+                    const floor = row.getCell(1).value.toString().charAt(0);
                     const rowData = {
+                        floor: floor,
                         name: row.getCell(1).value,
                         status: row.getCell(2).value,
                         quantityMember: row.getCell(3).value,
@@ -55,6 +57,7 @@ const RoomService = {
 
             const data = await Rooms.create({
                 houseId,
+                floor: req.body.name.charAt(0), 
                 ...req.body,
                 utilities: house.utilities,
                 otherUtilities: house.otherUtilities,
@@ -68,7 +71,7 @@ const RoomService = {
         try {
             const { houseId } = req.body;
             const { page, limit } = req.query;
-            const {name, status,quantityMember,roomType,area} = req.query;
+            const {floor,name, status,quantityMember,roomType,area} = req.query;
             const pageNumber = parseInt(page) || 1;
             const limitPerPage = parseInt(limit) || 10;
 
@@ -78,7 +81,9 @@ const RoomService = {
             const totalPages = Math.ceil(totalRooms / limitPerPage);
 
             const  query = {houseId,deleted: false};
-           
+            if (floor) {
+                query.floor = floor
+            }
             if (name){
                 query.name = { $regex: name, $options: 'i'};
             }
