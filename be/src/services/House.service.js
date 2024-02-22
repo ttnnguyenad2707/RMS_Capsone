@@ -43,7 +43,7 @@ const HouseService = {
             const totalPages = Math.ceil(totalHouses / limitPerPage);
 
             const data = await HousesModel.find({ hostId, deleted: false })
-                .populate([{ path: "utilities" }, { path: "otherUtilities" }])
+                .populate([{ path: "utilities" }, { path: "otherUtilities" },{ path: "hostId" }])
                 .skip(skip)
                 .limit(limitPerPage)
                 .sort({ createdAt: -1 });

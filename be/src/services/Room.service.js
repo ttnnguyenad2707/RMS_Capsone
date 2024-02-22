@@ -45,6 +45,8 @@ const RoomService = {
             });
             await AccountModel.insertMany(accounts)
             await Rooms.insertMany(data);
+            house.numberOfRoom += data.length; 
+            await house.save();
             return data;
         } catch (error) {
             console.log(error);
@@ -62,6 +64,8 @@ const RoomService = {
                 utilities: house.utilities,
                 otherUtilities: house.otherUtilities,
             });
+            house.numberOfRoom += 1;
+            await house.save();
             return data
         } catch (error) {
             throw error
