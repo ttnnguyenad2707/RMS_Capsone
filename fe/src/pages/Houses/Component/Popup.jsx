@@ -259,7 +259,7 @@ export default function BasicModal() {
         onClick={handleOpen}
         variant="contained"
         style={{
-          backgroundColor: "#5A67BA",
+          backgroundColor: "#1976d2",
           fontWeight: "bold",
           margin: "10px",
         }}

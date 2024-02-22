@@ -21,8 +21,8 @@ const ChartRooms = () => {
           fontSize: "15px",
         },
       }}
-      width={650}
-      height={210}
+      width={800}
+      height={400}
     />
   );
 };
