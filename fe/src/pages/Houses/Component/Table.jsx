@@ -14,8 +14,6 @@ function createData(
   stt,
   houseName,
   numberRooms,
-  numberBed,
-  emptyPosition,
   address,
   lender,
   phoneNumber,
@@ -28,8 +26,6 @@ function createData(
     stt,
     houseName,
     numberRooms,
-    numberBed,
-    emptyPosition,
     address,
     lender,
     phoneNumber,
@@ -39,7 +35,7 @@ function createData(
     action,
   };
 }
-export default function BasicTable() {
+export default function BasicTable({data}) {
   const [rows, setRows] = useState([]);
   const [status, setStatus] = useState([
     {
@@ -59,15 +55,21 @@ export default function BasicTable() {
       statusSort: true, // sắp xếp xuôi , false sắp xếp ngược
     },
   ]);
+  const dataHouse = data;
   const [dataModelUpdate, setDataModelUpdate] = useState();
   const [open, setOpen] = useState(false);
+
   const handleOpen = () => {
     setOpen(true);
   };
   const handleClose = () => {
     setOpen(false);
-    console.log("l0o");
   };
+  const dataTable = dataHouse.map((house)=> {
+    const address = house.location.district+'/'+ house.location.province+'/'+ house.location.ward+'/'+'350';
+    createData(1,house.name,3,house.l)
+  })
+
   const list = [
     createData(
       "1",
@@ -401,7 +403,7 @@ export default function BasicTable() {
     // Cập nhật state rows
     setRows(sortedRows);
   };
-  console.log(status);
+  console.log(dataHouse);
   return (
     <div>
       <TableContainer component={Paper}>
@@ -445,7 +447,7 @@ export default function BasicTable() {
                     <TableCell align="left">{row.lender}</TableCell>
                     <TableCell align="left">{row.phoneNumber}</TableCell>
                     <TableCell align="left">{row.email}</TableCell>
-                    <TableCell align="left" sx={{ width: "15%" }}>
+                    <TableCell align="left" sx={{ width: "20%" }}>
                       {row.action}
                     </TableCell>
                   </TableRow>

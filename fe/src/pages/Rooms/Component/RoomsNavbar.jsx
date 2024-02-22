@@ -21,13 +21,14 @@ const RoomsNavbar = () => {
         label="Age"
         onChange={handleChange}
         defaultValue={10}
-        sx={{width: "15%"}}
+        sx={{width: "20%"}}
+        className="me-5"
       >
         <MenuItem value={10}>Ten</MenuItem>
         <MenuItem value={20}>Twenty</MenuItem>
         <MenuItem value={30}>Thirty</MenuItem>
       </Select>
-      <Box sx={{ display: "flex", position: "absolute", right: "0" }}>
+      <Box sx={{ display: "flex"}}>
         <Button color="secondary" variant="contained" className="me-3">
           Tất Cả Hóa Đơn Tiền Nhà
         </Button>
