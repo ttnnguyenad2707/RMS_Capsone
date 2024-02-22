@@ -3,7 +3,7 @@ import Box from "@mui/material/Box";
 import FormGroup from "@mui/material/FormGroup";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import Checkbox from "@mui/material/Checkbox";
-const UtilitiesTab = ({ handleInputSelect }) => {
+const UtilitiesTab = ({ handleInputSelect, dataUtil }) => {
   const [utils, setUtil] = useState([
     {
       name: "Ban Công1",
@@ -51,6 +51,17 @@ const UtilitiesTab = ({ handleInputSelect }) => {
       .map((u) => u.value);
     handleInputSelect(selectUtil);
   }, [utils]);
+  useEffect(() => {
+    if (dataUtil) {
+      const dataUtils = dataUtils.map((u) => {
+        return {
+          name: u.name,
+          vale: u.name,
+          isCheck: true,
+        };
+      });
+    }
+  }, [dataUtil]);
   return (
     <Box sx={{ display: "flex" }}>
       <FormGroup>

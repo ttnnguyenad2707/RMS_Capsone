@@ -10,6 +10,7 @@ import Button from "@mui/material/Button";
 import { styled } from "@mui/material/styles";
 import { useEffect, useState } from "react";
 import BasicModalUpdate from "./PopupUpdate";
+import { AiOutlineLoading3Quarters } from "react-icons/ai";
 function createData(
   stt,
   houseName,
@@ -35,7 +36,7 @@ function createData(
     action,
   };
 }
-export default function BasicTable({data}) {
+export default function BasicTable({ data }) {
   const [rows, setRows] = useState([]);
   const [status, setStatus] = useState([
     {
@@ -65,148 +66,144 @@ export default function BasicTable({data}) {
   const handleClose = () => {
     setOpen(false);
   };
-  const dataTable = dataHouse.map((house)=> {
-    const address = house.location.district+'/'+ house.location.province+'/'+ house.location.ward+'/'+'350';
-    createData(1,house.name,3,house.l)
-  })
 
-  const list = [
-    createData(
-      "1",
-      "Nguyên",
-      3,
-      3,
-      3,
-      "Thành Phố Hà Nội/Quận Ba Đình/Phường Trúc Bạch/114",
-      "Trần Trung Nguyên",
-      "0123456789",
-      "trantrungnguyenad@gmail.com",
-      20000,
-      20000,
-      <div className="d-flex">
-        <Button
-          variant="contained"
-          sx={{ fontWeight: "bold", margin: "10px" }}
-          color="warning"
-          onClick={() =>
-            updateHouse(
-              "1",
-              "Nguyên",
-              3,
-              3,
-              3,
-              "Thành Phố Hà Nội/Quận Ba Đình/Phường Trúc Bạch/114",
-              "Trần Trung Nguyên",
-              "001202999999",
-              "0123456789",
-              "trantrungnguyenad@gmail.com",
-              20000,
-              20000
-            )
-          }
-        >
-          Cập Nhật
-        </Button>
-        <Button
-          variant="contained"
-          sx={{ fontWeight: "bold", margin: "10px" }}
-          color="error"
-        >
-          Xóa
-        </Button>
-      </div>
-    ),
-    createData(
-      "1",
-      "Nguyên",
-      3,
-      3,
-      3,
-      "Thành Phố Hà Nội/Quận Ba Đình/Phường Trúc Bạch/114",
-      "Trần Trung Nguyên",
-      "0123456789",
-      "trantrungnguyenad@gmail.com",
-      20000,
-      20000,
-      <div className="d-flex">
-        <Button
-          variant="contained"
-          sx={{ fontWeight: "bold", margin: "10px" }}
-          color="warning"
-          onClick={() =>
-            updateHouse(
-              "1",
-              "Nguyên",
-              3,
-              3,
-              3,
-              "Thành Phố Hà Nội/Quận Ba Đình/Phường Trúc Bạch/114",
-              "Trần Trung Nguyên",
-              "001202999999",
-              "0123456789",
-              "trantrungnguyenad@gmail.com",
-              20000,
-              20000
-            )
-          }
-        >
-          Cập Nhật
-        </Button>
-        <Button
-          variant="contained"
-          sx={{ fontWeight: "bold", margin: "10px" }}
-          color="error"
-        >
-          Xóa
-        </Button>
-      </div>
-    ),
-    createData(
-      "1",
-      "Nguyên",
-      3,
-      3,
-      3,
-      "Thành Phố Hà Nội/Quận Ba Đình/Phường Trúc Bạch/114",
-      "Trần Trung Nguyên",
-      "0123456789",
-      "trantrungnguyenad@gmail.com",
-      20000,
-      20000,
-      <div className="d-flex">
-        <Button
-          variant="contained"
-          sx={{ fontWeight: "bold", margin: "10px" }}
-          color="warning"
-          onClick={() =>
-            updateHouse(
-              "1",
-              "Nguyên",
-              3,
-              3,
-              3,
-              "Thành Phố Hà Nội/Quận Ba Đình/Phường Trúc Bạch/114",
-              "Trần Trung Nguyên",
-              "001202999999",
-              "0123456789",
-              "trantrungnguyenad@gmail.com",
-              20000,
-              20000
-            )
-          }
-        >
-          Cập Nhật
-        </Button>
-        <Button
-          variant="contained"
-          sx={{ fontWeight: "bold", margin: "10px" }}
-          color="error"
-        >
-          Xóa
-        </Button>
-      </div>
-    ),
-  ];
+  // const list = [
+  //   createData(
+  //     "1",
+  //     "Nguyên",
+  //     3,
+  //     3,
+  //     3,
+  //     "Thành Phố Hà Nội/Quận Ba Đình/Phường Trúc Bạch/114",
+  //     "Trần Trung Nguyên",
+  //     "0123456789",
+  //     "trantrungnguyenad@gmail.com",
+  //     20000,
+  //     20000,
+  //     <div className="d-flex">
+  //       <Button
+  //         variant="contained"
+  //         sx={{ fontWeight: "bold", margin: "10px" }}
+  //         color="warning"
+  //         onClick={() =>
+  //           updateHouse(
+  //             "1",
+  //             "Nguyên",
+  //             3,
+  //             3,
+  //             3,
+  //             "Thành Phố Hà Nội/Quận Ba Đình/Phường Trúc Bạch/114",
+  //             "Trần Trung Nguyên",
+  //             "001202999999",
+  //             "0123456789",
+  //             "trantrungnguyenad@gmail.com",
+  //             20000,
+  //             20000
+  //           )
+  //         }
+  //       >
+  //         Cập Nhật
+  //       </Button>
+  //       <Button
+  //         variant="contained"
+  //         sx={{ fontWeight: "bold", margin: "10px" }}
+  //         color="error"
+  //       >
+  //         Xóa
+  //       </Button>
+  //     </div>
+  //   ),
+  //   createData(
+  //     "1",
+  //     "Nguyên",
+  //     3,
+  //     3,
+  //     3,
+  //     "Thành Phố Hà Nội/Quận Ba Đình/Phường Trúc Bạch/114",
+  //     "Trần Trung Nguyên",
+  //     "0123456789",
+  //     "trantrungnguyenad@gmail.com",
+  //     20000,
+  //     20000,
+  //     <div className="d-flex">
+  //       <Button
+  //         variant="contained"
+  //         sx={{ fontWeight: "bold", margin: "10px" }}
+  //         color="warning"
+  //         onClick={() =>
+  //           updateHouse(
+  //             "1",
+  //             "Nguyên",
+  //             3,
+  //             3,
+  //             3,
+  //             "Thành Phố Hà Nội/Quận Ba Đình/Phường Trúc Bạch/114",
+  //             "Trần Trung Nguyên",
+  //             "001202999999",
+  //             "0123456789",
+  //             "trantrungnguyenad@gmail.com",
+  //             20000,
+  //             20000
+  //           )
+  //         }
+  //       >
+  //         Cập Nhật
+  //       </Button>
+  //       <Button
+  //         variant="contained"
+  //         sx={{ fontWeight: "bold", margin: "10px" }}
+  //         color="error"
+  //       >
+  //         Xóa
+  //       </Button>
+  //     </div>
+  //   ),
+  //   createData(
+  //     "1",
+  //     "Nguyên",
+  //     3,
+  //     3,
+  //     3,
+  //     "Thành Phố Hà Nội/Quận Ba Đình/Phường Trúc Bạch/114",
+  //     "Trần Trung Nguyên",
+  //     "0123456789",
+  //     "trantrungnguyenad@gmail.com",
+  //     20000,
+  //     20000,
+  //     <div className="d-flex">
+  //       <Button
+  //         variant="contained"
+  //         sx={{ fontWeight: "bold", margin: "10px" }}
+  //         color="warning"
+  //         onClick={() =>
+  //           updateHouse(
+  //             "1",
+  //             "Nguyên",
+  //             3,
+  //             3,
+  //             3,
+  //             "Thành Phố Hà Nội/Quận Ba Đình/Phường Trúc Bạch/114",
+  //             "Trần Trung Nguyên",
+  //             "001202999999",
+  //             "0123456789",
+  //             "trantrungnguyenad@gmail.com",
+  //             20000,
+  //             20000
+  //           )
+  //         }
+  //       >
+  //         Cập Nhật
+  //       </Button>
+  //       <Button
+  //         variant="contained"
+  //         sx={{ fontWeight: "bold", margin: "10px" }}
+  //         color="error"
+  //       >
+  //         Xóa
+  //       </Button>
+  //     </div>
+  //   ),
+  // ];
 
   const headCells = [
     {
@@ -221,16 +218,6 @@ export default function BasicTable({data}) {
     {
       id: "numberRooms",
       label: "Số Phòng",
-      sort: true,
-    },
-    {
-      id: "numberBed",
-      label: "Số Giường",
-      sort: true,
-    },
-    {
-      id: "emptyPosition",
-      label: "Chỗ Trống",
       sort: true,
     },
     {
@@ -255,8 +242,60 @@ export default function BasicTable({data}) {
     },
   ];
   useEffect(() => {
-    setRows(list);
-  }, []);
+    if (dataHouse) {
+      const dataTable = dataHouse.map((house) => {
+        const address =
+          house.location.district +
+          "/" +
+          house.location.province +
+          "/" +
+          house.location.ward +
+          "/" +
+          "350";
+        return createData(
+          1,
+          house.name,
+          3,
+          address,
+          house.hostId.name,
+          house.hostId.phone,
+          house.hostId.email,
+          house.electricPrice,
+          house.waterPrice,
+          <div className="d-flex">
+            <Button
+              variant="contained" 
+              sx={{ fontWeight: "bold", margin: "10px" }}
+              color="warning"
+              onClick={() =>
+                updateHouse(
+                  1,
+                  house.name,
+                  3,
+                  address,
+                  house.hostId.name,
+                  house.hostId.phone,
+                  house.hostId.email,
+                  house.electricPrice,
+                  house.waterPrice
+                )
+              }
+            >
+              Cập Nhật
+            </Button>
+            <Button
+              variant="contained"
+              sx={{ fontWeight: "bold", margin: "10px" }}
+              color="error"
+            >
+              Xóa
+            </Button>
+          </div>
+        );
+      });
+      setRows(dataTable);
+    }
+  }, [dataHouse]);
   const StyledTableRow = styled(TableRow)(() => ({
     backgroundColor: "#1976d2",
     "td, th": {
@@ -280,8 +319,6 @@ export default function BasicTable({data}) {
     stt,
     houseName,
     numberRooms,
-    numberBed,
-    emptyPosition,
     address,
     lender,
     phoneNumber,
@@ -300,8 +337,6 @@ export default function BasicTable({data}) {
       stt: stt,
       houseName: houseName,
       numberRooms: numberRooms,
-      numberBed: numberBed,
-      emptyPosition: emptyPosition,
       address: {
         city: City,
         ward: Ward,
@@ -405,63 +440,70 @@ export default function BasicTable({data}) {
   };
   console.log(dataHouse);
   return (
-    <div>
-      <TableContainer component={Paper}>
-        <Table sx={{ minWidth: 650 }} aria-label="simple table">
-          <TableHead>
-            <StyledTableRow>
-              {headCells.map((headCell) => (
-                <TableCell key={headCell.id} align="left">
-                  {headCell.sort === true ? (
-                    <TableSortLabel
-                      active={true}
-                      direction="asc"
-                      onClick={() => handleSort(headCell.id)}
-                    >
-                      {headCell.label}
-                    </TableSortLabel>
-                  ) : (
-                    headCell.label
-                  )}
-                </TableCell>
-              ))}
-            </StyledTableRow>
-          </TableHead>
-          <TableBody>
-            {rows
-              ? rows.map((row) => (
-                  <TableRow
-                    key={row.name}
-                    sx={{
-                      "&:last-child td, &:last-child th": {
-                        border: 0,
-                      },
-                    }}
-                  >
-                    <TableCell align="left">{row.stt}</TableCell>
-                    <TableCell align="left">{row.houseName}</TableCell>
-                    <TableCell align="left">{row.numberRooms}</TableCell>
-                    <TableCell align="left">{row.numberBed}</TableCell>
-                    <TableCell align="left">{row.emptyPosition}</TableCell>
-                    <TableCell align="left">{row.address}</TableCell>
-                    <TableCell align="left">{row.lender}</TableCell>
-                    <TableCell align="left">{row.phoneNumber}</TableCell>
-                    <TableCell align="left">{row.email}</TableCell>
-                    <TableCell align="left" sx={{ width: "20%" }}>
-                      {row.action}
+    <>
+      {dataHouse ? (
+        <div>
+          <TableContainer component={Paper}>
+            <Table sx={{ minWidth: 650 }} aria-label="simple table">
+              <TableHead>
+                <StyledTableRow>
+                  {headCells.map((headCell) => (
+                    <TableCell key={headCell.id} align="left">
+                      {headCell.sort === true ? (
+                        <TableSortLabel
+                          active={true}
+                          direction="asc"
+                          onClick={() => handleSort(headCell.id)}
+                        >
+                          {headCell.label}
+                        </TableSortLabel>
+                      ) : (
+                        headCell.label
+                      )}
                     </TableCell>
-                  </TableRow>
-                ))
-              : null}
-          </TableBody>
-        </Table>
-      </TableContainer>
-      <BasicModalUpdate
-        data={dataModelUpdate}
-        handleOpen={handleOpen}
-        handleClose={handleClose}
-        openModal={open}
-      />
-    </div>
+                  ))}
+                </StyledTableRow>
+              </TableHead>
+              <TableBody>
+                {rows
+                  ? rows.map((row) => (
+                      <TableRow
+                        key={row.name}
+                        sx={{
+                          "&:last-child td, &:last-child th": {
+                            border: 0,
+                          },
+                        }}
+                      >
+                        <TableCell align="left">{row.stt}</TableCell>
+                        <TableCell align="left">{row.houseName}</TableCell>
+                        <TableCell align="left">{row.numberRooms}</TableCell>
+                        <TableCell align="left">{row.address}</TableCell>
+                        <TableCell align="left">{row.lender}</TableCell>
+                        <TableCell align="left">{row.phoneNumber}</TableCell>
+                        <TableCell align="left">{row.email}</TableCell>
+                        <TableCell align="left" sx={{ width: "20%" }}>
+                          {row.action}
+                        </TableCell>
+                      </TableRow>
+                    ))
+                  : null}
+              </TableBody>
+            </Table>
+          </TableContainer>
+          <BasicModalUpdate
+            data={dataModelUpdate}
+            handleOpen={handleOpen}
+            handleClose={handleClose}
+            openModal={open}
+          />
+        </div>
+      ) : (
+        <div className="text-center">
+          <AiOutlineLoading3Quarters className="loading-icon" />
+          <p>Loading...</p>
+        </div>
+      )}
+    </>
   );
 }

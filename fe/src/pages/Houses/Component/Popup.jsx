@@ -41,7 +41,6 @@ const stylesBody = {
 };
 export default function BasicModal() {
   const [open, setOpen] = React.useState(false);
-  const [age, setAge] = React.useState("");
   const [errorName, setErrorName] = React.useState(false);
   const [errorAddress, setErrorAddress] = React.useState(false);
   const [errorCostElectric, setErrorCostElectric] = React.useState(false);
@@ -65,12 +64,6 @@ export default function BasicModal() {
   const inputCostWater = React.useRef();
   const handleChangeMenu = (event, newValue) => {
     setValue(newValue);
-  };
-  const handleChange = (event) => {
-    const inputSelect = event.target.value;
-    if (inputSelect !== null) {
-      setAge(inputSelect);
-    }
   };
   const handleChangeCity = (event) => {
     const inputSelect = event.target.value;
@@ -299,24 +292,10 @@ export default function BasicModal() {
                 id="outlined-basic"
                 label="Tên Nhà"
                 variant="outlined"
-                sx={{ width: "65%" }}
+                sx={{ width: "100%" }}
                 inputRef={inputName}
                 error={errorName}
               />
-              <FormControl fullWidth sx={{ width: "35%", ml: "20px" }}>
-                <InputLabel id="demo-simple-select-label">Loại Nhà</InputLabel>
-                <Select
-                  labelId="demo-simple-select-label"
-                  id="demo-simple-select"
-                  value={age}
-                  label="Age"
-                  onChange={handleChange}
-                >
-                  <MenuItem value={10}>Ten</MenuItem>
-                  <MenuItem value={20}>Twenty</MenuItem>
-                  <MenuItem value={30}>Thirty</MenuItem>
-                </Select>
-              </FormControl>
             </Box>
             <Box sx={{ mt: "20px", display: "flex" }}>
               <FormControl fullWidth sx={{ width: "30%" }}>
