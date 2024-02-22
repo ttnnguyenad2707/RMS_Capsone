@@ -19,9 +19,9 @@ const CommonRooms = () => {
     // Thêm dữ liệu danh mục và nội dung tương ứng ở đây
   ];
   return (
-    <Box sx={{ position: "relative", backgroundColor: "#F1F2F7" }}>
+    <Box sx={{ position: "relative", backgroundColor: "#FFFFFF" }}>
       <Box
-        sx={{ backgroundColor: "#5A67BA", alignItems: "center" }}
+        sx={{ backgroundColor: "#1976d2", alignItems: "center" }}
         className="p-2"
       >
         <p className="fs-4 fw-bold" style={{ color: "#fff", margin: "unset" }}>
