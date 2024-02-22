@@ -21,9 +21,5 @@ const AccountController = {
     getListImages: asyncHandler(async (req, res) => {
         await AccountService.getListImages(req, res);
     }),
-
-
-
-
 }
 export default AccountController

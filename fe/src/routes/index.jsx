@@ -1,43 +1,47 @@
-import {createBrowserRouter} from 'react-router-dom'
-import Dashboard from '../pages/Dashboard/Dashboard'
-import News from '../pages/News/News'
-import SignUp from '../pages/Auth/SignUp'
-import Login from '../pages/Auth/Login'
-import ToolbarHeader from '../CommonComponents/ToolbarHeader'
-import Profile from '../pages/Profiles/Profile'
+import { createBrowserRouter } from "react-router-dom";
+import Dashboard from "../pages/Dashboard/Dashboard";
+import SignUp from "../pages/Auth/SignUp";
+import Login from "../pages/Auth/Login";
+import ToolbarHeader from "../CommonComponents/ToolbarHeader";
+import HousePage from "../pages/Houses/HousePage";
+import Profile from "../pages/Profiles/Profile";
+import RoomsPage from "../pages/Rooms/RoomsPage";
+import News from "../pages/News/News";
 export const appRoutes = createBrowserRouter([
-    {
-        path: '',
-        element: <ToolbarHeader />,
-       children :[
-        {
-            path: '/',
-            element: <Dashboard />
-        },
-        
-        {
-            path: '/Profile',
-            element: <Profile />
-        },
-        
-        {
-            path: '/new',
-            element: <News />
-        },
+  {
+    path: "",
+    element: <ToolbarHeader />,
+    children: [
+      {
+        path: "/",
+        element: <Dashboard />,
+      },
 
+      {
+        path: "/Profile",
+        element: <Profile />,
+      },
+      {
+        path: "/house",
+        element: <HousePage />,
+      },
+      {
+        path: "/rooms",
+        element: <RoomsPage />,
+      },
+      {
+        path: "/new",
+        element: <News />,
+      },
+    ],
+  },
 
-       ]
-    },
-
-    
-    {
-        path: '/login',
-        element: <Login />
-    },
-    {
-        path: '/register',
-        element: <SignUp />
-    },
-
-
-])
+  {
+    path: "/login",
+    element: <Login />,
+  },
+  {
+    path: "/register",
+    element: <SignUp />,
+  },
+]);
