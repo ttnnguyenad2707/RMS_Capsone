@@ -24,7 +24,7 @@ const NewsController = {
     getOne: asyncHandler(async (req,res) => {
         try {
             const news = await NewsService.getOne(req);
-            if (news) return res.status(201).json(response.successResponse(201,news));
+            if (news) return res.status(200).json(response.successResponse(200,news));
             else return res.status(404).json(response.errorResponse(404));
         } catch (error) {
             return res.status(500).json(response.errorResponse(500,error.toString()))
@@ -33,7 +33,7 @@ const NewsController = {
     updateOne: asyncHandler(async (req,res) => {
         try {
             const news = await NewsService.updateOne(req);
-            if (news) return res.status(201).json(response.successResponse(201,news));
+            if (news) return res.status(200).json(response.successResponse(200,news));
             else return res.status(404).json(response.errorResponse(404));
         } catch (error) {
             return res.status(500).json(response.errorResponse(500,error.toString()))

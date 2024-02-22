@@ -40,6 +40,7 @@ const NewsService = {
             const { newsId } = req.params;
             const data = await NewsModel.findById(newsId).populate([
                 { path: "authorId" },
+                { path: "commentsId" },
                 { path: "likedBy" },
             ]);
             return {

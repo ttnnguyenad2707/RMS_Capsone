@@ -42,6 +42,10 @@ const Houses = new Schema(
             type: Number,
             require: true,
         },
+        servicePrice: {
+            type: Number,
+            require: true,
+        },
         utilities: [
             {
                 type: Schema.ObjectId,

@@ -53,15 +53,4 @@ export const verifyTokenAdmin = asyncHandler(async(req,res,next) => {
     })
 })
 
-// const verifyTokenAdmin = asyncHandler(async (req, res, next) => {
-//     await verifyToken(req, res, () => {
-//         if (req.user.admin) {
-//             next();
-//         } else {
-//             return res.status(403).json("You are not an Admin");
-//         }
-//     });
-
-// });
-
 

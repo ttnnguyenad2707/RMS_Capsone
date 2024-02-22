@@ -24,7 +24,7 @@ const ProblemController = {
     getOne: asyncHandler(async (req,res) => {
         try {
             const problem = await ProblemService.getOne(req);
-            if (problem) return res.status(201).json(response.successResponse(201,problem));
+            if (problem) return res.status(200).json(response.successResponse(200,problem));
             else return res.status(404).json(response.errorResponse(404));
         } catch (error) {
             return res.status(500).json(response.errorResponse(500,error.toString()))
@@ -33,7 +33,7 @@ const ProblemController = {
     updateOne: asyncHandler(async (req,res) => {
         try {
             const problem = await ProblemService.updateOne(req);
-            if (problem) return res.status(201).json(response.successResponse(201,problem));
+            if (problem) return res.status(200).json(response.successResponse(200,problem));
             else return res.status(404).json(response.errorResponse(404));
         } catch (error) {
             return res.status(500).json(response.errorResponse(500,error.toString()))
@@ -42,7 +42,7 @@ const ProblemController = {
     deleteOne: asyncHandler(async (req,res) => {
         try {
             const problem = await ProblemService.deleteOne(req);
-            if (problem) return res.status(201).json(response.successResponse(201,problem));
+            if (problem) return res.status(200).json(response.successResponse(200,problem));
             else return res.status(404).json(response.errorResponse(404));
         } catch (error) {
             return res.status(500).json(response.errorResponse(500,error.toString()))
