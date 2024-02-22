@@ -10,6 +10,7 @@ import Box from "@mui/material/Box";
 import TextField from "@mui/material/TextField";
 import { AiOutlineLoading3Quarters } from "react-icons/ai";
 import { updateUser } from "../../services/auth";
+import { login } from "../../reduxToolkit/UserSlice";
 
 const Profile = () => {
   const [isLoading, setIsLoading] = useState(true);
@@ -37,10 +38,10 @@ const Profile = () => {
   const handleSubmitForm = async (values) => {
     try {
       const res = await updateUser(accessToken, values);
-      const data = res.data.data;
+      const data = res?.data?.data;
       console.log("data", data);
       // setUser(data);
-    
+      dispatch(login(data))
       setIsEditMode(false);
       toast.success(res.data.message);
     } catch (error) {
