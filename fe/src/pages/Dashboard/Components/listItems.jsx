@@ -44,12 +44,15 @@ export const mainListItems = (
         <ListItemText primary="Danh Sách Phòng" />
       </ListItemButton>
     </Link>
+    <Link to={"/new"}>
     <ListItemButton>
       <ListItemIcon>
         <NewspaperIcon />
       </ListItemIcon>
       <ListItemText primary="Bản Tin" />
     </ListItemButton>
+    </Link>
+    
   </React.Fragment>
 );
 
