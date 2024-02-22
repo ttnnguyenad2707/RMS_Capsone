@@ -136,58 +136,66 @@ export default function News() {
       ) : (
         <>
   
-                  <Grid item xs={12} md={7} lg={8}>
+                  <Grid item xs={12} md={7} lg={8} marginLeft={17}>
                     <Paper
                       sx={{
                         p: 2,
                         display: "flex",
                         flexDirection: "column",
-                        height: 350,
+                        height: "auto",
                       }}
                     >
                       {/* <Chart /> */}
+                      <div style={{ display: "flex", alignItems: "center" }}>
+  <p style={{ marginRight: "10px" }}>
+    <b>m_ducs</b>
+  </p>
+  <p>1 giờ trước</p>
+</div>
+                      
+                      <p>
+                        "Em tỏa hương
+                      </p>
+                      <p>
+                        Tôi tưởng hoa.."
+                      </p>
+                    <div>
+                      <button>Bình Luận</button>
+                    </div>
                     </Paper>
                   </Grid>
+                  
              
-                  <Grid item xs={12} md={5} lg={4}>
+                  <Grid item xs={12} md={7} lg={8} marginLeft={17}>
                     <Paper
                       sx={{
                         p: 2,
                         display: "flex",
                         flexDirection: "column",
-                        height: 350,
+                        height: "auto",
                       }}
                     >
                       {/* <Deposits /> */}
+                      <div style={{ display: "flex", alignItems: "center" }}>
+  <p style={{ marginRight: "10px" }}>
+    <b>m_ducs</b>
+  </p>
+  <p>9 giờ trước</p>
+</div>
+                      
+                      <p>(Dân trí) - Nhìn lại chặng đường hơn 3 năm nỗ lực chống đại dịch Covid-19, Thủ tướng Phạm Minh Chính cho rằng chúng ta đã làm được những điều không tưởng, để Việt Nam "đi sau về trước" trong phòng chống dịch.
+Thủ tướng Phạm Minh Chính nhấn mạnh nhận định này khi phát biểu khai mạc Hội nghị tổng kết công tác phòng, chống dịch Covid-19 sáng 29/10.
+
+Đây là dịp để nhìn lại chặng đường hơn 3 năm cả nước nỗ lực chống Covid-19, đại dịch ghi nhận ca bệnh đầu tiên vào cuối tháng 12/2019 tại Vũ Hán, Trung Quốc.
+
+Hội nghị tổng kết của Ban Chỉ đạo phòng, chống dịch diễn ra trong bối cảnh dịch bệnh đã được kiểm soát tốt nhờ những nỗ lực lớn, những giải pháp quyết liệt, hiệu quả mang tính toàn cầu, toàn dân; kinh tế từng bước phục hồi và phát triển, đời sống người dân trở lại trạng thái bình thường.</p>
+                    <div>
+                      <button>Bình Luận</button>
+                    </div>
                     </Paper>
                   </Grid>
-                  <Grid item xs={12} md={7} lg={8}>
-                    <Paper
-                      sx={{
-                        p: 2,
-                        display: "flex",
-                        flexDirection: "column",
-                        height: 350,
-                      }}
-                    >
-                      {/* <Chart /> */}
-                    </Paper>
-                  </Grid>
-             
-                  <Grid item xs={12} md={5} lg={4}>
-                    <Paper
-                      sx={{
-                        p: 2,
-                        display: "flex",
-                        flexDirection: "column",
-                        height: 350,
-                      }}
-                    >
-                      {/* <Deposits /> */}
-                    </Paper>
-                  </Grid>
+                  
                  
-     
         </>
 
       )}
