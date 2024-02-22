@@ -3,6 +3,10 @@ import Joi from 'joi'
 const accountValidate = {
 
     validateRegister: Joi.object({
+        username: Joi.string()
+            .not(null)
+            .only()
+            .required(),
         name: Joi.string()
             .not(null)
             .only()

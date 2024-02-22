@@ -34,11 +34,19 @@ const Houses = new Schema(
             type: LocationSchema,
             default: {},
         },
+        numberOfRoom: {
+            type: Number,
+            default: 0,
+        },
         electricPrice: {
             type: Number,
             require: true,
         },
         waterPrice: {
+            type: Number,
+            require: true,
+        },
+        servicePrice: {
             type: Number,
             require: true,
         },

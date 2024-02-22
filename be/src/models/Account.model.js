@@ -7,13 +7,15 @@ const Account = new Schema({
         default: null,
 
     },
-
+    username: {
+        type: String,
+        default: null,
+    },
     email: {
         type: String,
-        required: true,
+        default: null,
         minlength: 10,
         maxlength: 50,
-        unique: true
     },
     phone: {
         type: String,

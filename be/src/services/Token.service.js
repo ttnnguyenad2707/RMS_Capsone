@@ -8,15 +8,13 @@ class Token {
     async genAccessToken(account) {
         return jwt.sign({
             id: account._id,
-            level: account.levelAccount,
-            admin: account.admin,
+            accountType: account.accountType,
         }, ACCESS_KEY, { expiresIn: "10h" });
     }
     async genRefreshToken(account) {
         return jwt.sign({
             id: account._id,
-            level: account.levelAccount,
-            admin: account.admin,
+            accountType: account.accountType,
         }, REFRESH_KEY, { expiresIn: "365d" });
     }
 }

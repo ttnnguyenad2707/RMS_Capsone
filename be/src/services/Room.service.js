@@ -1,6 +1,9 @@
 import exceljs from "exceljs";
 import Rooms from "../models/Rooms.model.js";
 import HousesModel from "../models/Houses.model.js";
+import AccountModel from "../models/Account.model.js";
+import bcrypt from "bcrypt";
+
 
 const RoomService = {
     addRoom: async (req) => {
@@ -12,9 +15,14 @@ const RoomService = {
             await workbook.xlsx.load(buffer);
             const worksheet = workbook.worksheets[0];
             const data = [];
+            const accounts = [];
+            const salt = await bcrypt.genSalt(10);
+            const hashedPassword = await bcrypt.hash("88888888", salt);
             worksheet.eachRow({ includeEmpty: true }, (row, rowNumber) => {
                 if (rowNumber !== 1 && row.getCell(1).value) {
+                    const floor = row.getCell(1).value.toString().charAt(0);
                     const rowData = {
+                        floor: floor,
                         name: row.getCell(1).value,
                         status: row.getCell(2).value,
                         quantityMember: row.getCell(3).value,
@@ -26,10 +34,19 @@ const RoomService = {
                         utilities: house.utilities,
                         otherUtilities: house.otherUtilities,
                     };
+                    const accountData = {
+                        username: house.name.replace(/\s/g, '') + row.getCell(1).value,
+                        password: hashedPassword,
+                        accountType: "renter",
+                    }
+                    accounts.push(accountData);
                     data.push(rowData);
                 }
             });
+            await AccountModel.insertMany(accounts)
             await Rooms.insertMany(data);
+            house.numberOfRoom += data.length; 
+            await house.save();
             return data;
         } catch (error) {
             console.log(error);
@@ -42,10 +59,13 @@ const RoomService = {
 
             const data = await Rooms.create({
                 houseId,
+                floor: req.body.name.charAt(0), 
                 ...req.body,
                 utilities: house.utilities,
                 otherUtilities: house.otherUtilities,
             });
+            house.numberOfRoom += 1;
+            await house.save();
             return data
         } catch (error) {
             throw error
@@ -55,7 +75,7 @@ const RoomService = {
         try {
             const { houseId } = req.body;
             const { page, limit } = req.query;
-            const {name, status,quantityMember,roomType,area} = req.query;
+            const {floor,name, status,quantityMember,roomType,area} = req.query;
             const pageNumber = parseInt(page) || 1;
             const limitPerPage = parseInt(limit) || 10;
 
@@ -65,18 +85,20 @@ const RoomService = {
             const totalPages = Math.ceil(totalRooms / limitPerPage);
 
             const  query = {houseId,deleted: false};
-           
+            if (floor) {
+                query.floor = floor
+            }
             if (name){
                 query.name = { $regex: name, $options: 'i'};
             }
             if (status){
-                query.status = { $regex: status, $options: 'i'};
+                query.status = status;
             }
             if (quantityMember){
                 query.quantityMember =  quantityMember
             }
             if (roomType){
-                query.roomType = { $regex: roomType, $options: 'i'};
+                query.roomType = roomType;
             }
             if (area){
                 query.area =  area
