@@ -13,7 +13,7 @@ const imageCCCD = Schema ({
 const member = Schema ({
     name: {
         type: String,
-        require,
+        require: true ,
     },
     DOB: {
         type: String,
@@ -29,12 +29,20 @@ const member = Schema ({
 })
 
 const Rooms = Schema ({
+    floor: {
+        type: Number,
+    },
     name: {
         type : String,
 
     },
     status: {
-        type: Boolean,
+        type: String,
+        enum: ["Empty","Full","Available"]
+    },
+    quantityMember : {
+        type: Number,
+        require: true,
 
     },
     members: [member],
@@ -53,6 +61,10 @@ const Rooms = Schema ({
         type: Schema.ObjectId,
         ref: "Utilities",
     }],
+    otherUtilities : [{
+        type: Schema.ObjectId,
+        ref: "OtherUtilities",
+    }],
     area: {
         type:Number,
         require: true,
@@ -64,7 +76,15 @@ const Rooms = Schema ({
     problemId: [{
         type: Schema.ObjectId,
         ref: "Problems"
-    }]
+    }],
+    deleted: {
+        type: Boolean,
+        default: false,
+    },
+    deletedAt: {
+        type: Date,
+        default: null,
+    }
 
     
 }, {timestamps: true});

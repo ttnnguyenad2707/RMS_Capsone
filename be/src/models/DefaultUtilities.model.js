@@ -1,10 +1,10 @@
 import { Schema, model } from "mongoose";
 
-const BaseUtilities = Schema({
+const DefaultUtilities = Schema({
     name: {
         type: String,
         default: ""
     }
 })
 
-export default model("BaseUtilities", BaseUtilities);
+export default model("DefaultUtilities", DefaultUtilities);

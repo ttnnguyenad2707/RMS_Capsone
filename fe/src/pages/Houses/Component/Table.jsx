@@ -18,7 +18,6 @@ function createData(
   emptyPosition,
   address,
   lender,
-  passPort,
   phoneNumber,
   email,
   costElectricity,
@@ -33,7 +32,6 @@ function createData(
     emptyPosition,
     address,
     lender,
-    passPort,
     phoneNumber,
     email,
     costElectricity,
@@ -79,7 +77,6 @@ export default function BasicTable() {
       3,
       "Thành Phố Hà Nội/Quận Ba Đình/Phường Trúc Bạch/114",
       "Trần Trung Nguyên",
-      "001202999999",
       "0123456789",
       "trantrungnguyenad@gmail.com",
       20000,
@@ -125,7 +122,6 @@ export default function BasicTable() {
       3,
       "Thành Phố Hà Nội/Quận Ba Đình/Phường Trúc Bạch/114",
       "Trần Trung Nguyên",
-      "001202999999",
       "0123456789",
       "trantrungnguyenad@gmail.com",
       20000,
@@ -171,7 +167,6 @@ export default function BasicTable() {
       3,
       "Thành Phố Hà Nội/Quận Ba Đình/Phường Trúc Bạch/114",
       "Trần Trung Nguyên",
-      "001202999999",
       "0123456789",
       "trantrungnguyenad@gmail.com",
       20000,
@@ -245,10 +240,6 @@ export default function BasicTable() {
       label: "Chủ Sở Hữu",
     },
     {
-      id: "passPort",
-      label: "CMTND",
-    },
-    {
       id: "phoneNumber",
       label: "Số Điện Thoại",
     },
@@ -265,7 +256,7 @@ export default function BasicTable() {
     setRows(list);
   }, []);
   const StyledTableRow = styled(TableRow)(() => ({
-    backgroundColor: "#5A67BA",
+    backgroundColor: "#1976d2",
     "td, th": {
       fontWeight: "bold",
       color: "#ffffff",
@@ -291,7 +282,6 @@ export default function BasicTable() {
     emptyPosition,
     address,
     lender,
-    passPort,
     phoneNumber,
     email,
     costElectricity,
@@ -317,7 +307,6 @@ export default function BasicTable() {
         streetNumber: streetNumber,
       },
       lender: lender,
-      passPort: passPort,
       phoneNumber: phoneNumber,
       email: email,
       costElectricity: costElectricity,
@@ -454,10 +443,11 @@ export default function BasicTable() {
                     <TableCell align="left">{row.emptyPosition}</TableCell>
                     <TableCell align="left">{row.address}</TableCell>
                     <TableCell align="left">{row.lender}</TableCell>
-                    <TableCell align="left">{row.passPort}</TableCell>
                     <TableCell align="left">{row.phoneNumber}</TableCell>
                     <TableCell align="left">{row.email}</TableCell>
-                    <TableCell align="left">{row.action}</TableCell>
+                    <TableCell align="left" sx={{ width: "15%" }}>
+                      {row.action}
+                    </TableCell>
                   </TableRow>
                 ))
               : null}

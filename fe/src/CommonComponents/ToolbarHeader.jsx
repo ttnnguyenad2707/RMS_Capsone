@@ -310,7 +310,7 @@ export default function ToolbarHeader() {
               sx={{
                 backgroundColor: (theme) =>
                   theme.palette.mode === "light"
-                    ? theme.palette.grey[100]
+                    ? "#FFFFFF"
                     : theme.palette.grey[900],
                 flexGrow: 1,
                 height: "100vh",
@@ -319,7 +319,7 @@ export default function ToolbarHeader() {
             >
               <Toolbar />
               {/* bố cục nội dung  */}
-              <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
+              <Container maxWidth="false">
                 <Grid container spacing={1}>
                   {/* spacing={number}   <Grid> sẽ chứa các phần tử con và có khoảng cách (spacing)
                  là number đơn vị giữa các phần tử con  */}

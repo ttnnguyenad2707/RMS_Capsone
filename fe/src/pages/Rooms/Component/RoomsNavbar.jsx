@@ -12,7 +12,7 @@ const RoomsNavbar = () => {
     }
   };
   return (
-    <Box sx={{ display: "flex", position: "relative", alignItems: "center" }}>
+    <Box sx={{ display: "flex", position: "relative", alignItems: "center"}}>
       <h5 className="me-4">Lựa Chọn Nhà Trọ:</h5>
       <Select
         labelId="demo-simple-select-label"
@@ -21,7 +21,7 @@ const RoomsNavbar = () => {
         label="Age"
         onChange={handleChange}
         defaultValue={10}
-        sx={{width: "20%"}}
+        sx={{width: "15%"}}
       >
         <MenuItem value={10}>Ten</MenuItem>
         <MenuItem value={20}>Twenty</MenuItem>
