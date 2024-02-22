@@ -20,35 +20,35 @@ export const verifyToken = asyncHandler(async (req, res, next) => {
     }
 });
 
+export const verifyTokenRenter = asyncHandler(async(req,res,next) => {
+    await verifyToken(req,res, () => {
+        if (req.user.accountType === "renter") {
+            next();
+            
+        }else{
+            return res.status(403).json("You are not an Renter");
+        }
+    })
+})
+
+export const verifyTokenHost = asyncHandler(async(req,res,next) => {
+    await verifyToken(req,res, () => {
+        if (req.user.accountType === "host") {
+            next();
+            
+        }else{
+            return res.status(403).json("You are not an host");
+        }
+    })
+})
+
 export const verifyTokenAdmin = asyncHandler(async(req,res,next) => {
     await verifyToken(req,res, () => {
-        if (req.user.admin) {
+        if (req.user.accountType === "admin") {
             next();
             
         }else{
-            return res.status(403).json("You are not an Admin");
-        }
-    })
-})
-
-export const verifyTokenAccountLevelPro = asyncHandler(async(req,res,next) => {
-    await verifyToken(req,res, () => {
-        if (req.user.level === "Pro" || req.user.level === "Premium") {
-            next();
-            
-        }else{
-            return res.status(403).json("You are not an account level Pro");
-        }
-    })
-})
-
-export const verifyTokenAccountLevelPremium = asyncHandler(async(req,res,next) => {
-    await verifyToken(req,res, () => {
-        if (req.user.level === "Premium") {
-            next();
-            
-        }else{
-            return res.status(403).json("You are not an account level Premium");
+            return res.status(403).json("You are not admin");
         }
     })
 })

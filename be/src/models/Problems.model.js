@@ -26,6 +26,14 @@ const Problems = Schema ({
     creatorId: {
         type: Schema.ObjectId,
         ref: "Account"
+    },
+    deleted: {
+        type: Boolean,
+        default: false,
+    },
+    deletedAt: {
+        type : Date,
+        default: null
     }
 })
 

@@ -1,6 +1,9 @@
 import exceljs from "exceljs";
 import Rooms from "../models/Rooms.model.js";
 import HousesModel from "../models/Houses.model.js";
+import AccountModel from "../models/Account.model.js";
+import bcrypt from "bcrypt";
+
 
 const RoomService = {
     addRoom: async (req) => {
@@ -12,6 +15,9 @@ const RoomService = {
             await workbook.xlsx.load(buffer);
             const worksheet = workbook.worksheets[0];
             const data = [];
+            const accounts = [];
+            const salt = await bcrypt.genSalt(10);
+            const hashedPassword = await bcrypt.hash("88888888", salt);
             worksheet.eachRow({ includeEmpty: true }, (row, rowNumber) => {
                 if (rowNumber !== 1 && row.getCell(1).value) {
                     const rowData = {
@@ -26,9 +32,16 @@ const RoomService = {
                         utilities: house.utilities,
                         otherUtilities: house.otherUtilities,
                     };
+                    const accountData = {
+                        username: house.name.replace(/\s/g, '') + row.getCell(1).value,
+                        password: hashedPassword,
+                        accountType: "renter",
+                    }
+                    accounts.push(accountData);
                     data.push(rowData);
                 }
             });
+            await AccountModel.insertMany(accounts)
             await Rooms.insertMany(data);
             return data;
         } catch (error) {
@@ -70,13 +83,13 @@ const RoomService = {
                 query.name = { $regex: name, $options: 'i'};
             }
             if (status){
-                query.status = { $regex: status, $options: 'i'};
+                query.status = status;
             }
             if (quantityMember){
                 query.quantityMember =  quantityMember
             }
             if (roomType){
-                query.roomType = { $regex: roomType, $options: 'i'};
+                query.roomType = roomType;
             }
             if (area){
                 query.area =  area

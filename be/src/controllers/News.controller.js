@@ -1,21 +1,21 @@
-import ProblemService from "../services/Problem.service.js";
+import NewsService from "../services/News.service.js";
 import asyncHandler from "../utils/async-handler.js"
 import response from "../utils/response.js"
 
-const ProblemController = {
+const NewsController = {
     addOne: asyncHandler(async (req,res) => {
         try {
-            const problem = await ProblemService.addOne(req);
-            if (problem) return res.status(201).json(response.successResponse(201,problem));
+            const news = await NewsService.addOne(req);
+            if (news) return res.status(201).json(response.successResponse(201,news));
             else return res.status(404).json(response.errorResponse(404));
         } catch (error) {
             return res.status(500).json(response.errorResponse(500,error.toString()))
         }
     }),
-    getByFilter: asyncHandler(async (req,res) => {
+    getAll: asyncHandler(async (req,res) => {
         try {
-            const problem = await ProblemService.getByFilter(req);
-            if (problem) return res.status(200).json(response.successResponse(200,problem));
+            const news = await NewsService.getAll(req);
+            if (news) return res.status(200).json(response.successResponse(200,news));
             else return res.status(404).json(response.errorResponse(404));
         } catch (error) {
             return res.status(500).json(response.errorResponse(500,error.toString()))
@@ -23,8 +23,8 @@ const ProblemController = {
     }),
     getOne: asyncHandler(async (req,res) => {
         try {
-            const problem = await ProblemService.getOne(req);
-            if (problem) return res.status(201).json(response.successResponse(201,problem));
+            const news = await NewsService.getOne(req);
+            if (news) return res.status(201).json(response.successResponse(201,news));
             else return res.status(404).json(response.errorResponse(404));
         } catch (error) {
             return res.status(500).json(response.errorResponse(500,error.toString()))
@@ -32,8 +32,8 @@ const ProblemController = {
     }),
     updateOne: asyncHandler(async (req,res) => {
         try {
-            const problem = await ProblemService.updateOne(req);
-            if (problem) return res.status(201).json(response.successResponse(201,problem));
+            const news = await NewsService.updateOne(req);
+            if (news) return res.status(201).json(response.successResponse(201,news));
             else return res.status(404).json(response.errorResponse(404));
         } catch (error) {
             return res.status(500).json(response.errorResponse(500,error.toString()))
@@ -41,8 +41,8 @@ const ProblemController = {
     }),
     deleteOne: asyncHandler(async (req,res) => {
         try {
-            const problem = await ProblemService.deleteOne(req);
-            if (problem) return res.status(201).json(response.successResponse(201,problem));
+            const news = await NewsService.deleteOne(req);
+            if (news) return res.status(200).json(response.successResponse(200,news));
             else return res.status(404).json(response.errorResponse(404));
         } catch (error) {
             return res.status(500).json(response.errorResponse(500,error.toString()))
@@ -50,4 +50,4 @@ const ProblemController = {
     }),
 }
 
-export default ProblemController
+export default NewsController
