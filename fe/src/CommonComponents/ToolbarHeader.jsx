@@ -139,7 +139,7 @@ export default function ToolbarHeader() {
         }
         console.log(error);
       });
-  }, [dispatch, accessToken]);
+  }, [dispatch, accessToken,userData]);
 
   useEffect(() => {
     if (userData) {
@@ -214,7 +214,7 @@ export default function ToolbarHeader() {
                     flexGrow: 1,
                   }}
                 >
-                  <div>{name}</div>
+                  {userData && <div>{name}</div> }
                 </Typography>
                 <Box sx={{ flexGrow: 0 }}>
                   <Tooltip title="Open settings">

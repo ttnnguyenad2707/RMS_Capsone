@@ -6,6 +6,7 @@ import ToolbarHeader from "../CommonComponents/ToolbarHeader";
 import HousePage from "../pages/Houses/HousePage";
 import Profile from "../pages/Profiles/Profile";
 import RoomsPage from "../pages/Rooms/RoomsPage";
+import RentalProblem from "../pages/ProblemsReport/RentalProblem";
 export const appRoutes = createBrowserRouter([
   {
     path: "",
@@ -27,6 +28,10 @@ export const appRoutes = createBrowserRouter([
       {
         path: "/rooms",
         element: <RoomsPage />,
+      },
+      {
+        path: "/problems",
+        element: <RentalProblem />,
       },
     ],
   },
