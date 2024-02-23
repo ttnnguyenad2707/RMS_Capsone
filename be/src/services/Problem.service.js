@@ -19,7 +19,7 @@ const ProblemService = {
     },/*  */
     getByFilter: async(req) => {
         try {
-            const {roomId} = req.body; 
+            const {roomId} = req.params; 
             const {page,limit,type,status,title,content} = req.query;
             const query = {roomId,deleted: false};
             if (type) {

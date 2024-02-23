@@ -20,8 +20,8 @@ const NewsService = {
     },
     getAll: async (req) => {
         try {
-            const { houseId } = req.body;
-            const { page, limit, title, content } = req.params;
+            const { houseId } = req.params;
+            const { page, limit, title, content } = req.query;
             const query = { houseId,deleted: false };
             if (title) {
                 query.title = { $regex: title, $options: "i" };
