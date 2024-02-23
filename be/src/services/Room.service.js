@@ -73,7 +73,7 @@ const RoomService = {
     },
     getRooms: async (req) => {
         try {
-            const { houseId } = req.body;
+            const { houseId } = req.params;
             const { page, limit } = req.query;
             const {floor,name, status,quantityMember,roomType,area} = req.query;
             const pageNumber = parseInt(page) || 1;
