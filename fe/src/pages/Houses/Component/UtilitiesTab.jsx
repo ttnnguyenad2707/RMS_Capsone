@@ -4,33 +4,7 @@ import FormGroup from "@mui/material/FormGroup";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import Checkbox from "@mui/material/Checkbox";
 const UtilitiesTab = ({ handleInputSelect, dataUtil }) => {
-  const [utils, setUtil] = useState([
-    {
-      name: "Ban Công1",
-      value: "Ban Công1",
-      isCheck: true,
-    },
-    {
-      name: "Ban Công2",
-      value: "Ban Công",
-      isCheck: true,
-    },
-    {
-      name: "Ban Côn3",
-      value: "Ban Công",
-      isCheck: true,
-    },
-    {
-      name: "Ban Công4",
-      value: "Ban Công",
-      isCheck: true,
-    },
-    {
-      name: "Ban Công5",
-      value: "Ban Công",
-      isCheck: true,
-    },
-  ]);
+  const [utils, setUtil] = useState([]);
   const handleChange = (util) => {
     console.log(util.value);
     const newUtil = utils.map((u) => {
@@ -53,13 +27,14 @@ const UtilitiesTab = ({ handleInputSelect, dataUtil }) => {
   }, [utils]);
   useEffect(() => {
     if (dataUtil) {
-      const dataUtils = dataUtils.map((u) => {
+      const dataUtils = dataUtil.map((u) => {
         return {
           name: u.name,
           vale: u.name,
           isCheck: true,
         };
       });
+      setUtil(dataUtils);
     }
   }, [dataUtil]);
   return (

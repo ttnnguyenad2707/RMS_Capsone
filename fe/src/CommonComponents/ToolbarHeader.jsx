@@ -116,11 +116,11 @@ export default function ToolbarHeader() {
 
   const dispatch = useDispatch();
   const userData = useSelector((state) => state.user.data); //state là rootReducer trong store ,counter cái tên đăng kí trong rootReducer
-  console.log("userData", userData);
-  const name = userData.name;
+  // console.log("userData", userData);
+  // const name = userData.name;
 
   const accessToken = Cookies.get("accessToken");
-  console.log("accessToken", accessToken);
+  // console.log("accessToken", accessToken);
 
   useEffect(() => {
     if (!accessToken) {
@@ -130,7 +130,7 @@ export default function ToolbarHeader() {
 
     getCurrentUser(accessToken)
       .then((res) => {
-        console.log("getCurrentUser", res);
+        // console.log("getCurrentUser", res);
         dispatch(login(res?.data?.data));
       })
       .catch((error) => {

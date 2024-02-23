@@ -6,18 +6,21 @@ import Container from "@mui/material/Container";
 import * as React from "react";
 const HousePage = () => {
   const [houses, setHouse] = React.useState();
+  const [utilList, setUtilList] = React.useState();
   const GetHouse = async () => {
     try {
       const result = (await GetHouseService()).data.data.houses;
       setHouse(result);
+      const listUtil = result.map((r) => r.utilities);
+      setUtilList(listUtil);
     } catch (error) {
       console.log(error);
     }
   };
-
   React.useEffect(() => {
     GetHouse();
   }, []);
+  console.log(utilList, "hi");
   return (
     <Container
       maxWidth="false"

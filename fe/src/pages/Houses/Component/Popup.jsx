@@ -14,7 +14,9 @@ import Tab from "@mui/material/Tab";
 import Tabs from "@mui/material/Tabs";
 import UtilitiesTab from "./UtilitiesTab";
 import AddIcon from "@mui/icons-material/Add";
+import { ToastContainer, toast } from "react-toastify";
 import axios from "axios";
+import { AddHouseService } from "../../../services/houses";
 const style = {
   position: "absolute",
   top: "50%",
@@ -39,7 +41,7 @@ const stylesBody = {
   width: "100%",
   marginTop: "20px",
 };
-export default function BasicModal() {
+export default function BasicModal({ dataUtils }) {
   const [open, setOpen] = React.useState(false);
   const [errorName, setErrorName] = React.useState(false);
   const [errorAddress, setErrorAddress] = React.useState(false);
@@ -160,6 +162,7 @@ export default function BasicModal() {
       setErrorName(false);
     } else {
       setErrorName(true);
+      toast.error("Tên nhà không đúng định dạng");
     }
   };
   const handleInputAddress = () => {
@@ -169,6 +172,7 @@ export default function BasicModal() {
       setErrorAddress(false);
     } else {
       setErrorAddress(true);
+      toast.error("Địa chỉ không đúng định dạng");
     }
   };
   const handleInputCostElectric = () => {
@@ -178,6 +182,7 @@ export default function BasicModal() {
       setErrorCostElectric(false);
     } else {
       setErrorCostElectric(true);
+      toast.error("Giá tiền điện không đúng định dạng");
     }
   };
   const handleInputCostWater = () => {
@@ -187,10 +192,21 @@ export default function BasicModal() {
       setErrorWater(false);
     } else {
       setErrorWater(true);
+      toast.error("Giá tiền nước không đúng định dạng");
     }
   };
   const handleInputUtilities = (data) => {
     setUtilities(data);
+  };
+
+  const submitService = async (data) => {
+    try {
+      await AddHouseService(data);
+      toast.success("Thêm Nhà Thành Công");
+    } catch (error) {
+      console.log(error);
+      toast.error("Thêm Nhà Không Thành Công");
+    }
   };
   const HandleSubmit = () => {
     handleInputName();
@@ -203,21 +219,22 @@ export default function BasicModal() {
       address !== "" &&
       CostElectricity !== null &&
       CostWater !== null &&
-      utilities !== null &&
       city !== "" &&
       county !== "" &&
       ward !== ""
     ) {
-      console.log(
-        name,
-        city,
-        ward,
-        county,
-        address,
-        CostElectricity,
-        CostWater,
-        utilities
-      );
+      const setData = {
+        name: name,
+        status: true,
+        location: {
+          district: city,
+          ward: ward,
+          province: county,
+        },
+        electricPrice: CostElectricity,
+        waterPrice: CostWater,
+      };
+      submitService(setData)
       handleClose();
     }
   };
@@ -239,7 +256,7 @@ export default function BasicModal() {
   }, [ward]);
 
   const validateInput = (input) => {
-    const pattern = /^[a-zA-Z\s]*$/;
+    const pattern = /^[a-zA-Z0-9\s]*$/;
 
     return pattern.test(input);
   };

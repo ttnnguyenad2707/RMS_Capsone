@@ -11,8 +11,11 @@ import { styled } from "@mui/material/styles";
 import { useEffect, useState } from "react";
 import BasicModalUpdate from "./PopupUpdate";
 import { AiOutlineLoading3Quarters } from "react-icons/ai";
+import { DeleteHouseService } from "../../../services/houses";
+import { ToastContainer, toast } from "react-toastify";
 function createData(
   stt,
+  id,
   houseName,
   numberRooms,
   address,
@@ -25,6 +28,7 @@ function createData(
 ) {
   return {
     stt,
+    id,
     houseName,
     numberRooms,
     address,
@@ -47,14 +51,6 @@ export default function BasicTable({ data }) {
       cellId: "numberRooms",
       statusSort: true, // sắp xếp xuôi , false sắp xếp ngược
     },
-    {
-      cellId: "numberBed",
-      statusSort: true, // sắp xếp xuôi , false sắp xếp ngược
-    },
-    {
-      cellId: "emptyPosition",
-      statusSort: true, // sắp xếp xuôi , false sắp xếp ngược
-    },
   ]);
   const dataHouse = data;
   const [dataModelUpdate, setDataModelUpdate] = useState();
@@ -67,144 +63,14 @@ export default function BasicTable({ data }) {
     setOpen(false);
   };
 
-  // const list = [
-  //   createData(
-  //     "1",
-  //     "Nguyên",
-  //     3,
-  //     3,
-  //     3,
-  //     "Thành Phố Hà Nội/Quận Ba Đình/Phường Trúc Bạch/114",
-  //     "Trần Trung Nguyên",
-  //     "0123456789",
-  //     "trantrungnguyenad@gmail.com",
-  //     20000,
-  //     20000,
-  //     <div className="d-flex">
-  //       <Button
-  //         variant="contained"
-  //         sx={{ fontWeight: "bold", margin: "10px" }}
-  //         color="warning"
-  //         onClick={() =>
-  //           updateHouse(
-  //             "1",
-  //             "Nguyên",
-  //             3,
-  //             3,
-  //             3,
-  //             "Thành Phố Hà Nội/Quận Ba Đình/Phường Trúc Bạch/114",
-  //             "Trần Trung Nguyên",
-  //             "001202999999",
-  //             "0123456789",
-  //             "trantrungnguyenad@gmail.com",
-  //             20000,
-  //             20000
-  //           )
-  //         }
-  //       >
-  //         Cập Nhật
-  //       </Button>
-  //       <Button
-  //         variant="contained"
-  //         sx={{ fontWeight: "bold", margin: "10px" }}
-  //         color="error"
-  //       >
-  //         Xóa
-  //       </Button>
-  //     </div>
-  //   ),
-  //   createData(
-  //     "1",
-  //     "Nguyên",
-  //     3,
-  //     3,
-  //     3,
-  //     "Thành Phố Hà Nội/Quận Ba Đình/Phường Trúc Bạch/114",
-  //     "Trần Trung Nguyên",
-  //     "0123456789",
-  //     "trantrungnguyenad@gmail.com",
-  //     20000,
-  //     20000,
-  //     <div className="d-flex">
-  //       <Button
-  //         variant="contained"
-  //         sx={{ fontWeight: "bold", margin: "10px" }}
-  //         color="warning"
-  //         onClick={() =>
-  //           updateHouse(
-  //             "1",
-  //             "Nguyên",
-  //             3,
-  //             3,
-  //             3,
-  //             "Thành Phố Hà Nội/Quận Ba Đình/Phường Trúc Bạch/114",
-  //             "Trần Trung Nguyên",
-  //             "001202999999",
-  //             "0123456789",
-  //             "trantrungnguyenad@gmail.com",
-  //             20000,
-  //             20000
-  //           )
-  //         }
-  //       >
-  //         Cập Nhật
-  //       </Button>
-  //       <Button
-  //         variant="contained"
-  //         sx={{ fontWeight: "bold", margin: "10px" }}
-  //         color="error"
-  //       >
-  //         Xóa
-  //       </Button>
-  //     </div>
-  //   ),
-  //   createData(
-  //     "1",
-  //     "Nguyên",
-  //     3,
-  //     3,
-  //     3,
-  //     "Thành Phố Hà Nội/Quận Ba Đình/Phường Trúc Bạch/114",
-  //     "Trần Trung Nguyên",
-  //     "0123456789",
-  //     "trantrungnguyenad@gmail.com",
-  //     20000,
-  //     20000,
-  //     <div className="d-flex">
-  //       <Button
-  //         variant="contained"
-  //         sx={{ fontWeight: "bold", margin: "10px" }}
-  //         color="warning"
-  //         onClick={() =>
-  //           updateHouse(
-  //             "1",
-  //             "Nguyên",
-  //             3,
-  //             3,
-  //             3,
-  //             "Thành Phố Hà Nội/Quận Ba Đình/Phường Trúc Bạch/114",
-  //             "Trần Trung Nguyên",
-  //             "001202999999",
-  //             "0123456789",
-  //             "trantrungnguyenad@gmail.com",
-  //             20000,
-  //             20000
-  //           )
-  //         }
-  //       >
-  //         Cập Nhật
-  //       </Button>
-  //       <Button
-  //         variant="contained"
-  //         sx={{ fontWeight: "bold", margin: "10px" }}
-  //         color="error"
-  //       >
-  //         Xóa
-  //       </Button>
-  //     </div>
-  //   ),
-  // ];
-
+  const DeleteHouse = async(id)=> {
+    try {
+      await DeleteHouseService(id);
+      toast.success("Xóa Nhà Thành Công");
+    } catch (error) {
+      console.log(error);
+    }
+  }
   const headCells = [
     {
       id: "stt",
@@ -254,6 +120,7 @@ export default function BasicTable({ data }) {
           "350";
         return createData(
           1,
+          house._id,
           house.name,
           3,
           address,
@@ -270,6 +137,7 @@ export default function BasicTable({ data }) {
               onClick={() =>
                 updateHouse(
                   1,
+                  house._id,
                   house.name,
                   3,
                   address,
@@ -277,7 +145,8 @@ export default function BasicTable({ data }) {
                   house.hostId.phone,
                   house.hostId.email,
                   house.electricPrice,
-                  house.waterPrice
+                  house.waterPrice,
+                  house.utilities
                 )
               }
             >
@@ -287,6 +156,7 @@ export default function BasicTable({ data }) {
               variant="contained"
               sx={{ fontWeight: "bold", margin: "10px" }}
               color="error"
+              onClick={()=> DeleteHouse( house._id,)}
             >
               Xóa
             </Button>
@@ -317,6 +187,7 @@ export default function BasicTable({ data }) {
   };
   const updateHouse = (
     stt,
+    id,
     houseName,
     numberRooms,
     address,
@@ -324,7 +195,8 @@ export default function BasicTable({ data }) {
     phoneNumber,
     email,
     costElectricity,
-    costWater
+    costWater,
+    utils
   ) => {
     handleOpen();
     console.log(open);
@@ -335,6 +207,7 @@ export default function BasicTable({ data }) {
     const streetNumber = addressParts[3];
     const data = {
       stt: stt,
+      id: id,
       houseName: houseName,
       numberRooms: numberRooms,
       address: {
@@ -348,6 +221,7 @@ export default function BasicTable({ data }) {
       email: email,
       costElectricity: costElectricity,
       costWater: costWater,
+      utils:utils
     };
     setDataModelUpdate(data);
   };
@@ -394,42 +268,6 @@ export default function BasicTable({ data }) {
           return s;
         });
         setStatus(updateNumberRooms);
-        break;
-      case "numberBed":
-        const updateNumberBed = status.map((s) => {
-          if (s.cellId === "numberBed") {
-            if (s.statusSort === true) {
-              sortedRows.sort((a, b) =>
-                sortNumberBack(a.numberBed, b.numberBed)
-              );
-              s.statusSort = false;
-            } else {
-              sortedRows.sort((a, b) => sortNumber(a.numberBed, b.numberBed));
-              s.statusSort = true;
-            }
-          }
-          return s;
-        });
-        setStatus(updateNumberBed);
-        break;
-      case "emptyPosition":
-        const updateEmptyPosition = status.map((s) => {
-          if (s.cellId === "emptyPosition") {
-            if (s.statusSort === true) {
-              sortedRows.sort((a, b) =>
-                sortNumberBack(a.emptyPosition, b.emptyPosition)
-              );
-              s.statusSort = false;
-            } else {
-              sortedRows.sort((a, b) =>
-                sortNumber(a.emptyPosition, b.emptyPositions)
-              );
-              s.statusSort = true;
-            }
-          }
-          return s;
-        });
-        setStatus(updateEmptyPosition);
         break;
       default:
         break;
