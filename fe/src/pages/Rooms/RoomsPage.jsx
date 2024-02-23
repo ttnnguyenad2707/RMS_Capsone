@@ -25,10 +25,7 @@ const RoomsPage = () => {
   }
   const GetRoomsService = async()=> {
     try {
-      const input = {
-        houseId:houseId
-      }
-      const data = await GetRooms(input);
+      const data = await GetRooms(houseId);
       console.log(data);
     } catch (error) {
       console.log(error);

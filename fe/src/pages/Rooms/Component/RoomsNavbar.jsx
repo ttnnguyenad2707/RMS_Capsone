@@ -3,7 +3,6 @@ import Select from "@mui/material/Select";
 import Button from "@mui/material/Button";
 import MenuItem from "@mui/material/MenuItem";
 import SuperModal from "./Popup";
-import { AddRoomsFileService } from "../../../services/houses";
 import * as React from "react";
 const RoomsNavbar = ({ dataHouse, selectHouse }) => {
   const [house, setHouse] = React.useState();
@@ -46,15 +45,6 @@ const RoomsNavbar = ({ dataHouse, selectHouse }) => {
         break;
     }
   };
-  const handleUploadFile = (file)=> {
-    console.log(file,"hi");
-    const data = {
-      excelFile: file,
-      houseId:houseSelect,
-    }
-    AddRoomsFileService(data)
-  }
-  console.log(house);
   return (
     <Box sx={{ display: "flex", position: "relative", alignItems: "center" }}>
       <h5 className="me-4">Lựa Chọn Nhà Trọ:</h5>
@@ -106,7 +96,7 @@ const RoomsNavbar = ({ dataHouse, selectHouse }) => {
         handleClose={handleClose}
         openModal={open}
         typeModal={typeModal}
-        uploadFiles={handleUploadFile}
+        houseId={houseSelect}
       />
     </Box>
   );

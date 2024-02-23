@@ -48,18 +48,23 @@ export const GetUtilities = async () => {
   });
 };
 export const AddRoomsFileService = async ({data}) => {
+    console.log(data,"huy");
     const token = Cookies.get("accessToken");
     return await axios.post(`${URL_SERVER}/house/room`,data, {
       withCredentials: true,
       headers: {
         authorization: `Bearer ${token}`,
+        "Content-Type": "multipart/form-data",
+        "Accept": "application/json",
+        "type": "formData"
       },
     });
   };
 
   export const GetRooms = async (data) => {
+    console.log("data check "+data);
     const token = Cookies.get("accessToken");
-    return await axios.get(`${URL_SERVER}/house/room/`, data,{
+    return await axios.get(`${URL_SERVER}/house/${data}/room/`,{
       withCredentials: true,
       headers: {
         authorization: `Bearer ${token}`,

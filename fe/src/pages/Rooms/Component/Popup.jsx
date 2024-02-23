@@ -13,7 +13,8 @@ import IconButton from "@mui/material/IconButton";
 import Tab from "@mui/material/Tab";
 import Tabs from "@mui/material/Tabs";
 import AddIcon from "@mui/icons-material/Add";
-import { UpdateHouseService } from "../../../services/houses";
+import {AddRoomsFileService } from "../../../services/houses";
+
 import axios from "axios";
 import "../Scss/Popup.scss";
 const style = {
@@ -45,7 +46,7 @@ export default function SuperModal({
   handleClose,
   handleOpen,
   typeModal,
-  uploadFiles
+  houseId
 }) {
   const [errorName, setErrorName] = React.useState(false);
   const [errorAddress, setErrorAddress] = React.useState(false);
@@ -191,13 +192,6 @@ export default function SuperModal({
       setErrorWater(true);
     }
   };
-  const updateService = async (dataUpdate) => {
-    try {
-      await UpdateHouseService(dataUpdate, data.id);
-    } catch (error) {
-      console.log(error);
-    }
-  };
   const HandleSubmit = () => {
     handleInputName();
     handleInputAddress();
@@ -250,9 +244,12 @@ export default function SuperModal({
   };
 
   const handleFileUpload = () => {
+    console.log(houseId,"lllllll");
     const formData = new FormData();
-    formData.append('file', selectedFile);
-    uploadFiles(formData)
+    formData.append('excelFile', selectedFile);
+    formData.append('houseID', houseId);
+    console.log(formData,'ha');
+    AddRoomsFileService({formData});
   };
   const validateInput = (input) => {
     const pattern = /^[a-zA-Z0-9\s]*$/;
@@ -467,7 +464,7 @@ export default function SuperModal({
                 onChange={handleFileChange}
                 className="input-file"
               />
-              <Button variant="contained" onClick={handleFileUpload}>
+              <Button variant="contained" onClick={()=>handleFileUpload()}>
                 Upload
               </Button>
             </Box>
