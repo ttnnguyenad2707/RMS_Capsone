@@ -139,7 +139,7 @@ export default function ToolbarHeader() {
         }
         console.log(error);
       });
-  }, [dispatch, accessToken,userData]);
+  }, [dispatch, accessToken]);
 
   useEffect(() => {
     if (userData) {
