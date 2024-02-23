@@ -10,12 +10,14 @@ import Button from "@mui/material/Button";
 import { styled } from "@mui/material/styles";
 import { useEffect, useState } from "react";
 import BasicModalUpdate from "./PopupUpdate";
+import { AiOutlineLoading3Quarters } from "react-icons/ai";
+import { DeleteHouseService } from "../../../services/houses";
+import { ToastContainer, toast } from "react-toastify";
 function createData(
   stt,
+  id,
   houseName,
   numberRooms,
-  numberBed,
-  emptyPosition,
   address,
   lender,
   phoneNumber,
@@ -26,10 +28,9 @@ function createData(
 ) {
   return {
     stt,
+    id,
     houseName,
     numberRooms,
-    numberBed,
-    emptyPosition,
     address,
     lender,
     phoneNumber,
@@ -39,7 +40,7 @@ function createData(
     action,
   };
 }
-export default function BasicTable() {
+export default function BasicTable({ data }) {
   const [rows, setRows] = useState([]);
   const [status, setStatus] = useState([
     {
@@ -50,162 +51,26 @@ export default function BasicTable() {
       cellId: "numberRooms",
       statusSort: true, // sắp xếp xuôi , false sắp xếp ngược
     },
-    {
-      cellId: "numberBed",
-      statusSort: true, // sắp xếp xuôi , false sắp xếp ngược
-    },
-    {
-      cellId: "emptyPosition",
-      statusSort: true, // sắp xếp xuôi , false sắp xếp ngược
-    },
   ]);
+  const dataHouse = data;
   const [dataModelUpdate, setDataModelUpdate] = useState();
   const [open, setOpen] = useState(false);
+
   const handleOpen = () => {
     setOpen(true);
   };
   const handleClose = () => {
     setOpen(false);
-    console.log("l0o");
   };
-  const list = [
-    createData(
-      "1",
-      "Nguyên",
-      3,
-      3,
-      3,
-      "Thành Phố Hà Nội/Quận Ba Đình/Phường Trúc Bạch/114",
-      "Trần Trung Nguyên",
-      "0123456789",
-      "trantrungnguyenad@gmail.com",
-      20000,
-      20000,
-      <div className="d-flex">
-        <Button
-          variant="contained"
-          sx={{ fontWeight: "bold", margin: "10px" }}
-          color="warning"
-          onClick={() =>
-            updateHouse(
-              "1",
-              "Nguyên",
-              3,
-              3,
-              3,
-              "Thành Phố Hà Nội/Quận Ba Đình/Phường Trúc Bạch/114",
-              "Trần Trung Nguyên",
-              "001202999999",
-              "0123456789",
-              "trantrungnguyenad@gmail.com",
-              20000,
-              20000
-            )
-          }
-        >
-          Cập Nhật
-        </Button>
-        <Button
-          variant="contained"
-          sx={{ fontWeight: "bold", margin: "10px" }}
-          color="error"
-        >
-          Xóa
-        </Button>
-      </div>
-    ),
-    createData(
-      "1",
-      "Nguyên",
-      3,
-      3,
-      3,
-      "Thành Phố Hà Nội/Quận Ba Đình/Phường Trúc Bạch/114",
-      "Trần Trung Nguyên",
-      "0123456789",
-      "trantrungnguyenad@gmail.com",
-      20000,
-      20000,
-      <div className="d-flex">
-        <Button
-          variant="contained"
-          sx={{ fontWeight: "bold", margin: "10px" }}
-          color="warning"
-          onClick={() =>
-            updateHouse(
-              "1",
-              "Nguyên",
-              3,
-              3,
-              3,
-              "Thành Phố Hà Nội/Quận Ba Đình/Phường Trúc Bạch/114",
-              "Trần Trung Nguyên",
-              "001202999999",
-              "0123456789",
-              "trantrungnguyenad@gmail.com",
-              20000,
-              20000
-            )
-          }
-        >
-          Cập Nhật
-        </Button>
-        <Button
-          variant="contained"
-          sx={{ fontWeight: "bold", margin: "10px" }}
-          color="error"
-        >
-          Xóa
-        </Button>
-      </div>
-    ),
-    createData(
-      "1",
-      "Nguyên",
-      3,
-      3,
-      3,
-      "Thành Phố Hà Nội/Quận Ba Đình/Phường Trúc Bạch/114",
-      "Trần Trung Nguyên",
-      "0123456789",
-      "trantrungnguyenad@gmail.com",
-      20000,
-      20000,
-      <div className="d-flex">
-        <Button
-          variant="contained"
-          sx={{ fontWeight: "bold", margin: "10px" }}
-          color="warning"
-          onClick={() =>
-            updateHouse(
-              "1",
-              "Nguyên",
-              3,
-              3,
-              3,
-              "Thành Phố Hà Nội/Quận Ba Đình/Phường Trúc Bạch/114",
-              "Trần Trung Nguyên",
-              "001202999999",
-              "0123456789",
-              "trantrungnguyenad@gmail.com",
-              20000,
-              20000
-            )
-          }
-        >
-          Cập Nhật
-        </Button>
-        <Button
-          variant="contained"
-          sx={{ fontWeight: "bold", margin: "10px" }}
-          color="error"
-        >
-          Xóa
-        </Button>
-      </div>
-    ),
-  ];
 
+  const DeleteHouse = async(id)=> {
+    try {
+      await DeleteHouseService(id);
+      toast.success("Xóa Nhà Thành Công");
+    } catch (error) {
+      console.log(error);
+    }
+  }
   const headCells = [
     {
       id: "stt",
@@ -219,16 +84,6 @@ export default function BasicTable() {
     {
       id: "numberRooms",
       label: "Số Phòng",
-      sort: true,
-    },
-    {
-      id: "numberBed",
-      label: "Số Giường",
-      sort: true,
-    },
-    {
-      id: "emptyPosition",
-      label: "Chỗ Trống",
       sort: true,
     },
     {
@@ -253,8 +108,64 @@ export default function BasicTable() {
     },
   ];
   useEffect(() => {
-    setRows(list);
-  }, []);
+    if (dataHouse) {
+      const dataTable = dataHouse.map((house) => {
+        const address =
+          house.location.district +
+          "/" +
+          house.location.province +
+          "/" +
+          house.location.ward +
+          "/" +
+          "350";
+        return createData(
+          1,
+          house._id,
+          house.name,
+          3,
+          address,
+          house.hostId.name,
+          house.hostId.phone,
+          house.hostId.email,
+          house.electricPrice,
+          house.waterPrice,
+          <div className="d-flex">
+            <Button
+              variant="contained" 
+              sx={{ fontWeight: "bold", margin: "10px" }}
+              color="warning"
+              onClick={() =>
+                updateHouse(
+                  1,
+                  house._id,
+                  house.name,
+                  3,
+                  address,
+                  house.hostId.name,
+                  house.hostId.phone,
+                  house.hostId.email,
+                  house.electricPrice,
+                  house.waterPrice,
+                  house.utilities
+                )
+              }
+            >
+              Cập Nhật
+            </Button>
+            <Button
+              variant="contained"
+              sx={{ fontWeight: "bold", margin: "10px" }}
+              color="error"
+              onClick={()=> DeleteHouse( house._id,)}
+            >
+              Xóa
+            </Button>
+          </div>
+        );
+      });
+      setRows(dataTable);
+    }
+  }, [dataHouse]);
   const StyledTableRow = styled(TableRow)(() => ({
     backgroundColor: "#1976d2",
     "td, th": {
@@ -276,16 +187,16 @@ export default function BasicTable() {
   };
   const updateHouse = (
     stt,
+    id,
     houseName,
     numberRooms,
-    numberBed,
-    emptyPosition,
     address,
     lender,
     phoneNumber,
     email,
     costElectricity,
-    costWater
+    costWater,
+    utils
   ) => {
     handleOpen();
     console.log(open);
@@ -296,10 +207,9 @@ export default function BasicTable() {
     const streetNumber = addressParts[3];
     const data = {
       stt: stt,
+      id: id,
       houseName: houseName,
       numberRooms: numberRooms,
-      numberBed: numberBed,
-      emptyPosition: emptyPosition,
       address: {
         city: City,
         ward: Ward,
@@ -311,6 +221,7 @@ export default function BasicTable() {
       email: email,
       costElectricity: costElectricity,
       costWater: costWater,
+      utils:utils
     };
     setDataModelUpdate(data);
   };
@@ -358,42 +269,6 @@ export default function BasicTable() {
         });
         setStatus(updateNumberRooms);
         break;
-      case "numberBed":
-        const updateNumberBed = status.map((s) => {
-          if (s.cellId === "numberBed") {
-            if (s.statusSort === true) {
-              sortedRows.sort((a, b) =>
-                sortNumberBack(a.numberBed, b.numberBed)
-              );
-              s.statusSort = false;
-            } else {
-              sortedRows.sort((a, b) => sortNumber(a.numberBed, b.numberBed));
-              s.statusSort = true;
-            }
-          }
-          return s;
-        });
-        setStatus(updateNumberBed);
-        break;
-      case "emptyPosition":
-        const updateEmptyPosition = status.map((s) => {
-          if (s.cellId === "emptyPosition") {
-            if (s.statusSort === true) {
-              sortedRows.sort((a, b) =>
-                sortNumberBack(a.emptyPosition, b.emptyPosition)
-              );
-              s.statusSort = false;
-            } else {
-              sortedRows.sort((a, b) =>
-                sortNumber(a.emptyPosition, b.emptyPositions)
-              );
-              s.statusSort = true;
-            }
-          }
-          return s;
-        });
-        setStatus(updateEmptyPosition);
-        break;
       default:
         break;
     }
@@ -401,65 +276,72 @@ export default function BasicTable() {
     // Cập nhật state rows
     setRows(sortedRows);
   };
-  console.log(status);
+  console.log(dataHouse);
   return (
-    <div>
-      <TableContainer component={Paper}>
-        <Table sx={{ minWidth: 650 }} aria-label="simple table">
-          <TableHead>
-            <StyledTableRow>
-              {headCells.map((headCell) => (
-                <TableCell key={headCell.id} align="left">
-                  {headCell.sort === true ? (
-                    <TableSortLabel
-                      active={true}
-                      direction="asc"
-                      onClick={() => handleSort(headCell.id)}
-                    >
-                      {headCell.label}
-                    </TableSortLabel>
-                  ) : (
-                    headCell.label
-                  )}
-                </TableCell>
-              ))}
-            </StyledTableRow>
-          </TableHead>
-          <TableBody>
-            {rows
-              ? rows.map((row) => (
-                  <TableRow
-                    key={row.name}
-                    sx={{
-                      "&:last-child td, &:last-child th": {
-                        border: 0,
-                      },
-                    }}
-                  >
-                    <TableCell align="left">{row.stt}</TableCell>
-                    <TableCell align="left">{row.houseName}</TableCell>
-                    <TableCell align="left">{row.numberRooms}</TableCell>
-                    <TableCell align="left">{row.numberBed}</TableCell>
-                    <TableCell align="left">{row.emptyPosition}</TableCell>
-                    <TableCell align="left">{row.address}</TableCell>
-                    <TableCell align="left">{row.lender}</TableCell>
-                    <TableCell align="left">{row.phoneNumber}</TableCell>
-                    <TableCell align="left">{row.email}</TableCell>
-                    <TableCell align="left" sx={{ width: "15%" }}>
-                      {row.action}
+    <>
+      {dataHouse ? (
+        <div>
+          <TableContainer component={Paper}>
+            <Table sx={{ minWidth: 650 }} aria-label="simple table">
+              <TableHead>
+                <StyledTableRow>
+                  {headCells.map((headCell) => (
+                    <TableCell key={headCell.id} align="left">
+                      {headCell.sort === true ? (
+                        <TableSortLabel
+                          active={true}
+                          direction="asc"
+                          onClick={() => handleSort(headCell.id)}
+                        >
+                          {headCell.label}
+                        </TableSortLabel>
+                      ) : (
+                        headCell.label
+                      )}
                     </TableCell>
-                  </TableRow>
-                ))
-              : null}
-          </TableBody>
-        </Table>
-      </TableContainer>
-      <BasicModalUpdate
-        data={dataModelUpdate}
-        handleOpen={handleOpen}
-        handleClose={handleClose}
-        openModal={open}
-      />
-    </div>
+                  ))}
+                </StyledTableRow>
+              </TableHead>
+              <TableBody>
+                {rows
+                  ? rows.map((row) => (
+                      <TableRow
+                        key={row.name}
+                        sx={{
+                          "&:last-child td, &:last-child th": {
+                            border: 0,
+                          },
+                        }}
+                      >
+                        <TableCell align="left">{row.stt}</TableCell>
+                        <TableCell align="left">{row.houseName}</TableCell>
+                        <TableCell align="left">{row.numberRooms}</TableCell>
+                        <TableCell align="left">{row.address}</TableCell>
+                        <TableCell align="left">{row.lender}</TableCell>
+                        <TableCell align="left">{row.phoneNumber}</TableCell>
+                        <TableCell align="left">{row.email}</TableCell>
+                        <TableCell align="left" sx={{ width: "20%" }}>
+                          {row.action}
+                        </TableCell>
+                      </TableRow>
+                    ))
+                  : null}
+              </TableBody>
+            </Table>
+          </TableContainer>
+          <BasicModalUpdate
+            data={dataModelUpdate}
+            handleOpen={handleOpen}
+            handleClose={handleClose}
+            openModal={open}
+          />
+        </div>
+      ) : (
+        <div className="text-center">
+          <AiOutlineLoading3Quarters className="loading-icon" />
+          <p>Loading...</p>
+        </div>
+      )}
+    </>
   );
 }

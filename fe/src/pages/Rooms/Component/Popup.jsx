@@ -12,10 +12,11 @@ import MenuItem from "@mui/material/MenuItem";
 import IconButton from "@mui/material/IconButton";
 import Tab from "@mui/material/Tab";
 import Tabs from "@mui/material/Tabs";
-import UtilitiesTab from "./UtilitiesTab";
 import AddIcon from "@mui/icons-material/Add";
-import { UpdateHouseService } from "../../../services/houses";
+import {AddRoomsFileService } from "../../../services/houses";
+
 import axios from "axios";
+import "../Scss/Popup.scss";
 const style = {
   position: "absolute",
   top: "50%",
@@ -40,11 +41,12 @@ const stylesBody = {
   width: "100%",
   marginTop: "20px",
 };
-export default function BasicModalUpdate({
-  data,
+export default function SuperModal({
+  openModal,
   handleClose,
   handleOpen,
-  openModal,
+  typeModal,
+  houseId
 }) {
   const [errorName, setErrorName] = React.useState(false);
   const [errorAddress, setErrorAddress] = React.useState(false);
@@ -54,8 +56,6 @@ export default function BasicModalUpdate({
   const [address, setAddress] = React.useState("");
   const [CostElectricity, setCostElectricity] = React.useState();
   const [CostWater, setCostWater] = React.useState();
-  const [utilities, setUtilities] = React.useState();
-  const [value, setValue] = React.useState("1");
   const [location, setLocation] = React.useState();
   const [city, setCity] = React.useState("");
   const [ward, setWard] = React.useState("");
@@ -63,6 +63,7 @@ export default function BasicModalUpdate({
   const [locationCity, setLocationCity] = React.useState("");
   const [locationWard, setLocationWard] = React.useState("");
   const [locationCounty, setLocationCounty] = React.useState("");
+  const [selectedFile, setSelectedFile] = React.useState(null);
   const inputName = React.useRef();
   const inputAddress = React.useRef();
   const inputCostElectricity = React.useRef();
@@ -191,16 +192,6 @@ export default function BasicModalUpdate({
       setErrorWater(true);
     }
   };
-  const handleInputUtilities = (data) => {
-    setUtilities(data);
-  };
-  const updateService = async(dataUpdate)=>{
-    try {
-      await UpdateHouseService(dataUpdate,data.id)
-    } catch (error) {
-      console.log(error);
-    }
-  }
   const HandleSubmit = () => {
     handleInputName();
     handleInputAddress();
@@ -247,6 +238,19 @@ export default function BasicModalUpdate({
   React.useEffect(() => {
     settingCounty();
   }, [ward]);
+  const handleFileChange = (event) => {
+    const file = event.target.files[0];
+    setSelectedFile(file);
+  };
+
+  const handleFileUpload = () => {
+    console.log(houseId,"lllllll");
+    const formData = new FormData();
+    formData.append('excelFile', selectedFile);
+    formData.append('houseID', houseId);
+    console.log(formData,'ha');
+    AddRoomsFileService({formData});
+  };
   const validateInput = (input) => {
     const pattern = /^[a-zA-Z0-9\s]*$/;
     return pattern.test(input);
@@ -254,10 +258,9 @@ export default function BasicModalUpdate({
   const validateInputNumber = (input) => {
     return !isNaN(input);
   };
-  console.log(data);
   return (
     <div>
-      {data ? (
+      {typeModal === "Thêm Một Phòng" ? (
         <Modal
           open={openModal}
           onClose={handleClose}
@@ -294,7 +297,6 @@ export default function BasicModalUpdate({
                   sx={{ width: "100%" }}
                   inputRef={inputName}
                   error={errorName}
-                  defaultValue={data.houseName}
                 />
               </Box>
               <Box sx={{ mt: "20px", display: "flex" }}>
@@ -308,7 +310,6 @@ export default function BasicModalUpdate({
                     value={city}
                     label="Tỉnh Thành Phố"
                     onChange={handleChangeCity}
-                    defaultValue={data.address.city}
                   >
                     {locationCity ? (
                       locationCity.map((city) => (
@@ -375,7 +376,6 @@ export default function BasicModalUpdate({
                   sx={{ width: "100%" }}
                   inputRef={inputAddress}
                   error={errorAddress}
-                  defaultValue={data.address.streetNumber}
                 />
                 <p style={{ fontWeight: "bold", opacity: "0.5", color: "red" }}>
                   (Không nhập tên Xã/Phường,Quận/Huyện,Tỉnh/Thành Phố)
@@ -390,7 +390,6 @@ export default function BasicModalUpdate({
                   sx={{ width: "50%", mr: "1%" }}
                   inputRef={inputCostElectricity}
                   error={errorCostElectric}
-                  defaultValue={data.costElectricity}
                 />
                 <TextField
                   required
@@ -400,24 +399,7 @@ export default function BasicModalUpdate({
                   sx={{ width: "49%" }}
                   inputRef={inputCostWater}
                   error={errorCostWater}
-                  defaultValue={data.costWater}
                 />
-              </Box>
-              <Box sx={{ width: "100%", mt: "20px" }}>
-                <Tabs
-                  value={value}
-                  onChange={handleChangeMenu}
-                  textColor="primary"
-                  indicatorColor="primary"
-                  aria-label="secondary tabs example"
-                >
-                  <Tab value="1" label="Item One" />
-                  <Tab value="2" label="Item Two" />
-                  <Tab value="3" label="Item Three" />
-                </Tabs>
-                {value === "1" && (
-                  <UtilitiesTab handleInputSelect={handleInputUtilities} dataUtil={data.utils}/>
-                )}
               </Box>
             </Box>
             <Box
@@ -450,7 +432,45 @@ export default function BasicModalUpdate({
             </Box>
           </Box>
         </Modal>
-      ) : null}
+      ) : (
+        <Modal
+          open={openModal}
+          onClose={handleClose}
+          aria-labelledby="modal-modal-title"
+          aria-describedby="modal-modal-description"
+        >
+          <Box sx={style}>
+            <Box sx={stylesHeader}>
+              <Typography
+                id="modal-modal-title"
+                variant="h4"
+                component="h3"
+                sx={{ fontWeight: "Bold" }}
+              >
+                Thêm File
+              </Typography>
+              <IconButton
+                sx={{ position: "absolute", right: "10px" }}
+                onClick={handleClose}
+              >
+                <CloseIcon />
+              </IconButton>
+            </Box>
+            <Box sx={stylesBody}>
+              <Typography variant="h5">Add File</Typography>
+              <input
+                type="file"
+                accept=".xlsx"
+                onChange={handleFileChange}
+                className="input-file"
+              />
+              <Button variant="contained" onClick={()=>handleFileUpload()}>
+                Upload
+              </Button>
+            </Box>
+          </Box>
+        </Modal>
+      )}
     </div>
   );
 }
