@@ -17,7 +17,7 @@ const RoomService = {
             const data = [];
             const accounts = [];
             const salt = await bcrypt.genSalt(10);
-            const hashedPassword = await bcrypt.hash("88888888", salt);
+            const hashedPassword = await bcrypt.hash("Rms@12345", salt);
             worksheet.eachRow({ includeEmpty: true }, (row, rowNumber) => {
                 if (rowNumber !== 1 && row.getCell(1).value) {
                     const floor = row.getCell(1).value.toString().charAt(0);
