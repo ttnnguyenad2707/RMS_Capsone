@@ -9,13 +9,34 @@ import {
   TableRow,
   Paper,
 } from "@mui/material";
-const CommonRooms = () => {
+import * as React from "react";
+const CommonRooms = ({ houseData }) => {
+  console.log(houseData);
   const data = [
-    { category: "Danh mục 1", content: "Nội dung 1" },
-    { category: "Danh mục 2", content: "Nội dung 2" },
-    { category: "Danh mục 3", content: "Nội dung 3" },
-    { category: "Danh mục 3", content: "Nội dung 3" },
-    { category: "Danh mục 3", content: "Nội dung 3" },
+    {
+      category: "Tên Chủ Nhà",
+      content: houseData ? houseData.hostId.name : "Không có Dữ Liệu",
+    },
+    {
+      category: "Trạng Thái ",
+      content: houseData
+        ? houseData.status
+          ? "Đang Hoạt Động"
+          : "Không Hoạt Động"
+        : "Không có Dữ Liệu",
+    },
+    {
+      category: "Email",
+      content: houseData ? houseData.hostId.email : "Không có Dữ Liệu",
+    },
+    {
+      category: "Số Điện Thoại",
+      content: houseData ? houseData.hostId.phone : "Không có Dữ Liệu",
+    },
+    {
+      category: "Số Lượng Phòng",
+      content: houseData ? houseData.numberOfRoom : "Không có Dữ Liệu",
+    },
     // Thêm dữ liệu danh mục và nội dung tương ứng ở đây
   ];
   return (
@@ -29,7 +50,7 @@ const CommonRooms = () => {
         </p>
       </Box>
       <Box sx={{ display: "flex", padding: "20px" }}>
-        <Box sx={{ width: "50%", alignItems:"center" }}>
+        <Box sx={{ width: "50%", alignItems: "center" }}>
           <TableContainer component={Paper}>
             <Table>
               <TableBody>
