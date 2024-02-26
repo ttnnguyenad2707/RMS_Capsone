@@ -1,31 +1,11 @@
-import { styled, createTheme, ThemeProvider } from "@mui/material/styles";
-import CssBaseline from "@mui/material/CssBaseline";
-import MuiDrawer from "@mui/material/Drawer";
+
 import Box from "@mui/material/Box";
-import MuiAppBar from "@mui/material/AppBar";
-import Toolbar from "@mui/material/Toolbar";
-import List from "@mui/material/List";
 import Typography from "@mui/material/Typography";
-import Divider from "@mui/material/Divider";
-import IconButton from "@mui/material/IconButton";
-import Badge from "@mui/material/Badge";
-import Container from "@mui/material/Container";
 import Grid from "@mui/material/Grid";
 import Paper from "@mui/material/Paper";
-import Link from "@mui/material/Link";
-import MenuIcon from "@mui/icons-material/Menu";
-import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
-import NotificationsIcon from "@mui/icons-material/Notifications";
-import { mainListItems, secondaryListItems } from "./Components/listItems";
-import Chart from "./Components/Chart";
-import Deposits from "./Components/Deposits";
-import Orders from "./Components/Orders";
-import { useDispatch, useSelector } from "react-redux";
-import Cookies from "js-cookie";
 import React, { useEffect, useState } from "react";
-import { login } from "../../reduxToolkit/UserSlice";
-import { Outlet, useNavigate } from "react-router-dom";
-import { getCurrentUser } from "../../services/auth";
+import Button from '@mui/material/Button';
+import Modal from '@mui/material/Modal';
 import {
   AiOutlinePlus,
   AiFillDelete,
@@ -33,98 +13,26 @@ import {
   AiOutlineLoading3Quarters,
 } from "react-icons/ai";
 
-
-
-// const drawerWidth = 240;
-
-// const AppBar = styled(MuiAppBar, {
-//   shouldForwardProp: (prop) => prop !== "open",
-// })(({ theme, open }) => ({
-//   zIndex: theme.zIndex.drawer + 1,
-//   transition: theme.transitions.create(["width", "margin"], {
-//     easing: theme.transitions.easing.sharp,
-//     duration: theme.transitions.duration.leavingScreen,
-//   }),
-//   ...(open && {
-//     marginLeft: drawerWidth,
-//     width: `calc(100% - ${drawerWidth}px)`,
-//     transition: theme.transitions.create(["width", "margin"], {
-//       easing: theme.transitions.easing.sharp,
-//       duration: theme.transitions.duration.enteringScreen,
-//     }),
-//   }),
-// }));
-
-// const Drawer = styled(MuiDrawer, {
-//   shouldForwardProp: (prop) => prop !== "open",
-// })(({ theme, open }) => ({
-//   "& .MuiDrawer-paper": {
-//     position: "relative",
-//     whiteSpace: "nowrap",
-//     width: drawerWidth,
-//     transition: theme.transitions.create("width", {
-//       easing: theme.transitions.easing.sharp,
-//       duration: theme.transitions.duration.enteringScreen,
-//     }),
-//     boxSizing: "border-box",
-//     ...(!open && {
-//       overflowX: "hidden",
-//       transition: theme.transitions.create("width", {
-//         easing: theme.transitions.easing.sharp,
-//         duration: theme.transitions.duration.leavingScreen,
-//       }),
-//       width: theme.spacing(7),
-//       [theme.breakpoints.up("sm")]: {
-//         width: theme.spacing(9),
-//       },
-//     }),
-//   },
-// }));
-
-// TODO remove, this demo shouldn't need to reset the theme.
-// const defaultTheme = createTheme();
+const style = {
+  position: "absolute",
+  top: "50%",
+  left: "50%",
+  transform: "translate(-50%, -50%)",
+  width: 1200,
+  height: "80%",
+  bgcolor: "background.paper",
+  border: "2px solid #grey",
+  boxShadow: 25,
+  p: 5,
+  borderRadius: "10px",
+  padding: "18px",
+};
 
 export default function News() {
-  // const [open, setOpen] = React.useState(true);
-  // const toggleDrawer = () => {
-  //   setOpen(!open);
-  // };
+  const [open, setOpen] = React.useState(false);
+  const handleOpen = () => setOpen(true);
+  const handleClose = () => setOpen(false);
   const [isLoading, setIsLoading] = useState(false);
-
-  // const navigate = useNavigate();
-
-  // const dispatch = useDispatch();
-  // const userData = useSelector((state) => state.user.data); //state là rootReducer trong store ,counter cái tên đăng kí trong rootReducer
-  // console.log("userData", userData);
-  // const name = userData.name;
-
-  // const accessToken = Cookies.get("accessToken");
-  // console.log("accessToken", accessToken);
-
-  // useEffect(() => {
-  //   if (!accessToken) {
-  //     navigate("/login");
-  //     return;
-  //   }
-    
-  //   getCurrentUser(accessToken)
-  //     .then((res) => {
-  //       console.log("getCurrentUser", res);
-  //       dispatch(login(res?.data?.data));
-  //     })
-  //     .catch((error) => {
-  //       if (error.response && error.response.status === 403) {
-  //         navigate("/login");
-  //       }
-  //       console.log(error);
-  //     });
-  // }, [dispatch, accessToken]);
-
-  // useEffect(() => {
-  //   if (userData) {
-  //     setIsLoading(false);
-  //   }
-  // }, [userData]);
 
   return (
     <>
@@ -135,7 +43,6 @@ export default function News() {
         </div>
       ) : (
         <>
-  
                   <Grid item xs={12} md={7} lg={8} marginLeft={17}>
                     <Paper
                       sx={{
@@ -147,12 +54,11 @@ export default function News() {
                     >
                       {/* <Chart /> */}
                       <div style={{ display: "flex", alignItems: "center" }}>
-  <p style={{ marginRight: "10px" }}>
-    <b>m_ducs</b>
-  </p>
-  <p>1 giờ trước</p>
-</div>
-                      
+                        <p style={{ marginRight: "10px" }}>
+                          <b>m_ducs</b>
+                        </p>
+                        <p>1 giờ trước</p>
+                    </div>
                       <p>
                         "Em tỏa hương
                       </p>
@@ -160,7 +66,7 @@ export default function News() {
                         Tôi tưởng hoa.."
                       </p>
                     <div>
-                      <button>Bình Luận</button>
+                    <Button variant="outlined" onClick={handleOpen}>Bình Luận</Button>
                     </div>
                     </Paper>
                   </Grid>
@@ -190,7 +96,22 @@ Thủ tướng Phạm Minh Chính nhấn mạnh nhận định này khi phát bi
 
 Hội nghị tổng kết của Ban Chỉ đạo phòng, chống dịch diễn ra trong bối cảnh dịch bệnh đã được kiểm soát tốt nhờ những nỗ lực lớn, những giải pháp quyết liệt, hiệu quả mang tính toàn cầu, toàn dân; kinh tế từng bước phục hồi và phát triển, đời sống người dân trở lại trạng thái bình thường.</p>
                     <div>
-                      <button>Bình Luận</button>
+                    <Button variant="outlined" onClick={handleOpen}>Bình Luận</Button>
+      <Modal
+        open={open}
+        onClose={handleClose}
+        aria-labelledby="modal-modal-title"
+        aria-describedby="modal-modal-description"
+      >
+        <Box sx={style}>
+          <Typography id="modal-modal-title" variant="h6" component="h2">
+            Rất nhiều thứ !!
+          </Typography>
+          <Typography id="modal-modal-description" sx={{ mt: 2 }}>
+            Duis mollis, est non commodo luctus, nisi erat porttitor ligula.
+          </Typography>
+        </Box>
+      </Modal>
                     </div>
                     </Paper>
                   </Grid>
