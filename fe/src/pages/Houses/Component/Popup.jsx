@@ -157,13 +157,8 @@ export default function BasicModal({ dataUtils }) {
 
   const handleInputName = () => {
     const inputValue = inputName.current.value;
-    if (validateInput(inputValue) && inputValue != " ") {
-      setName(inputValue);
-      setErrorName(false);
-    } else {
-      setErrorName(true);
-      toast.error("Tên nhà không đúng định dạng");
-    }
+    setName(inputValue);
+    
   };
   const handleInputAddress = () => {
     const inputValue = inputAddress.current.value;
@@ -204,18 +199,18 @@ export default function BasicModal({ dataUtils }) {
       await AddHouseService(data);
       toast.success("Thêm Nhà Thành Công");
     } catch (error) {
-      console.log(error);
+console.log(error);
       toast.error("Thêm Nhà Không Thành Công");
     }
   };
   const HandleSubmit = () => {
-    handleInputName();
+handleInputName();
     handleInputAddress();
     handleInputCostElectric();
     handleInputCostWater();
 
     if (
-      name !== "" &&
+name !== "" &&
       address !== "" &&
       CostElectricity !== null &&
       CostWater !== null &&
@@ -234,7 +229,7 @@ export default function BasicModal({ dataUtils }) {
         electricPrice: CostElectricity,
         waterPrice: CostWater,
       };
-      submitService(setData)
+            submitService(setData)
       handleClose();
     }
   };
