@@ -9,8 +9,13 @@ const UtilitiesService = {
     },
     
     getDefaultUtilities : async (req) =>{
-        const data = await DefaultUtilitiesModel.find();
-        return data
+        try {
+            
+            const data = await DefaultUtilitiesModel.find();
+            return data
+        } catch (error) {
+            throw error
+        }
     },
 
     addOtherUtilities: async (req) => {
@@ -18,7 +23,14 @@ const UtilitiesService = {
         const {name} = req.body;
         const data = await OtherUtilitiesModel.create({userID,name});
         return data
+        
     },
+
+    getOtherUtilities: async (req) => {
+        const userID = getCurrentUser(req);
+        const data = await OtherUtilitiesModel.find({userID});
+        return data;
+    }
 
 
 }

@@ -112,11 +112,11 @@ export default function BasicTable({ data }) {
       const dataTable = dataHouse.map((house) => {
         const address =
           house.location.district +
-          "/" +
+          " - " +
           house.location.province +
-          "/" +
+          " - " +
           house.location.ward +
-          "/" +
+          " - " +
           "350";
         return createData(
           1,
@@ -304,7 +304,7 @@ export default function BasicTable({ data }) {
               </TableHead>
               <TableBody>
                 {rows
-                  ? rows.map((row) => (
+                  ? rows.map((row,index) => (
                       <TableRow
                         key={row.name}
                         sx={{
@@ -313,7 +313,7 @@ export default function BasicTable({ data }) {
                           },
                         }}
                       >
-                        <TableCell align="left">{row.stt}</TableCell>
+                        <TableCell align="left">{index + 1}</TableCell>
                         <TableCell align="left">{row.houseName}</TableCell>
                         <TableCell align="left">{row.numberRooms}</TableCell>
                         <TableCell align="left">{row.address}</TableCell>
