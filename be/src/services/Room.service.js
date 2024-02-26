@@ -66,6 +66,15 @@ const RoomService = {
             });
             house.numberOfRoom += 1;
             await house.save();
+            const salt = await bcrypt.genSalt(10);
+            const hashedPassword = await bcrypt.hash("Rms@12345", salt);
+            const accountData = await AccountModel.create({
+                username: house.name.replace(/\s/g, '') + req.body.name,
+                password: hashedPassword,
+                accountType: "renter",
+                roomId: data.id
+            }); 
+
             return data
         } catch (error) {
             throw error
