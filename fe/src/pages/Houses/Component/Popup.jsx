@@ -42,7 +42,7 @@ const stylesBody = {
   width: "100%",
   marginTop: "20px",
 };
-export default function BasicModal({ dataUtils,dataUtilsOrther }) {
+export default function BasicModal({ dataUtils, dataUtilsOrther }) {
   const [open, setOpen] = React.useState(false);
   const [errorName, setErrorName] = React.useState(false);
   const [errorAddress, setErrorAddress] = React.useState(false);
@@ -242,9 +242,9 @@ export default function BasicModal({ dataUtils,dataUtilsOrther }) {
       };
       submitService(setData);
       handleClose();
-      setCity("")
-      setWard("")
-      setCounty("")
+      setCity("");
+      setWard("");
+      setCounty("");
     }
   };
   React.useEffect(() => {
@@ -442,9 +442,7 @@ export default function BasicModal({ dataUtils,dataUtilsOrther }) {
                   typeUtil={"add"}
                 />
               )}
-               {value === "2" && (
-                <AddUtil/>
-              )}
+              {value === "2" && <AddUtil />}
             </Box>
           </Box>
           <Box

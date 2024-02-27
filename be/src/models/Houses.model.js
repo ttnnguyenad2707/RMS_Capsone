@@ -19,6 +19,10 @@ const LocationSchema = new Schema({
         type: String,
         default: "",
     },
+    detailLocation: {
+        type: String,
+        default: "",
+    }
 });
 const Houses = new Schema(
     {
