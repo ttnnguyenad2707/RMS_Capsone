@@ -9,7 +9,7 @@ const ProblemService = {
             const {roomId} = req.body;
             const room = await RoomsModel.findById(roomId);
             const creatorId = getCurrentUser(req);
-            const data = await ProblemsModel.create({...req.body,creatorId});
+            const data = await ProblemsModel.create({...req.body,creatorId,houseId:room.houseId});
             room.problemId = [...room.problemId,data.id];
             await room.save();
             return data;
@@ -17,6 +17,20 @@ const ProblemService = {
             throw error
         }
     },/*  */
+    getInHouse: async (req) => {
+        try {
+            const {houseId} = req.params;
+            const {page,limit} = req.query;
+            const query = {houseId,deleted: false};
+            const populateFields = ["roomId","creatorId"]
+            const data = await getPaginationData(ProblemsModel,page,limit,query,populateFields);
+            return data
+        } catch (error) {
+            throw error
+            
+        }
+        
+    },
     getByFilter: async(req) => {
         try {
             const {roomId} = req.params; 

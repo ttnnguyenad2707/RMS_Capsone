@@ -28,11 +28,6 @@ const Login = () => {
   const nav = useNavigate();
   const validationSchema = Yup.object({
     email: Yup.string()
-      .email("Invalid email address")
-      .matches(
-        /^[A-Za-z0-9._%+-]+@(?:[A-Za-z0-9-]+\.)+[A-Za-z]{2,}$/,
-        "Invalid email address"
-      )
       .required("email is required"),
 
     password: Yup.string()
@@ -87,7 +82,7 @@ const Login = () => {
               <Form>
                 <div className="mb-3">
                   <Field
-                    type="email"
+                    type="text"
                     label="Email"
                     className="form-control"
                     id="email"

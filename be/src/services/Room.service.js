@@ -14,14 +14,15 @@ const RoomService = {
             const buffer = req.file.buffer;
             await workbook.xlsx.load(buffer);
             const worksheet = workbook.worksheets[0];
-            const data = [];
-            const accounts = [];
+            
             const salt = await bcrypt.genSalt(10);
             const hashedPassword = await bcrypt.hash("Rms@12345", salt);
-            worksheet.eachRow({ includeEmpty: true }, (row, rowNumber) => {
+    
+            for (let rowNumber = 1; rowNumber <= worksheet.rowCount; rowNumber++) {
+                const row = worksheet.getRow(rowNumber);
                 if (rowNumber !== 1 && row.getCell(1).value) {
                     const floor = row.getCell(1).value.toString().charAt(0);
-                    const rowData = {
+                    const rowData = await Rooms.create({
                         floor: floor,
                         name: row.getCell(1).value,
                         status: row.getCell(2).value,
@@ -33,25 +34,25 @@ const RoomService = {
                         houseId: houseId,
                         utilities: house.utilities,
                         otherUtilities: house.otherUtilities,
-                    };
-                    const accountData = {
+                    });
+                    const accountData = await AccountModel.create({
                         username: house.name.replace(/\s/g, '') + row.getCell(1).value,
                         password: hashedPassword,
                         accountType: "renter",
-                    }
-                    accounts.push(accountData);
-                    data.push(rowData);
+                        roomId: rowData.id
+                    })
+                    house.numberOfRoom += 1; 
+                    await house.save();
                 }
-            });
-            await AccountModel.insertMany(accounts)
-            await Rooms.insertMany(data);
-            house.numberOfRoom += data.length; 
-            await house.save();
-            return data;
+            }
+            return {
+                message: "oke"
+            }
         } catch (error) {
             console.log(error);
         }
     },
+    
     addOne : async(req) => {
         try {
             const {houseId} = req.params;

@@ -10,7 +10,7 @@ const RoomController = {
             else res.status(404).json(response.errorResponse(404));
             
         } catch (error) {
-            return res.status(500).json(response.errorResponse(500));
+            return res.status(500).json(response.errorResponse(500,error.toString()));
         }
 
     }),
