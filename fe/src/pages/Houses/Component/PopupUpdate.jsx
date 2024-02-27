@@ -382,7 +382,7 @@ export default function BasicModalUpdate({
                   defaultValue={data.address.streetNumber}
                 />
                 <p style={{ fontWeight: "bold", opacity: "0.5", color: "red" }}>
-                  (Không nhập tên Xã/Phường,Quận/Huyện,Tỉnh/Thành Phố)
+                  
                 </p>
               </Box>
               <Box>

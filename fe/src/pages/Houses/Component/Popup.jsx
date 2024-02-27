@@ -400,7 +400,7 @@ export default function BasicModal({ dataUtils, dataUtilsOrther }) {
                 error={errorAddress}
               />
               <p style={{ fontWeight: "bold", opacity: "0.5", color: "red" }}>
-                (Không nhập tên Xã/Phường,Quận/Huyện,Tỉnh/Thành Phố)
+                
               </p>
             </Box>
             <Box>
