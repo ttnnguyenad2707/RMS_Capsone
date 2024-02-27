@@ -8,6 +8,7 @@ const RoomsPage = () => {
   const [roomsList, setRoomsList] = React.useState();
   const [housesSelect, setHouseSelect] = React.useState();
   const [houseId, setHouseId] = React.useState();
+  const [rooms, setRooms] = React.useState();
   const GetHouse = async () => {
     try {
       const result = (await GetHouseService()).data.data.houses;
@@ -25,8 +26,8 @@ const RoomsPage = () => {
   }
   const GetRoomsService = async()=> {
     try {
-      const data = await GetRooms(houseId);
-      console.log(data);
+      const data = (await GetRooms(houseId)).data.data.room;
+      setRooms(data)
     } catch (error) {
       console.log(error);
     }
@@ -44,7 +45,7 @@ const RoomsPage = () => {
         <RoomsNavbar dataHouse={houses} selectHouse={selectHouse}/>
       </div>
       <div style={{boxShadow: "4px 4px 5px 5px rgba(0, 0, 0, 0.1)"}}>
-        <CommonRooms houseData={housesSelect}/>
+        <CommonRooms houseData={housesSelect} roomsData={rooms}/>
       </div>
       {/* <div>
         {housesSelect? ():()}

@@ -3,10 +3,11 @@ import Box from "@mui/material/Box";
 import FormGroup from "@mui/material/FormGroup";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import Checkbox from "@mui/material/Checkbox";
-const UtilitiesTab = ({ handleInputSelect, dataUtil }) => {
+const UtilitiesTab = ({ handleInputSelect, dataUtil, typeUtil,dataUtilOther }) => {
   const [utils, setUtil] = useState([]);
+  const [utilsOrther, setUtilOther] = useState([]);
+  console.log(dataUtil, "dataUtil");
   const handleChange = (util) => {
-    console.log(util.value);
     const newUtil = utils.map((u) => {
       if (u.value === util.value) {
         if (util.isCheck === true) {
@@ -19,27 +20,71 @@ const UtilitiesTab = ({ handleInputSelect, dataUtil }) => {
     });
     setUtil(newUtil);
   };
+  const handleChangeOrther = (util) => {
+    const newUtil = utilsOrther.map((u) => {
+      if (u.value === util.value) {
+        if (util.isCheck === true) {
+          u.isCheck = false;
+        } else {
+          u.isCheck = true;
+        }
+      }
+      return u;
+    });
+    setUtilOther(newUtil);
+  };
   useEffect(() => {
     const selectUtil = utils
       .filter((u) => u.isCheck === true)
       .map((u) => u.value);
+    console.log(selectUtil, "looo");
     handleInputSelect(selectUtil);
   }, [utils]);
   useEffect(() => {
-    if (dataUtil) {
+    if (dataUtil && typeUtil === "update") {
       const dataUtils = dataUtil.map((u) => {
         return {
           name: u.name,
-          vale: u.name,
+          value: u._id,
           isCheck: true,
         };
       });
       setUtil(dataUtils);
+    } else if(dataUtil && typeUtil === "add") {
+      const dataUtils = dataUtil.map((u) => {
+        return {
+          name: u.name,
+          value: u._id,
+          isCheck: false,
+        };
+      });
+      setUtil(dataUtils);
     }
-  }, [dataUtil]);
+  }, []);
+  useEffect(() => {
+    if (dataUtilOther && typeUtil === "update") {
+      const dataUtils = dataUtilOther.map((u) => {
+        return {
+          name: u.name,
+          value: u._id,
+          isCheck: true,
+        };
+      });
+      setUtilOther(dataUtils);
+    } else if(dataUtilOther && typeUtil === "add") {
+      const dataUtils = dataUtilOther.map((u) => {
+        return {
+          name: u.name,
+          value: u._id,
+          isCheck: false,
+        };
+      });
+      setUtilOther(dataUtils);
+    }
+  }, []);
   return (
-    <Box sx={{ display: "flex" }}>
-      <FormGroup>
+    <Box>
+      <FormGroup  sx={{ width: "fit-content",display: "flex" }}>
         {utils.map((u) => (
           <FormControlLabel
             control={
@@ -47,7 +92,19 @@ const UtilitiesTab = ({ handleInputSelect, dataUtil }) => {
             }
             label={u.name}
             key={u.value}
-            sx={{ width: "fit-content" }}
+            sx={{ width: "fit-content",display: "flex" }}
+          />
+        ))}
+      </FormGroup>
+      <FormGroup  sx={{ width: "fit-content",display: "flex" }}>
+        {utilsOrther.map((u) => (
+          <FormControlLabel
+            control={
+              <Checkbox checked={u.isCheck} onChange={() => handleChangeOrther(u)} />
+            }
+            label={u.name}
+            key={u.value}
+            sx={{ width: "fit-content",display: "flex" }}
           />
         ))}
       </FormGroup>

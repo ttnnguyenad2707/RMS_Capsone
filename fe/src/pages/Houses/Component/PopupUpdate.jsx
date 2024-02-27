@@ -194,19 +194,20 @@ export default function BasicModalUpdate({
   const handleInputUtilities = (data) => {
     setUtilities(data);
   };
-  const updateService = async(dataUpdate)=>{
+  const updateService = async (dataUpdate) => {
     try {
-      await UpdateHouseService(dataUpdate,data.id)
+      await UpdateHouseService(dataUpdate, data.id);
     } catch (error) {
       console.log(error);
     }
-  }
+  };
   const HandleSubmit = () => {
     handleInputName();
     handleInputAddress();
     handleInputCostElectric();
     handleInputCostWater();
-
+    handleInputUtilities();
+    console.log(utilities, " sao ");
     if (
       name !== "" &&
       address !== "" &&
@@ -214,7 +215,8 @@ export default function BasicModalUpdate({
       CostWater !== null &&
       city !== "" &&
       county !== "" &&
-      ward !== ""
+      ward !== "" &&
+      typeof utilities !== "undefined"
     ) {
       const setData = {
         name: name,
@@ -226,7 +228,9 @@ export default function BasicModalUpdate({
         },
         electricPrice: CostElectricity,
         waterPrice: CostWater,
+        utilities: utilities,
       };
+      console.log(setData, " adu");
       updateService(setData);
       handleClose();
     }
@@ -248,13 +252,13 @@ export default function BasicModalUpdate({
     settingCounty();
   }, [ward]);
   const validateInput = (input) => {
-    const pattern = /^[a-zA-Z0-9\s]*$/;
+    const pattern =/^[\p{L}\p{N}\s]+$/u;
     return pattern.test(input);
   };
   const validateInputNumber = (input) => {
     return !isNaN(input);
   };
-  console.log(data);
+    console.log(data);
   return (
     <div>
       {data ? (
@@ -416,7 +420,11 @@ export default function BasicModalUpdate({
                   <Tab value="3" label="Item Three" />
                 </Tabs>
                 {value === "1" && (
-                  <UtilitiesTab handleInputSelect={handleInputUtilities} dataUtil={data.utils}/>
+                  <UtilitiesTab
+                    handleInputSelect={handleInputUtilities}
+                    dataUtil={data.utils}
+                    typeUtil={"update"}
+                  />
                 )}
               </Box>
             </Box>
