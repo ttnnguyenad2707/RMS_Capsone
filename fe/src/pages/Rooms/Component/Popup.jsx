@@ -247,9 +247,8 @@ export default function SuperModal({
     console.log(houseId,"lllllll");
     const formData = new FormData();
     formData.append('excelFile', selectedFile);
-    formData.append('houseID', houseId);
-    console.log(formData,'ha');
-    AddRoomsFileService({formData});
+    formData.set('houseId', houseId);
+    AddRoomsFileService({data: formData} );
   };
   const validateInput = (input) => {
     const pattern = /^[a-zA-Z0-9\s]*$/;

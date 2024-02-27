@@ -6,6 +6,9 @@ import Paper from "@mui/material/Paper";
 import React, { useEffect, useState } from "react";
 import Button from '@mui/material/Button';
 import Modal from '@mui/material/Modal';
+import TextField from '@mui/material/TextField';
+import ThumbUpAltIcon from '@mui/icons-material/ThumbUpAlt';
+import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline';
 import {
   AiOutlinePlus,
   AiFillDelete,
@@ -18,7 +21,7 @@ const style = {
   top: "50%",
   left: "50%",
   transform: "translate(-50%, -50%)",
-  width: 1200,
+  width: 700,
   height: "80%",
   bgcolor: "background.paper",
   border: "2px solid #grey",
@@ -66,7 +69,10 @@ export default function News() {
                         Tôi tưởng hoa.."
                       </p>
                     <div>
-                    <Button variant="outlined" onClick={handleOpen}>Bình Luận</Button>
+                    <Box sx={{ display: 'flex', gap: '10px' }}>
+  <Button variant="outlined"><ThumbUpAltIcon fontSize="small"></ThumbUpAltIcon>Thích</Button>
+  <Button variant="outlined" onClick={handleOpen}><ChatBubbleOutlineIcon fontSize="small"></ChatBubbleOutlineIcon>  Bình Luận</Button>
+</Box>
                     </div>
                     </Paper>
                   </Grid>
@@ -88,28 +94,45 @@ export default function News() {
   </p>
   <p>9 giờ trước</p>
 </div>
-                      
-                      <p>(Dân trí) - Nhìn lại chặng đường hơn 3 năm nỗ lực chống đại dịch Covid-19, Thủ tướng Phạm Minh Chính cho rằng chúng ta đã làm được những điều không tưởng, để Việt Nam "đi sau về trước" trong phòng chống dịch.
-Thủ tướng Phạm Minh Chính nhấn mạnh nhận định này khi phát biểu khai mạc Hội nghị tổng kết công tác phòng, chống dịch Covid-19 sáng 29/10.
-
-Đây là dịp để nhìn lại chặng đường hơn 3 năm cả nước nỗ lực chống Covid-19, đại dịch ghi nhận ca bệnh đầu tiên vào cuối tháng 12/2019 tại Vũ Hán, Trung Quốc.
-
-Hội nghị tổng kết của Ban Chỉ đạo phòng, chống dịch diễn ra trong bối cảnh dịch bệnh đã được kiểm soát tốt nhờ những nỗ lực lớn, những giải pháp quyết liệt, hiệu quả mang tính toàn cầu, toàn dân; kinh tế từng bước phục hồi và phát triển, đời sống người dân trở lại trạng thái bình thường.</p>
+          <p>Không ít người dự đoán, với đà tăng này, doanh thu phim Mai sẽ sớm chạm mốc 500 tỷ đồng. Tuy nhiên, bên cạnh những phản ứng tích cực về "cơn sốt" của phim Mai, 
+            nhiều ý kiến cũng bày tỏ sự nghi ngờ về doanh thu mà tác phẩm này đạt được. Về vấn đề này, ông Nguyễn Khánh Dương - Nhà sáng lập Box Office Vietnam - 
+            từng chia sẻ với phóng viên Dân trí rằng mọi số liệu của Box Office Vietnam đều thu thập, tổng hợp từ dữ liệu bán vé công khai trên các hệ thống cụm rạp trong nước.</p>            
+                    
                     <div>
-                    <Button variant="outlined" onClick={handleOpen}>Bình Luận</Button>
+                    <Box sx={{ display: 'flex', gap: '10px' }}>
+                    <Button variant="outlined"><ThumbUpAltIcon fontSize="small"></ThumbUpAltIcon>Thích</Button>
+  <Button variant="outlined" onClick={handleOpen}><ChatBubbleOutlineIcon fontSize="small"></ChatBubbleOutlineIcon>  Bình Luận</Button>
+</Box>
       <Modal
         open={open}
         onClose={handleClose}
         aria-labelledby="modal-modal-title"
         aria-describedby="modal-modal-description"
       >
-        <Box sx={style}>
+        <Box sx={style} style={{ display: 'flex', flexDirection: 'column' }}>
           <Typography id="modal-modal-title" variant="h6" component="h2">
-            Rất nhiều thứ !!
+            <b>Những kẻ mộng mơ </b>
           </Typography>
           <Typography id="modal-modal-description" sx={{ mt: 2 }}>
-            Duis mollis, est non commodo luctus, nisi erat porttitor ligula.
+              Không ít người dự đoán, với đà tăng này, doanh thu phim Mai sẽ sớm chạm mốc 500 tỷ đồng. Tuy nhiên, bên cạnh những phản ứng tích cực về "cơn sốt" của phim Mai, 
+              nhiều ý kiến cũng bày tỏ sự nghi ngờ về doanh thu mà tác phẩm này đạt được. 
+              Về vấn đề này, ông Nguyễn Khánh Dương - Nhà sáng lập Box Office Vietnam - từng chia sẻ với phóng viên Dân trí rằng mọi số liệu của Box Office Vietnam đều thu thập, 
+              tổng hợp từ dữ liệu bán vé công khai trên các hệ thống cụm rạp trong nước.
+              <hr/>
+              <Button variant=""><ThumbUpAltIcon fontSize="small"></ThumbUpAltIcon>Thích</Button>
+              <Button variant=""><ChatBubbleOutlineIcon fontSize="small"></ChatBubbleOutlineIcon>Bình Luận</Button>
+              <hr/>
           </Typography>
+          <Box style={{ marginTop: 'auto' }}>
+          <TextField 
+            id="comment"
+            label="Bình luận"
+            multiline
+            //rows={6}
+            variant="outlined"
+            sx={{ width: '100%' }}
+          />
+          </Box>
         </Box>
       </Modal>
                     </div>

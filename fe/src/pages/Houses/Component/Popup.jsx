@@ -13,6 +13,7 @@ import IconButton from "@mui/material/IconButton";
 import Tab from "@mui/material/Tab";
 import Tabs from "@mui/material/Tabs";
 import UtilitiesTab from "./UtilitiesTab";
+import AddUtil from "./AddUtil";
 import AddIcon from "@mui/icons-material/Add";
 import { ToastContainer, toast } from "react-toastify";
 import axios from "axios";
@@ -41,7 +42,7 @@ const stylesBody = {
   width: "100%",
   marginTop: "20px",
 };
-export default function BasicModal({ dataUtils }) {
+export default function BasicModal({ dataUtils, dataUtilsOrther }) {
   const [open, setOpen] = React.useState(false);
   const [errorName, setErrorName] = React.useState(false);
   const [errorAddress, setErrorAddress] = React.useState(false);
@@ -158,7 +159,13 @@ export default function BasicModal({ dataUtils }) {
   const handleInputName = () => {
     const inputValue = inputName.current.value;
     setName(inputValue);
-    
+    if (validateInput(inputValue) && inputValue != " ") {
+      setName(inputValue);
+      setErrorName(false);
+    } else {
+      setErrorName(true);
+      toast.error("Tên nhà không đúng định dạng");
+    }
   };
   const handleInputAddress = () => {
     const inputValue = inputAddress.current.value;
@@ -191,6 +198,7 @@ export default function BasicModal({ dataUtils }) {
     }
   };
   const handleInputUtilities = (data) => {
+    console.log(data, "hello utils");
     setUtilities(data);
   };
 
@@ -199,24 +207,26 @@ export default function BasicModal({ dataUtils }) {
       await AddHouseService(data);
       toast.success("Thêm Nhà Thành Công");
     } catch (error) {
-console.log(error);
+      console.log(error);
       toast.error("Thêm Nhà Không Thành Công");
     }
   };
   const HandleSubmit = () => {
-handleInputName();
+    handleInputName();
     handleInputAddress();
     handleInputCostElectric();
     handleInputCostWater();
-
+    handleInputUtilities();
+    console.log(utilities, " sao ");
     if (
-name !== "" &&
+      name !== "" &&
       address !== "" &&
       CostElectricity !== null &&
       CostWater !== null &&
       city !== "" &&
       county !== "" &&
-      ward !== ""
+      ward !== "" &&
+      typeof utilities !== "undefined"
     ) {
       const setData = {
         name: name,
@@ -228,9 +238,13 @@ name !== "" &&
         },
         electricPrice: CostElectricity,
         waterPrice: CostWater,
+        utilities: utilities,
       };
-            submitService(setData)
+      submitService(setData);
       handleClose();
+      setCity("");
+      setWard("");
+      setCounty("");
     }
   };
   React.useEffect(() => {
@@ -251,7 +265,7 @@ name !== "" &&
   }, [ward]);
 
   const validateInput = (input) => {
-    const pattern = /^[a-zA-Z0-9\s]*$/;
+    const pattern = /^[\p{L}\p{N}\s]+$/u;
 
     return pattern.test(input);
   };
@@ -417,13 +431,18 @@ name !== "" &&
                 indicatorColor="primary"
                 aria-label="secondary tabs example"
               >
-                <Tab value="1" label="Item One" />
-                <Tab value="2" label="Item Two" />
+                <Tab value="1" label="Tiện Ích" />
+                <Tab value="2" label="Thêm Tiện Ích" />
                 <Tab value="3" label="Item Three" />
               </Tabs>
               {value === "1" && (
-                <UtilitiesTab handleInputSelect={handleInputUtilities} />
+                <UtilitiesTab
+                  handleInputSelect={handleInputUtilities}
+                  dataUtil={dataUtils}
+                  typeUtil={"add"}
+                />
               )}
+              {value === "2" && <AddUtil />}
             </Box>
           </Box>
           <Box

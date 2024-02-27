@@ -1,5 +1,6 @@
 import Box from "@mui/material/Box";
 import ChartRooms from "./ChartRooms";
+import { GetRooms } from "../../../services/houses";
 import {
   Table,
   TableBody,
@@ -10,8 +11,8 @@ import {
   Paper,
 } from "@mui/material";
 import * as React from "react";
-const CommonRooms = ({ houseData }) => {
-  console.log(houseData);
+const CommonRooms = ({ houseData, roomsData }) => {
+  console.log(roomsData);
   const data = [
     {
       category: "Tên Chủ Nhà",
@@ -39,6 +40,7 @@ const CommonRooms = ({ houseData }) => {
     },
     // Thêm dữ liệu danh mục và nội dung tương ứng ở đây
   ];
+  // Thêm dữ liệu danh mục và nội dung tương ứng ở đây
   return (
     <Box sx={{ position: "relative", backgroundColor: "#FFFFFF" }}>
       <Box
@@ -60,6 +62,32 @@ const CommonRooms = ({ houseData }) => {
                     <TableCell>{item.content}</TableCell>
                   </TableRow>
                 ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
+          <p className="h3 mt-2">Danh Sách Phòng</p>
+          <TableContainer component={Paper} sx={{mt: "20px"}}>
+            <Table>
+              <TableHead>
+                <TableRow>
+                  <TableCell>Tầng</TableCell>
+                  <TableCell>Tên</TableCell>
+                  <TableCell>Trạng thái</TableCell>
+                  <TableCell>Số lượng người</TableCell>
+                  <TableCell>Diện Tích</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {roomsData?roomsData.map((room, index) => (
+                  <TableRow key={index}>
+                    <TableCell>{room.floor}</TableCell>
+                    <TableCell>{room.name}</TableCell>
+                    <TableCell>{room.status}</TableCell>
+                    <TableCell>{room.quantityMember}</TableCell>
+                    <TableCell>{room.area}</TableCell>
+                  </TableRow>
+
+                )):<Box>Không Có Dữ Liệu</Box>}
               </TableBody>
             </Table>
           </TableContainer>
