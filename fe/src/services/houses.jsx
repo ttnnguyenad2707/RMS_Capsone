@@ -10,6 +10,15 @@ export const AddHouseService = async (data) => {
     },
   });
 };
+export const AddOrtherUtilService = async (data) => {
+  const token = Cookies.get("accessToken");
+  return await axios.post(`${URL_SERVER}/utilities/otherUtilities`, data, {
+    withCredentials: true,
+    headers: {
+      authorization: `Bearer ${token}`,
+    },
+  });
+};
 export const GetHouseService = async () => {
   const token = Cookies.get("accessToken");
   return await axios.get(`${URL_SERVER}/house`, {
@@ -40,7 +49,7 @@ export const DeleteHouseService = async (id) => {
   
 export const GetUtilities = async () => {
   const token = Cookies.get("accessToken");
-  return await axios.get(`${URL_SERVER}/house`, {
+  return await axios.get(`${URL_SERVER}/utilities/`, {
     withCredentials: true,
     headers: {
       authorization: `Bearer ${token}`,
@@ -64,6 +73,16 @@ export const AddRoomsFileService = async ({data}) => {
     console.log("data check "+data);
     const token = Cookies.get("accessToken");
     return await axios.get(`${URL_SERVER}/house/${data}/room/`,{
+      withCredentials: true,
+      headers: {
+        authorization: `Bearer ${token}`,
+      },
+    });
+  };
+
+  export const GetUtilitiesOther = async () => {
+    const token = Cookies.get("accessToken");
+    return await axios.get(`${URL_SERVER}/utilities/otherUtilities`, {
       withCredentials: true,
       headers: {
         authorization: `Bearer ${token}`,

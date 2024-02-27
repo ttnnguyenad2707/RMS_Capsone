@@ -55,7 +55,7 @@ export default function BasicTable({ data }) {
   const dataHouse = data;
   const [dataModelUpdate, setDataModelUpdate] = useState();
   const [open, setOpen] = useState(false);
-
+  
   const handleOpen = () => {
     setOpen(true);
   };
@@ -63,14 +63,14 @@ export default function BasicTable({ data }) {
     setOpen(false);
   };
 
-  const DeleteHouse = async(id)=> {
+  const DeleteHouse = async (id) => {
     try {
       await DeleteHouseService(id);
       toast.success("Xóa Nhà Thành Công");
     } catch (error) {
       console.log(error);
     }
-  }
+  };
   const headCells = [
     {
       id: "stt",
@@ -112,11 +112,11 @@ export default function BasicTable({ data }) {
       const dataTable = dataHouse.map((house) => {
         const address =
           house.location.district +
-          "/" +
+          " - " +
           house.location.province +
-          "/" +
+          " - " +
           house.location.ward +
-          "/" +
+          " - " +
           "350";
         return createData(
           1,
@@ -131,7 +131,7 @@ export default function BasicTable({ data }) {
           house.waterPrice,
           <div className="d-flex">
             <Button
-              variant="contained" 
+              variant="contained"
               sx={{ fontWeight: "bold", margin: "10px" }}
               color="warning"
               onClick={() =>
@@ -156,7 +156,7 @@ export default function BasicTable({ data }) {
               variant="contained"
               sx={{ fontWeight: "bold", margin: "10px" }}
               color="error"
-              onClick={()=> DeleteHouse( house._id,)}
+              onClick={() => DeleteHouse(house._id)}
             >
               Xóa
             </Button>
@@ -200,7 +200,7 @@ export default function BasicTable({ data }) {
   ) => {
     handleOpen();
     console.log(open);
-    const addressParts = address.split("/");
+    const addressParts = address.split("-");
     const City = addressParts[0];
     const Ward = addressParts[1];
     const county = addressParts[2];
@@ -221,7 +221,7 @@ export default function BasicTable({ data }) {
       email: email,
       costElectricity: costElectricity,
       costWater: costWater,
-      utils:utils
+      utils: utils,
     };
     setDataModelUpdate(data);
   };
@@ -328,7 +328,7 @@ export default function BasicTable({ data }) {
                   : null}
               </TableBody>
             </Table>
-          </TableContainer>
+                      </TableContainer>
           <BasicModalUpdate
             data={dataModelUpdate}
             handleOpen={handleOpen}

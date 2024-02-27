@@ -29,8 +29,8 @@ const RoomsNavbar = ({ dataHouse, selectHouse }) => {
   const handleChange = (event) => {
     const inputSelect = event.target.value;
     if (inputSelect !== null) {
-      setHouseSelect(inputSelect)
-      selectHouse(inputSelect)
+      setHouseSelect(inputSelect);
+      selectHouse(inputSelect);
     }
   };
   const handleSelectModal = (nameModal) => {
@@ -54,12 +54,15 @@ const RoomsNavbar = ({ dataHouse, selectHouse }) => {
         value={houseSelect}
         label="Age"
         onChange={handleChange}
-        defaultValue={10}
         sx={{ width: "20%" }}
         className="me-5"
       >
         {house ? (
-          house.map((h) => (<MenuItem value={h.houseId} key={h.houseId}>{h.name}</MenuItem>))
+          house.map((h) => (
+            <MenuItem value={h.houseId} key={h.houseId}>
+              {h.name}
+            </MenuItem>
+          ))
         ) : (
           <div>Lỗi Dữ Liệu</div>
         )}
