@@ -12,7 +12,6 @@ import { useEffect, useState } from "react";
 import BasicModalUpdate from "./PopupUpdate";
 import { useDispatch, useSelector } from "react-redux";
 import { AiOutlineLoading3Quarters } from "react-icons/ai";
-import { DeleteHouseService } from "../../../services/houses";
 import { ToastContainer, toast } from "react-toastify";
 import { deleteHouse } from "../../../reduxToolkit/HouseSlice";
 import { fetchHouses } from "../../../reduxToolkit/HouseSlice";
@@ -21,6 +20,83 @@ import Typography from "@mui/material/Typography";
 import Modal from "@mui/material/Modal";
 import CloseIcon from "@mui/icons-material/Close";
 import IconButton from "@mui/material/IconButton";
+import TableFooter from "@mui/material/TableFooter";
+import TablePagination from "@mui/material/TablePagination";
+import FirstPageIcon from "@mui/icons-material/FirstPage";
+import KeyboardArrowLeft from "@mui/icons-material/KeyboardArrowLeft";
+import KeyboardArrowRight from "@mui/icons-material/KeyboardArrowRight";
+import LastPageIcon from "@mui/icons-material/LastPage";
+import { useTheme } from "@mui/material/styles";
+import PropTypes from "prop-types";
+function TablePaginationActions(props) {
+  const theme = useTheme();
+  const { count, page, rowsPerPage, onPageChange } = props;
+
+  const handleFirstPageButtonClick = (event) => {
+    onPageChange(event, 0);
+  };
+
+  const handleBackButtonClick = (event) => {
+    onPageChange(event, page - 1);
+  };
+
+  const handleNextButtonClick = (event) => {
+    onPageChange(event, page + 1);
+  };
+
+  const handleLastPageButtonClick = (event) => {
+    onPageChange(event, Math.max(0, Math.ceil(count / rowsPerPage) - 1));
+  };
+
+  return (
+    <Box sx={{ flexShrink: 0, ml: 2.5 }}>
+      <IconButton
+        onClick={handleFirstPageButtonClick}
+        disabled={page === 0}
+        aria-label="first page"
+      >
+        {theme.direction === "rtl" ? <LastPageIcon /> : <FirstPageIcon />}
+      </IconButton>
+      <IconButton
+        onClick={handleBackButtonClick}
+        disabled={page === 0}
+        aria-label="previous page"
+      >
+        {theme.direction === "rtl" ? (
+          <KeyboardArrowRight />
+        ) : (
+          <KeyboardArrowLeft />
+        )}
+      </IconButton>
+      <IconButton
+        onClick={handleNextButtonClick}
+        disabled={page >= Math.ceil(count / rowsPerPage) - 1}
+        aria-label="next page"
+      >
+        {theme.direction === "rtl" ? (
+          <KeyboardArrowLeft />
+        ) : (
+          <KeyboardArrowRight />
+        )}
+      </IconButton>
+      <IconButton
+        onClick={handleLastPageButtonClick}
+        disabled={page >= Math.ceil(count / rowsPerPage) - 1}
+        aria-label="last page"
+      >
+        {theme.direction === "rtl" ? <FirstPageIcon /> : <LastPageIcon />}
+      </IconButton>
+    </Box>
+  );
+}
+
+TablePaginationActions.propTypes = {
+  count: PropTypes.number.isRequired,
+  onPageChange: PropTypes.func.isRequired,
+  page: PropTypes.number.isRequired,
+  rowsPerPage: PropTypes.number.isRequired,
+};
+
 function createData(
   stt,
   id,
@@ -65,11 +141,14 @@ export default function BasicTable() {
   const [open, setOpen] = useState(false);
   const [houseSelect, setHouseSelect] = useState();
   const [openConfirm, setOpenConfirm] = useState(false);
+  const [rowsPerPage, setRowsPerPage] = useState(5);
+  const [page, setPage] = useState(0);
   const houses = useSelector((state) => state.house.houses);
+
   useEffect(() => {
     // GetHouse();
     dispatch(fetchHouses());
-  }, [dispatch]);
+  }, [dispatch, page, rowsPerPage]);
   const handleOpen = () => {
     setOpen(true);
   };
@@ -195,7 +274,18 @@ export default function BasicTable() {
       setRows(dataTable);
     }
   }, [houses]);
+  const handleChangePage = (event, newPage) => {
+    setPage(newPage);
+  };
 
+  const handleChangeRowsPerPage = (event) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
+  };
+
+  const startIndex = page * rowsPerPage;
+  const endIndex = startIndex + rowsPerPage;
+  const displayedData = rows.slice(startIndex, endIndex);
   const StyledTableRow = styled(TableRow)(() => ({
     backgroundColor: "#1976d2",
     "td, th": {
@@ -328,6 +418,8 @@ export default function BasicTable() {
     position: "relative",
     fontWeight: "Bold",
   };
+
+  console.log(page, rowsPerPage, "rowsPerPage");
   return (
     <>
       {houses ? (
@@ -355,8 +447,8 @@ export default function BasicTable() {
                 </StyledTableRow>
               </TableHead>
               <TableBody>
-                {rows
-                  ? rows.map((row, index) => (
+                {displayedData
+                  ? displayedData.map((row, index) => (
                       <TableRow
                         key={row.name}
                         sx={{
@@ -379,6 +471,16 @@ export default function BasicTable() {
                     ))
                   : null}
               </TableBody>
+              <TableFooter>
+                <TablePagination
+                  rowsPerPageOptions={[5, 10, 25]}
+                  count={rows.length}
+                  rowsPerPage={rowsPerPage}
+                  page={page}
+                  onPageChange={handleChangePage}
+                  onRowsPerPageChange={handleChangeRowsPerPage}
+                />
+              </TableFooter>
             </Table>
           </TableContainer>
           <BasicModalUpdate

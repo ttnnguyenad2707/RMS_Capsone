@@ -6,8 +6,8 @@ import {
   DeleteHouseService,
 } from '../services/houses';
 // Action async gọi API để lấy danh sách nhà
-export const fetchHouses = createAsyncThunk('houses/fetchHouses', async (page, limit) => {
-  const response = await GetHouseService(page, limit);
+export const fetchHouses = createAsyncThunk('houses/fetchHouses', async (page,rowsPerPage) => {
+  const response = await GetHouseService(page,rowsPerPage);
   return response.data.data.houses;
 });
 // Action async gọi API để thêm nhà mới

@@ -22,7 +22,12 @@ export const AddOrtherUtilService = async (data) => {
 };
 export const GetHouseService = async (page,limit) => {
   const token = Cookies.get("accessToken");
-  return await axios.get(`${URL_SERVER}/house`, {
+  console.log(page,limit,"service");
+  return await axios.get(`${URL_SERVER}/house?`, {
+    params: {
+      page: ++page,
+      limit: limit
+    },
     withCredentials: true,
     headers: {
       authorization: `Bearer ${token}`,
