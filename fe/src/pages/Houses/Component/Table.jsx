@@ -10,9 +10,17 @@ import Button from "@mui/material/Button";
 import { styled } from "@mui/material/styles";
 import { useEffect, useState } from "react";
 import BasicModalUpdate from "./PopupUpdate";
+import { useDispatch, useSelector } from "react-redux";
 import { AiOutlineLoading3Quarters } from "react-icons/ai";
 import { DeleteHouseService } from "../../../services/houses";
 import { ToastContainer, toast } from "react-toastify";
+import { deleteHouse } from "../../../reduxToolkit/HouseSlice";
+import { fetchHouses } from "../../../reduxToolkit/HouseSlice";
+import Box from "@mui/material/Box";
+import Typography from "@mui/material/Typography";
+import Modal from "@mui/material/Modal";
+import CloseIcon from "@mui/icons-material/Close";
+import IconButton from "@mui/material/IconButton";
 function createData(
   stt,
   id,
@@ -40,7 +48,7 @@ function createData(
     action,
   };
 }
-export default function BasicTable({ data }) {
+export default function BasicTable() {
   const [rows, setRows] = useState([]);
   const [status, setStatus] = useState([
     {
@@ -52,21 +60,34 @@ export default function BasicTable({ data }) {
       statusSort: true, // sắp xếp xuôi , false sắp xếp ngược
     },
   ]);
-  const dataHouse = data;
+  const dispatch = useDispatch();
   const [dataModelUpdate, setDataModelUpdate] = useState();
   const [open, setOpen] = useState(false);
-  
+  const [houseSelect, setHouseSelect] = useState();
+  const [openConfirm, setOpenConfirm] = useState(false);
+  const houses = useSelector((state) => state.house.houses);
+  useEffect(() => {
+    // GetHouse();
+    dispatch(fetchHouses());
+  }, [dispatch]);
   const handleOpen = () => {
     setOpen(true);
   };
   const handleClose = () => {
     setOpen(false);
   };
-
+  const handleOpenConfirm = () => {
+    setOpenConfirm(true);
+  };
+  const handleCloseConfirm = () => {
+    setOpenConfirm(false);
+  };
   const DeleteHouse = async (id) => {
     try {
-      await DeleteHouseService(id);
+      dispatch(deleteHouse({ id }));
+      dispatch(fetchHouses());
       toast.success("Xóa Nhà Thành Công");
+      handleCloseConfirm()
     } catch (error) {
       console.log(error);
     }
@@ -108,21 +129,21 @@ export default function BasicTable({ data }) {
     },
   ];
   useEffect(() => {
-    if (dataHouse) {
-      const dataTable = dataHouse.map((house) => {
+    if (houses) {
+      const dataTable = houses.map((house) => {
         const address =
           house.location.district +
-          " - " +
+          "-" +
           house.location.province +
-          " - " +
+          "-" +
           house.location.ward +
-          " - " +
-          "350";
+          "-" +
+          house.location.detailLocation;
         return createData(
           1,
           house._id,
           house.name,
-          3,
+          house.numberOfRoom,
           address,
           house.hostId.name,
           house.hostId.phone,
@@ -139,7 +160,7 @@ export default function BasicTable({ data }) {
                   1,
                   house._id,
                   house.name,
-                  3,
+                  house.numberOfRoom,
                   address,
                   house.hostId.name,
                   house.hostId.phone,
@@ -156,7 +177,14 @@ export default function BasicTable({ data }) {
               variant="contained"
               sx={{ fontWeight: "bold", margin: "10px" }}
               color="error"
-              onClick={() => DeleteHouse(house._id)}
+              onClick={() => {
+                setHouseSelect({
+                  id: house._id,
+                  name: house.name,
+                });
+
+                handleOpenConfirm();
+              }}
             >
               Xóa
             </Button>
@@ -165,7 +193,7 @@ export default function BasicTable({ data }) {
       });
       setRows(dataTable);
     }
-  }, [dataHouse]);
+  }, [houses]);
   const StyledTableRow = styled(TableRow)(() => ({
     backgroundColor: "#1976d2",
     "td, th": {
@@ -276,10 +304,29 @@ export default function BasicTable({ data }) {
     // Cập nhật state rows
     setRows(sortedRows);
   };
-  console.log(dataHouse);
+  const style = {
+    position: "absolute",
+    top: "50%",
+    left: "50%",
+    transform: "translate(-50%, -50%)",
+    width: 500,
+    height: "20%",
+    bgcolor: "background.paper",
+    border: "2px solid #grey",
+    boxShadow: 25,
+    p: 5,
+    borderRadius: "10px",
+    padding: "18px",
+  };
+  const stylesHeader = {
+    color: "#1976d2",
+    display: "flex",
+    position: "relative",
+    fontWeight: "Bold",
+  };
   return (
     <>
-      {dataHouse ? (
+      {houses ? (
         <div>
           <TableContainer component={Paper}>
             <Table sx={{ minWidth: 650 }} aria-label="simple table">
@@ -292,6 +339,7 @@ export default function BasicTable({ data }) {
                           active={true}
                           direction="asc"
                           onClick={() => handleSort(headCell.id)}
+                          className="label-header"
                         >
                           {headCell.label}
                         </TableSortLabel>
@@ -304,7 +352,7 @@ export default function BasicTable({ data }) {
               </TableHead>
               <TableBody>
                 {rows
-                  ? rows.map((row,index) => (
+                  ? rows.map((row, index) => (
                       <TableRow
                         key={row.name}
                         sx={{
@@ -328,13 +376,68 @@ export default function BasicTable({ data }) {
                   : null}
               </TableBody>
             </Table>
-                      </TableContainer>
+          </TableContainer>
           <BasicModalUpdate
             data={dataModelUpdate}
             handleOpen={handleOpen}
             handleClose={handleClose}
             openModal={open}
           />
+          {houseSelect ? (
+            <Modal
+              open={openConfirm}
+              onClose={handleCloseConfirm}
+              aria-labelledby="modal-modal-title"
+              aria-describedby="modal-modal-description"
+            >
+              <Box sx={style}>
+                <Box sx={stylesHeader}>
+                  <Typography
+                    id="modal-modal-title"
+                    variant="h4"
+                    component="h3"
+                    sx={{ fontWeight: "Bold"}}
+                  >
+                    Xác Nhận Xóa Nhà
+                  </Typography>
+                  <IconButton
+                    sx={{ position: "absolute", right: "10px" }}
+                    onClick={handleCloseConfirm}
+                  >
+                    <CloseIcon />
+                  </IconButton>
+                </Box>
+                <Box sx={{ display: "flex", mt: 3, mb: 3 }}>
+                  <Typography
+                    id="modal-modal-title"
+                    sx={{ fontWeight: "Bold",color: "red" }}
+                    component="h3"
+                    variant="h5"
+                  >
+                    Tên Nhà: {houseSelect.name}
+                  </Typography>
+                </Box>
+                <Box sx={{ display: "flex", justifyContent: "end" }}>
+                  <Button
+                    variant="contained"
+                    sx={{ padding: "3px", ml: 3 }}
+                    onClick={handleCloseConfirm}
+                  >
+                    Hủy
+                  </Button>
+                  <Button
+                    variant="contained"
+                    sx={{ padding: "3px", ml: 3 }}
+                    onClick={() => DeleteHouse(houseSelect.id)}
+                  >
+                    Xóa
+                  </Button>
+                </Box>
+              </Box>
+            </Modal>
+          ) : (
+            <div></div>
+          )}
         </div>
       ) : (
         <div className="text-center">

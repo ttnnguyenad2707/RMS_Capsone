@@ -3,22 +3,23 @@ import BasicModal from "./Component/Popup";
 import { GetHouseService } from "../../services/houses";
 import Container from "@mui/material/Container";
 import { GetUtilities, GetUtilitiesOther } from "../../services/houses";
+import "./Scss/HousePage.scss"
 import * as React from "react";
 const HousePage = () => {
-  const [houses, setHouse] = React.useState();
+  // const [houses, setHouse] = React.useState();
   const [utilList, setUtilList] = React.useState();
   const [DataUtilities, setUtilitiesData] = React.useState();
   const [DataUtilitiesOther, setUtilitiesDataOther] = React.useState();
-  const GetHouse = async () => {
-    try {
-      const result = (await GetHouseService()).data.data.houses;
-      setHouse(result);
-      const listUtil = result.map((r) => r.utilities);
-      setUtilList(listUtil);
-    } catch (error) {
-      console.log(error);
-    }
-  };
+  // const GetHouse = async () => {
+  //   try {
+  //     const result = (await GetHouseService()).data.data.houses;
+  //     setHouse(result);
+  //     const listUtil = result.map((r) => r.utilities);
+  //     setUtilList(listUtil);
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
+  // };
   const GetDataUtilities = async () => {
     try {
       const data = (await GetUtilities()).data.data;
@@ -38,13 +39,9 @@ const HousePage = () => {
     }
   };
   React.useEffect(() => {
-    GetHouse();
-  }, []);
-  React.useEffect(() => {
     GetDataUtilities();
     GetDataUtilitiesOther();
   }, []);
-  console.log(utilList, "hi");
   return (
     <Container
       maxWidth="false"
@@ -53,7 +50,7 @@ const HousePage = () => {
       <div className="d-flex">
         <BasicModal dataUtils={DataUtilities} dataUtilsOrther={DataUtilitiesOther} />
       </div>
-      <BasicTable data={houses} />
+      <BasicTable/>
     </Container>
   );
 };
