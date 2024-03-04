@@ -16,10 +16,12 @@ import {
   addOrtherUtil,
   fetchOrtherUtil,
 } from "../../../reduxToolkit/UtilSlice";
+import { fetchDefaultUtil } from "../../../reduxToolkit/UtilSliceDefault";
 const UtilitiesTab = ({
   handleInputSelect,
   handleInputSelectOrther,
   dataUtil,
+  dataOrtherUtil,
   typeUtil,
 }) => {
   const [utils, setUtil] = useState([]);
@@ -27,6 +29,7 @@ const UtilitiesTab = ({
   const [open, setOpen] = useState(false);
   const inputName = useRef();
   const dispatch = useDispatch();
+  const defaultUtils = useSelector((state) => state.defaultUtil.defaultutils);
   const ortherUtil = useSelector((state) => state.utilOther.otherutils);
   const handleInputName = () => {
     const inputValue = inputName.current.value;
@@ -91,17 +94,18 @@ const UtilitiesTab = ({
     handleInputSelectOrther(selectUtilOrther);
   }, [utilsOrther]);
   useEffect(() => {
-    if (dataUtil && typeUtil === "update") {
-      const dataUtils = dataUtil.map((u) => {
+    if (defaultUtils && typeUtil === "update" && dataUtil) {
+      const dataUtils = defaultUtils.map((u) => {
+        const foundUtil = dataUtil.find((u2) => u._id === u2._id);
         return {
           name: u.name,
           value: u._id,
-          isCheck: true,
+          isCheck: foundUtil ? true : false,
         };
       });
       setUtil(dataUtils);
-    } else if (dataUtil && typeUtil === "add") {
-      const dataUtils = dataUtil.map((u) => {
+    } else if (defaultUtils && typeUtil === "add") {
+      const dataUtils = defaultUtils.map((u) => {
         return {
           name: u.name,
           value: u._id,
@@ -110,14 +114,15 @@ const UtilitiesTab = ({
       });
       setUtil(dataUtils);
     }
-  }, [typeUtil]);
+  }, [defaultUtils, dataUtil]);
   useEffect(() => {
-    if (ortherUtil && typeUtil === "update") {
+    if (ortherUtil && typeUtil === "update" && dataOrtherUtil) {
       const dataUtils = ortherUtil.map((u) => {
+        const foundUtil = dataOrtherUtil.find((u2) => u._id === u2._id);
         return {
           name: u.name,
           value: u._id,
-          isCheck: true,
+          isCheck: foundUtil ? true : false,
         };
       });
       setUtilOther(dataUtils);
@@ -132,6 +137,10 @@ const UtilitiesTab = ({
       setUtilOther(dataUtils);
     }
   }, [ortherUtil]);
+  useEffect(() => {
+    dispatch(fetchOrtherUtil());
+    dispatch(fetchDefaultUtil());
+  }, []);
   const style = {
     position: "absolute",
     top: "50%",
@@ -145,6 +154,7 @@ const UtilitiesTab = ({
     p: 5,
     borderRadius: "10px",
     padding: "18px",
+    overflow: "auto"
   };
   const stylesHeader = {
     color: "#1976d2",
@@ -223,7 +233,7 @@ const UtilitiesTab = ({
             <TextField
               required
               id="outlined-basic"
-              label="Tên Nhà"
+              label="Tên Tiện Ích"
               variant="outlined"
               sx={{ width: "100%" }}
               inputRef={inputName}

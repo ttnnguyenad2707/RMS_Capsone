@@ -87,7 +87,7 @@ export default function BasicTable() {
       dispatch(deleteHouse({ id }));
       dispatch(fetchHouses());
       toast.success("Xóa Nhà Thành Công");
-      handleCloseConfirm()
+      handleCloseConfirm();
     } catch (error) {
       console.log(error);
     }
@@ -167,7 +167,8 @@ export default function BasicTable() {
                   house.hostId.email,
                   house.electricPrice,
                   house.waterPrice,
-                  house.utilities
+                  house.utilities,
+                  house.otherUtilities
                 )
               }
             >
@@ -194,6 +195,7 @@ export default function BasicTable() {
       setRows(dataTable);
     }
   }, [houses]);
+
   const StyledTableRow = styled(TableRow)(() => ({
     backgroundColor: "#1976d2",
     "td, th": {
@@ -224,7 +226,8 @@ export default function BasicTable() {
     email,
     costElectricity,
     costWater,
-    utils
+    utils,
+    ortherUtils
   ) => {
     handleOpen();
     console.log(open);
@@ -250,6 +253,7 @@ export default function BasicTable() {
       costElectricity: costElectricity,
       costWater: costWater,
       utils: utils,
+      ortherUtils: ortherUtils,
     };
     setDataModelUpdate(data);
   };
@@ -396,7 +400,7 @@ export default function BasicTable() {
                     id="modal-modal-title"
                     variant="h4"
                     component="h3"
-                    sx={{ fontWeight: "Bold"}}
+                    sx={{ fontWeight: "Bold" }}
                   >
                     Xác Nhận Xóa Nhà
                   </Typography>
@@ -410,7 +414,7 @@ export default function BasicTable() {
                 <Box sx={{ display: "flex", mt: 3, mb: 3 }}>
                   <Typography
                     id="modal-modal-title"
-                    sx={{ fontWeight: "Bold",color: "red" }}
+                    sx={{ fontWeight: "Bold", color: "red" }}
                     component="h3"
                     variant="h5"
                   >

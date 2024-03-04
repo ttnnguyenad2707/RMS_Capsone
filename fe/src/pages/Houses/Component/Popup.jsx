@@ -45,7 +45,7 @@ const stylesBody = {
   width: "100%",
   marginTop: "20px",
 };
-export default function BasicModal({ dataUtils, dataUtilsOrther }) {
+export default function BasicModal() {
   const [open, setOpen] = React.useState(false);
   const [errorName, setErrorName] = React.useState(false);
   const [errorAddress, setErrorAddress] = React.useState(false);
@@ -446,7 +446,6 @@ export default function BasicModal({ dataUtils, dataUtilsOrther }) {
                 <UtilitiesTab
                   handleInputSelect={handleInputUtilities}
                   handleInputSelectOrther={handleInputUtilitiesOrther}
-                  dataUtil={dataUtils}
                   typeUtil={"add"}
                 />
               )}

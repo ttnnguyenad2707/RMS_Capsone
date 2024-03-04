@@ -233,6 +233,7 @@ export default function BasicModalUpdate({
         electricPrice: CostElectricity,
         waterPrice: CostWater,
         utilities: utilities,
+        otherUtilities: utilitiesOther,
       };
       const id = data.id;
       dispatch(updateHouse({ setData, id }));
@@ -457,6 +458,7 @@ export default function BasicModalUpdate({
                   <UtilitiesTab
                     handleInputSelect={handleInputUtilities}
                     dataUtil={data.utils}
+                    dataOrtherUtil= {data.ortherUtils}
                     typeUtil={"update"}
                     handleInputSelectOrther={handleInputUtilitiesOrther}
                   />
