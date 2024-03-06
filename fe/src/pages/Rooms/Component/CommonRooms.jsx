@@ -1,6 +1,10 @@
 import Box from "@mui/material/Box";
 import ChartRooms from "./ChartRooms";
 import { GetRooms } from "../../../services/houses";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchRooms } from "../../../reduxToolkit/RoomSlice";
+import TableFooter from "@mui/material/TableFooter";
+import TablePagination from "@mui/material/TablePagination";
 import {
   Table,
   TableBody,
@@ -11,8 +15,11 @@ import {
   Paper,
 } from "@mui/material";
 import * as React from "react";
-const CommonRooms = ({ houseData, roomsData }) => {
-  console.log(roomsData);
+const CommonRooms = ({ houseData }) => {
+  const [rowsPerPage, setRowsPerPage] = React.useState(5);
+  const [page, setPage] = React.useState(0);
+  console.log(houseData);
+  const roomsData = useSelector((state) => state.room.rooms);
   const data = [
     {
       category: "Tên Chủ Nhà",
@@ -40,45 +47,90 @@ const CommonRooms = ({ houseData, roomsData }) => {
     },
     // Thêm dữ liệu danh mục và nội dung tương ứng ở đây
   ];
+  const startIndex = page * rowsPerPage;
+  const endIndex = startIndex + rowsPerPage;
+  const displayedData = roomsData.slice(startIndex, endIndex);
+  const handleChangePage = (event, newPage) => {
+    setPage(newPage);
+  };
+
+  const handleChangeRowsPerPage = (event) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
+  };
   // Thêm dữ liệu danh mục và nội dung tương ứng ở đây
   return (
-    <Box sx={{ position: "relative", backgroundColor: "#FFFFFF" }}>
+    <Box>
       <Box
-        sx={{ backgroundColor: "#1976d2", alignItems: "center" }}
-        className="p-2"
+        sx={{
+          position: "relative",
+          backgroundColor: "#FFFFFF",
+          boxShadow: "0px 0px 10px 2px #888888",
+        }}
       >
-        <p className="fs-4 fw-bold" style={{ color: "#fff", margin: "unset" }}>
-          Thông Tin Chung
-        </p>
+        <Box
+          sx={{ backgroundColor: "#1976d2", alignItems: "center" }}
+          className="p-2"
+        >
+          <p
+            className="fs-4 fw-bold"
+            style={{ color: "#fff", margin: "unset" }}
+          >
+            Thông Tin Chung
+          </p>
+        </Box>
+        <Box sx={{ display: "flex", padding: "20px" }}>
+          <Box sx={{ width: "50%", alignItems: "center" }}>
+            <TableContainer component={Paper}>
+              <Table>
+                <TableBody>
+                  {data.map((item, index) => (
+                    <TableRow key={index}>
+                      <TableCell>{item.category}</TableCell>
+                      <TableCell>{item.content}</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          </Box>
+          <Box>
+            <p className="fs-5 fw-bold d-flex justify-content-center">
+              Tỷ Lệ Đầy Phòng
+            </p>
+            <ChartRooms />
+          </Box>
+        </Box>
       </Box>
-      <Box sx={{ display: "flex", padding: "20px" }}>
-        <Box sx={{ width: "50%", alignItems: "center" }}>
-          <TableContainer component={Paper}>
-            <Table>
-              <TableBody>
-                {data.map((item, index) => (
-                  <TableRow key={index}>
-                    <TableCell>{item.category}</TableCell>
-                    <TableCell>{item.content}</TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </TableContainer>
-          <p className="h3 mt-2">Danh Sách Phòng</p>
-          <TableContainer component={Paper} sx={{mt: "20px"}}>
-            <Table>
-              <TableHead>
-                <TableRow>
-                  <TableCell>Tầng</TableCell>
-                  <TableCell>Tên</TableCell>
-                  <TableCell>Trạng thái</TableCell>
-                  <TableCell>Số lượng người</TableCell>
-                  <TableCell>Diện Tích</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {roomsData?roomsData.map((room, index) => (
+      <Box
+        sx={{ position: "relative", backgroundColor: "#FFFFFF" }}
+        className="mt-3"
+      >
+        <Box
+          sx={{ backgroundColor: "#1976d2", alignItems: "center" }}
+          className="p-2"
+        >
+          <p
+            className="fs-4 fw-bold"
+            style={{ color: "#fff", margin: "unset" }}
+          >
+            Thông Tin Phòng
+          </p>
+        </Box>
+        <TableContainer component={Paper} sx={{ mt: "20px" }}>
+          <Table>
+            <TableHead>
+              <TableRow>
+                <TableCell>Tầng</TableCell>
+                <TableCell>Tên</TableCell>
+                <TableCell>Trạng thái</TableCell>
+                <TableCell>Số lượng người</TableCell>
+                <TableCell>Diện Tích</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {displayedData ? (
+                displayedData.map((room, index) => (
                   <TableRow key={index}>
                     <TableCell>{room.floor}</TableCell>
                     <TableCell>{room.name}</TableCell>
@@ -86,18 +138,23 @@ const CommonRooms = ({ houseData, roomsData }) => {
                     <TableCell>{room.quantityMember}</TableCell>
                     <TableCell>{room.area}</TableCell>
                   </TableRow>
-
-                )):<Box>Không Có Dữ Liệu</Box>}
-              </TableBody>
-            </Table>
-          </TableContainer>
-        </Box>
-        <Box>
-          <p className="fs-5 fw-bold d-flex justify-content-center">
-            Tỷ Lệ Đầy Phòng
-          </p>
-          <ChartRooms />
-        </Box>
+                ))
+              ) : (
+                <Box>Không Có Dữ Liệu</Box>
+              )}
+            </TableBody>
+            <TableFooter>
+              <TablePagination
+                rowsPerPageOptions={[5, 10, 25]}
+                count={roomsData.length}
+                rowsPerPage={rowsPerPage}
+                page={page}
+                onPageChange={handleChangePage}
+                onRowsPerPageChange={handleChangeRowsPerPage}
+              />
+            </TableFooter>
+          </Table>
+        </TableContainer>
       </Box>
     </Box>
   );
