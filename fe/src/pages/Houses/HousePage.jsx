@@ -9,7 +9,7 @@ const HousePage = () => {
   return (
     <Container
       maxWidth="false"
-      sx={{ backgroundColor: "#F1F2F7", padding: "20px", width: "100%" }}
+      sx={{ backgroundColor: "#F1F2F7", padding: "20px", width: "100%", }}
     >
       <div className="d-flex">
         <BasicModal />

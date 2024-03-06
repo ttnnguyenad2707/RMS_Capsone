@@ -3,6 +3,8 @@ import ChartRooms from "./ChartRooms";
 import { GetRooms } from "../../../services/houses";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchRooms } from "../../../reduxToolkit/RoomSlice";
+import TableFooter from "@mui/material/TableFooter";
+import TablePagination from "@mui/material/TablePagination";
 import {
   Table,
   TableBody,
@@ -14,6 +16,8 @@ import {
 } from "@mui/material";
 import * as React from "react";
 const CommonRooms = ({ houseData }) => {
+  const [rowsPerPage, setRowsPerPage] = React.useState(5);
+  const [page, setPage] = React.useState(0);
   console.log(houseData);
   const roomsData = useSelector((state) => state.room.rooms);
   const data = [
@@ -43,10 +47,27 @@ const CommonRooms = ({ houseData }) => {
     },
     // Thêm dữ liệu danh mục và nội dung tương ứng ở đây
   ];
+  const startIndex = page * rowsPerPage;
+  const endIndex = startIndex + rowsPerPage;
+  const displayedData = roomsData.slice(startIndex, endIndex);
+  const handleChangePage = (event, newPage) => {
+    setPage(newPage);
+  };
+
+  const handleChangeRowsPerPage = (event) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
+  };
   // Thêm dữ liệu danh mục và nội dung tương ứng ở đây
   return (
     <Box>
-      <Box sx={{ position: "relative", backgroundColor: "#FFFFFF", boxShadow:"0px 0px 10px 2px #888888" }}>
+      <Box
+        sx={{
+          position: "relative",
+          backgroundColor: "#FFFFFF",
+          boxShadow: "0px 0px 10px 2px #888888",
+        }}
+      >
         <Box
           sx={{ backgroundColor: "#1976d2", alignItems: "center" }}
           className="p-2"
@@ -81,7 +102,10 @@ const CommonRooms = ({ houseData }) => {
           </Box>
         </Box>
       </Box>
-      <Box sx={{ position: "relative", backgroundColor: "#FFFFFF" }} className = "mt-3">
+      <Box
+        sx={{ position: "relative", backgroundColor: "#FFFFFF" }}
+        className="mt-3"
+      >
         <Box
           sx={{ backgroundColor: "#1976d2", alignItems: "center" }}
           className="p-2"
@@ -105,8 +129,8 @@ const CommonRooms = ({ houseData }) => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {roomsData ? (
-                roomsData.map((room, index) => (
+              {displayedData ? (
+                displayedData.map((room, index) => (
                   <TableRow key={index}>
                     <TableCell>{room.floor}</TableCell>
                     <TableCell>{room.name}</TableCell>
@@ -119,6 +143,16 @@ const CommonRooms = ({ houseData }) => {
                 <Box>Không Có Dữ Liệu</Box>
               )}
             </TableBody>
+            <TableFooter>
+              <TablePagination
+                rowsPerPageOptions={[5, 10, 25]}
+                count={roomsData.length}
+                rowsPerPage={rowsPerPage}
+                page={page}
+                onPageChange={handleChangePage}
+                onRowsPerPageChange={handleChangeRowsPerPage}
+              />
+            </TableFooter>
           </Table>
         </TableContainer>
       </Box>
