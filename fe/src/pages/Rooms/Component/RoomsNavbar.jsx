@@ -26,6 +26,16 @@ const RoomsNavbar = ({ dataHouse, selectHouse }) => {
       setHouse(data);
     }
   }, [dataHouse]);
+  React.useEffect(() => {
+    if (house) {
+      const defaultHouse = house[0];
+      console.log(defaultHouse);
+      if (defaultHouse) {
+        setHouseSelect(defaultHouse.houseId);
+        selectHouse(defaultHouse.houseId);
+      }
+    }
+  }, [house, dataHouse]);
   const handleChange = (event) => {
     const inputSelect = event.target.value;
     if (inputSelect !== null) {
@@ -52,7 +62,6 @@ const RoomsNavbar = ({ dataHouse, selectHouse }) => {
         labelId="demo-simple-select-label"
         id="demo-simple-select"
         value={houseSelect}
-        label="Age"
         onChange={handleChange}
         sx={{ width: "20%" }}
         className="me-5"
@@ -77,7 +86,7 @@ const RoomsNavbar = ({ dataHouse, selectHouse }) => {
           className="me-3"
           onClick={() => handleSelectModal("Thêm Dữ Liệu File")}
         >
-          Nhập Dữ Liệu
+          Import Phòng
         </Button>
         <Button color="info" variant="contained" className="me-3">
           In Tất Cả Hóa Đơn
