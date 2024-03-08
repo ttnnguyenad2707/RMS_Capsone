@@ -15,10 +15,10 @@ import {
   Paper,
 } from "@mui/material";
 import * as React from "react";
+import RoomList from "./RoomList";
 const CommonRooms = ({ houseData }) => {
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
   const [page, setPage] = React.useState(0);
-  console.log(houseData);
   const roomsData = useSelector((state) => state.room.rooms);
   const data = [
     {
@@ -117,7 +117,7 @@ const CommonRooms = ({ houseData }) => {
             Thông Tin Phòng
           </p>
         </Box>
-        <TableContainer component={Paper} sx={{ mt: "20px" }}>
+        {/* <TableContainer component={Paper} sx={{ mt: "20px" }}>
           <Table>
             <TableHead>
               <TableRow>
@@ -154,7 +154,8 @@ const CommonRooms = ({ houseData }) => {
               />
             </TableFooter>
           </Table>
-        </TableContainer>
+        </TableContainer> */}
+        <RoomList rooms={displayedData}/>
       </Box>
     </Box>
   );

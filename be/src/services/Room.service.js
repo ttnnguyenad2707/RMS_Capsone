@@ -84,7 +84,7 @@ const RoomService = {
     getRooms: async (req) => {
         try {
             const { houseId } = req.params;
-            const { page, limit } = req.query;
+            const { page, limit, option } = req.query;
             const {floor,name, status,quantityMember,roomType,area} = req.query;
             const pageNumber = parseInt(page) || 1;
             const limitPerPage = parseInt(limit) || 10;
@@ -113,21 +113,30 @@ const RoomService = {
             if (area){
                 query.area =  area
             }
-            const data = await Rooms.find(query)
-                .skip(skip)
-                .limit(limitPerPage)
-                .sort({ createdAt: -1 })
-                .exec();
-
-            return {                
-                pagination: {
-                    currentPage: pageNumber,
-                    totalPages: totalPages,
-                    totalRooms: totalRooms,
-                    roomsPerPage: data.length
-                },
-                room: data
-            };
+            let data;
+            if (String(option) === "all"){
+                data = await Rooms.find(query)
+                    .sort({ createdAt: -1 })
+                    .exec();
+                return data
+                
+            }
+            else{
+                data = await Rooms.find(query)
+                    .skip(skip)
+                    .limit(limitPerPage)
+                    .sort({ createdAt: -1 })
+                    .exec();
+                return {                
+                    pagination: {
+                        currentPage: pageNumber,
+                        totalPages: totalPages,
+                        totalRooms: totalRooms,
+                        roomsPerPage: data.length
+                    },
+                    room: data
+                };
+            }
         } catch (error) {
             console.log(error);
             throw error;
@@ -136,8 +145,14 @@ const RoomService = {
     getOne: async (req) => {
         try {
             const {roomId} = req.params;
-            const room = await Rooms.findById(roomId);
-            return room
+            const room = await Rooms.findById(roomId)
+                .populate("utilities")
+                .populate("otherUtilities")
+                .populate("houseId")
+            return {
+                ...room._doc,
+                currentMember: room.members.length
+            }
         } catch (error) {
             throw error
         }
@@ -165,7 +180,8 @@ const RoomService = {
         } catch (error) {
             throw error
         }
-    }
+    },
+    
 };
 
 export default RoomService;

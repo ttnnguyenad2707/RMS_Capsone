@@ -15,6 +15,7 @@ const SelectHouse = ({ onSelect }) => {
             const fetchedHouses = data.data.data.houses;
             setHouses(fetchedHouses);
             setHouseSelected(fetchedHouses.length > 0 ? fetchedHouses[0]._id : '');
+            onSelect(fetchedHouses.length > 0 ? fetchedHouses[0]._id : '');
         });
     }, []);
 

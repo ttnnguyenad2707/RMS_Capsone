@@ -9,6 +9,7 @@ import HouseRoute from "./House.router.js";
 import UtilitiesRoute from "./Utilities.route.js";
 import problemRoute from "./problem.router.js";
 import newsRouter from "./news.router.js";
+import defaultPriceRoute from "./Defaultprice.route.js";
 
 const indexRouter = express.Router();
 
@@ -20,5 +21,5 @@ indexRouter.use("/account",verifyToken, AccountRoute)
 indexRouter.use("/auth/google", GoogleAuthRoute)
 indexRouter.use("/auth/facebook",FacebookAuthRoute)
 indexRouter.use("/auth", AuthRoute);
-
+indexRouter.use("/defaultPrice",defaultPriceRoute)
 export default indexRouter;

@@ -38,7 +38,6 @@ const UtilitiesTab = ({
         name: inputValue,
       };
 
-      console.log(data, " add orther util");
       dispatch(addOrtherUtil({ data }));
       dispatch(fetchOrtherUtil());
       toast.success("Thêm Tiện Ích Thành Công");

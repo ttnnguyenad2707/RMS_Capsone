@@ -5,7 +5,6 @@ export const fetchRooms = createAsyncThunk(
   "rooms/fetchRooms",
   async ({ houseId }) => {
     const response = await GetRooms(houseId);
-    console.log("goi fetch rooms");
     return response.data.data.room;
   }
 );
