@@ -11,6 +11,7 @@ const upload = multer({ storage: storage });
 
 const HouseRoute = express.Router();
 
+HouseRoute.get("/downloadTemplate",RoomController.downloadTemplate)
 HouseRoute.post("/room/addOne/:houseId",RoomController.addOne)
 HouseRoute.post("/room",upload.single('excelFile'),RoomController.addRoom)
 HouseRoute.get("/room/:roomId",RoomController.getOne)

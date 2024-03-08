@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useLayoutEffect, useState } from 'react';
 import SelectHouse from '../../CommonComponents/SelectHouse';
 import TableData from '../../CommonComponents/TableData';
 import { deleteProblem, getProblemsInHouse } from '../../services/problems';
@@ -10,19 +10,21 @@ const RenterProblem = () => {
     const [selectedHouseId, setSelectedHouseId] = useState();
     const [dataTable,setDataTable] = useState([]);
     useEffect(() => {
-        setDataTable([])
-        getProblemsInHouse(selectedHouseId).then(data => {
-            data.data.data.data.map(data => {
-                setDataTable(prev => [...prev,{
-                    id: data._id,
-                    Title : data.title,
-                    Content: data.content,
-                    Status: data.status,
-                    Room: data.roomId.name,
-                    Creator: data.creatorId.name,
-                }])
-            })    
-        })
+        if(selectedHouseId) {
+            setDataTable([])
+            getProblemsInHouse(selectedHouseId).then(data => {
+                data.data.data.data.map(data => {
+                    setDataTable(prev => [...prev,{
+                        id: data._id,
+                        Title : data.title,
+                        Content: data.content,
+                        Status: data.status,
+                        Room: data.roomId.name,
+                        Creator: data.creatorId.name,
+                    }])
+                })    
+            })
+        }
     },[selectedHouseId])
     const handleDelete = (id) => {
         deleteProblem(id).then(data=> {

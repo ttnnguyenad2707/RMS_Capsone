@@ -2,7 +2,6 @@ import axios from "axios";
 import { URL_SERVER } from "../dataConfig";
 import Cookies from "js-cookie";
 export const AddHouseService = async (data) => {
-  console.log(data, "service");
   const token = Cookies.get("accessToken");
   return await axios.post(`${URL_SERVER}/house`, data, {
     withCredentials: true,
@@ -22,7 +21,6 @@ export const AddOrtherUtilService = async (data) => {
 };
 export const GetHouseService = async (page, limit) => {
   const token = Cookies.get("accessToken");
-  console.log(page, limit, "service");
   return await axios.get(`${URL_SERVER}/house?`, {
     params: {
       page: ++page,
@@ -36,7 +34,6 @@ export const GetHouseService = async (page, limit) => {
 };
 export const UpdateHouseService = async (data, id) => {
   const token = Cookies.get("accessToken");
-  console.log(id, "đây là house update");
   return await axios.post(`${URL_SERVER}/house/${id}`, data, {
     withCredentials: true,
     headers: {
@@ -46,7 +43,6 @@ export const UpdateHouseService = async (data, id) => {
 };
 export const DeleteHouseService = async (id) => {
   const token = Cookies.get("accessToken");
-  console.log(id, "Delete");
   return await axios.delete(`${URL_SERVER}/house/${id}`, {
     withCredentials: true,
     headers: {
@@ -65,7 +61,6 @@ export const GetUtilities = async () => {
   });
 };
 export const AddRoomsFileService = async ({ data }) => {
-  console.log(data, "huy");
   const token = Cookies.get("accessToken");
   return await axios.post(`${URL_SERVER}/house/room`, data, {
     withCredentials: true,
@@ -78,9 +73,8 @@ export const AddRoomsFileService = async ({ data }) => {
 };
 
 export const GetRooms = async (data) => {
-  console.log("data check " + data);
   const token = Cookies.get("accessToken");
-  return await axios.get(`${URL_SERVER}/house/${data}/room/`, {
+  return await axios.get(`${URL_SERVER}/house/${data}/room`, {
     withCredentials: true,
     headers: {
       authorization: `Bearer ${token}`,
@@ -100,7 +94,6 @@ export const GetUtilitiesOther = async () => {
 
 export const AddRoom = async (data, id) => {
   const token = Cookies.get("accessToken");
-  console.log(data, "data");
   return await axios.post(`${URL_SERVER}/house/room/addOne/${id}`, data, {
     withCredentials: true,
     headers: {
@@ -117,3 +110,13 @@ export const AddUtilitiesOther = async (data) => {
     },
   });
 };
+
+export const getOneRoom = async (id) => {
+  const token = Cookies.get("accessToken");
+  return await axios.get(`${URL_SERVER}/house/room/${id}`, {
+    withCredentials: true,
+    headers: {
+      authorization: `Bearer ${token}`,
+    },
+  });
+}

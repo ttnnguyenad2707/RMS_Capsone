@@ -6,6 +6,16 @@ const rule = new Schema({
         default: "",
     },
 });
+const priceItemSchema = new Schema({
+    base: {
+        type: Schema.ObjectId,
+        ref: "DefaultPrice",
+    },
+    price: {
+        type: Number,
+        require: true
+    }
+})
 const LocationSchema = new Schema({
     district: {
         type: String,
@@ -54,6 +64,13 @@ const Houses = new Schema(
             type: Number,
             require: true,
         },
+        priceList: [
+            {
+                type: priceItemSchema,
+                default: {},
+                unique: true,
+            }
+        ],
         utilities: [
             {
                 type: Schema.ObjectId,

@@ -8,7 +8,7 @@ const HouseController = {
             if (house) return res.status(201).json(response.successResponse(201,house));
             else return res.status(404).json(response.errorResponse(404));
         } catch (error) {
-            return res.status(500).json(response.errorResponse(500))
+            return res.status(500).json(response.errorResponse(500,error.toString()))
         }
     }),
     getHouses: asyncHandler(async (req,res) => {
