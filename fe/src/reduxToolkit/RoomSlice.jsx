@@ -5,7 +5,7 @@ export const fetchRooms = createAsyncThunk(
   "rooms/fetchRooms",
   async ({ houseId }) => {
     const response = await GetRooms(houseId);
-    return response.data.data.room;
+    return response.data.data;
   }
 );
 // Action async gọi API để thêm nhà mới
@@ -17,10 +17,13 @@ export const addRooms = createAsyncThunk("rooms/addRooms", async ({ data }) => {
   await AddRoomsFileService({ data });
 });
 
-export const addOneRoom = createAsyncThunk("rooms/addOneRoom", async ({setData,houseId}) => {
- const add = await AddRoom(setData,houseId);
- console.log(add,"add");
-})
+export const addOneRoom = createAsyncThunk(
+  "rooms/addOneRoom",
+  async ({ setData, houseId }) => {
+    const add = await AddRoom(setData, houseId);
+    console.log(add, "add");
+  }
+);
 const roomSlice = createSlice({
   name: "rooms",
   initialState: {

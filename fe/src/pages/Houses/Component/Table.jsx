@@ -419,7 +419,7 @@ export default function BasicTable() {
     fontWeight: "Bold",
   };
 
-  console.log(page, rowsPerPage, "rowsPerPage");
+  console.log(rows, "rowsPerPage");
   return (
     <>
       {houses ? (
@@ -447,8 +447,8 @@ export default function BasicTable() {
                 </StyledTableRow>
               </TableHead>
               <TableBody>
-                {displayedData
-                  ? displayedData.map((row, index) => (
+                {rows
+                  ? rows.map((row, index) => (
                       <TableRow
                         key={row.name}
                         sx={{
