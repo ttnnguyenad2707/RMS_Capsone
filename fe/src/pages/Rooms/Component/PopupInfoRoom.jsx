@@ -35,7 +35,7 @@ function GeneralInfo(props) {
                 <Box sx={{ p: 3 }}>
                     <Box sx={{
                         display: "grid",
-                        gridTemplateColumns: "auto auto auto",
+                        gridTemplateColumns: "auto auto auto auto",
                         gap: 4
                     }}>
                         <Typography>
@@ -94,7 +94,7 @@ const PopupInfoRoom = ({ roomId, open, handleClose }) => {
             aria-labelledby="parent-modal-title"
             aria-describedby="parent-modal-description"
         >
-            <Box sx={{ ...style, width: "80vw" }}>
+            <Box sx={{ ...style, width: "60vw" }}>
                 <Tabs value={value} onChange={handleChange} aria-label="basic tabs example">
                     <Tab label="Thông tin phòng" value={1} />
                     <Tab label="Khách thuê" value={2} />

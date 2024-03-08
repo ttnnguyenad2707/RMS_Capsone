@@ -72,9 +72,11 @@ export const AddRoomsFileService = async ({ data }) => {
   });
 };
 
-export const GetRooms = async (data) => {
+export const GetRooms = async (data,filterParams) => {
   const token = Cookies.get("accessToken");
-  return await axios.get(`${URL_SERVER}/house/${data}/room`, {
+  const queryParams = new URLSearchParams(filterParams).toString();
+  console.log( "query"+queryParams)
+  return await axios.get(`${URL_SERVER}/house/${data}/room?${queryParams}`, {
     withCredentials: true,
     headers: {
       authorization: `Bearer ${token}`,
@@ -114,6 +116,16 @@ export const AddUtilitiesOther = async (data) => {
 export const getOneRoom = async (id) => {
   const token = Cookies.get("accessToken");
   return await axios.get(`${URL_SERVER}/house/room/${id}`, {
+    withCredentials: true,
+    headers: {
+      authorization: `Bearer ${token}`,
+    },
+  });
+}
+
+export const getFloor = async (houseId) => {
+  const token = Cookies.get("accessToken");
+  return await axios.get(`${URL_SERVER}/house/${houseId}/floor`, {
     withCredentials: true,
     headers: {
       authorization: `Bearer ${token}`,

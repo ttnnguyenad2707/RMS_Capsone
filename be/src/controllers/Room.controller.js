@@ -79,6 +79,17 @@ const RoomController = {
 
         templateFileStream.pipe(res);
     }),
+    getFloor: asyncHandler(async (req,res,next) => {
+        try {
+            const floor = await RoomService.getFloor(req);
+
+            if (floor) { return res.status(200).json(response.successResponse(200,floor))}
+            else res.status(404).json(response.errorResponse(404));
+            
+        } catch (error) {
+            return res.status(500).json(response.errorResponse(500));
+        }
+    }),
 }
 
 export default RoomController

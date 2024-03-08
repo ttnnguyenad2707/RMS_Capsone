@@ -155,7 +155,7 @@ const CommonRooms = ({ houseData }) => {
             </TableFooter>
           </Table>
         </TableContainer> */}
-        <RoomList rooms={displayedData}/>
+        <RoomList rooms={displayedData} house={houseData}/>
       </Box>
     </Box>
   );

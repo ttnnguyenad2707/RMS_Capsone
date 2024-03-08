@@ -181,6 +181,15 @@ const RoomService = {
             throw error
         }
     },
+    getFloor: async (req) => {
+        try {
+            const {houseId} = req.params;
+            const floor = await Rooms.distinct("floor", {houseId})
+            return floor
+        } catch (error) {
+            throw error
+        }
+    }
     
 };
 
