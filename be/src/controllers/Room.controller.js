@@ -90,6 +90,39 @@ const RoomController = {
             return res.status(500).json(response.errorResponse(500));
         }
     }),
+    addMember: asyncHandler(async (req,res,next) => {
+        try {
+            const member = await RoomService.addMember(req);
+
+            if (member) { return res.status(201).json(response.successResponse(201,member))}
+            else res.status(404).json(response.errorResponse(404));
+            
+        } catch (error) {
+            return res.status(500).json(response.errorResponse(500));
+        }
+    }),
+    removeMember: asyncHandler(async (req,res,next) => {
+        try {
+            const member = await RoomService.removeMember(req);
+
+            if (member) { return res.status(200).json(response.successResponse(200,member))}
+            else res.status(404).json(response.errorResponse(404));
+            
+        } catch (error) {
+            return res.status(500).json(response.errorResponse(500));
+        }
+    }),
+    updateMember: asyncHandler(async (req,res,next) => {
+        try {
+            const member = await RoomService.updateMember(req);
+
+            if (member) { return res.status(200).json(response.successResponse(200,member))}
+            else res.status(404).json(response.errorResponse(404));
+            
+        } catch (error) {
+            return res.status(500).json(response.errorResponse(500,error.toString()));
+        }
+    }),
 }
 
 export default RoomController

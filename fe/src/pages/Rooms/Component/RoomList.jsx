@@ -20,7 +20,6 @@ import { GetRooms, getFloor } from "../../../services/houses";
 
 const RoomList = ({house }) => {
     const [rooms,setRooms] = useState([]);
-    console.log(rooms)
     const [open,setOpen] = useState(false);
     const [floorSelected,setFloorSelected] = useState(1)
     const [floors,setFloors] = useState([]);
@@ -32,6 +31,7 @@ const RoomList = ({house }) => {
                 setFloors(data.data.data);
             })
         }
+        setFloorSelected(1)
         fetchFloor()
     },[house])
     useEffect(() => {
@@ -88,7 +88,7 @@ const RoomList = ({house }) => {
                 gap: 3
             }}>
                 {floors?.map((floor,index) => (
-                    <Button variant="outlined" key={index} onClick={() => handleChangeFloor(floor)}>Tầng {floor}</Button>
+                    <Button variant={floorSelected === floor ? "contained" : "outlined"} key={index} onClick={() => handleChangeFloor(floor)}>Tầng {floor}</Button>
                 ))}
 
             </Box>

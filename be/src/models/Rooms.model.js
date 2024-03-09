@@ -28,6 +28,9 @@ const member = Schema ({
     cccd: {
         type: String,
     },
+    avatar: {
+        type: String,
+    },
     imageCCCDs: [imageCCCD],
     note: {
         type: String,

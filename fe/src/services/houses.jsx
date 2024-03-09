@@ -21,7 +21,7 @@ export const AddOrtherUtilService = async (data) => {
 };
 export const GetHouseService = async (page, limit) => {
   const token = Cookies.get("accessToken");
-  return await axios.get(`${URL_SERVER}/house?`, {
+  return await axios.get(`${URL_SERVER}/house`, {
     params: {
       page: ++page,
       limit: limit,
@@ -75,8 +75,7 @@ export const AddRoomsFileService = async ({ data }) => {
 export const GetRooms = async (data,filterParams) => {
   const token = Cookies.get("accessToken");
   const queryParams = new URLSearchParams(filterParams).toString();
-  console.log( "query"+queryParams)
-  return await axios.get(`${URL_SERVER}/house/${data}/room?${queryParams}`, {
+  return await axios.get(`${URL_SERVER}/house/${data}/room?option=all&${queryParams}`, {
     withCredentials: true,
     headers: {
       authorization: `Bearer ${token}`,

@@ -20,6 +20,7 @@ const CommonRooms = ({ houseData }) => {
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
   const [page, setPage] = React.useState(0);
   const roomsData = useSelector((state) => state.room.rooms);
+  const dispatch = useDispatch();
   const data = [
     {
       category: "Tên Chủ Nhà",
@@ -47,17 +48,14 @@ const CommonRooms = ({ houseData }) => {
     },
     // Thêm dữ liệu danh mục và nội dung tương ứng ở đây
   ];
-  const startIndex = page * rowsPerPage;
-  const endIndex = startIndex + rowsPerPage;
-  const displayedData = roomsData.slice(startIndex, endIndex);
-  const handleChangePage = (event, newPage) => {
-    setPage(newPage);
-  };
-
-  const handleChangeRowsPerPage = (event) => {
-    setRowsPerPage(parseInt(event.target.value, 10));
-    setPage(0);
-  };
+  React.useEffect(()=> {
+    if(houseData){
+      const houseId = houseData._id;
+      console.log(houseId,"houseId");
+      dispatch(fetchRooms({houseId}));
+    }
+  },[houseData])
+  console.log(roomsData,"roomsData");
   // Thêm dữ liệu danh mục và nội dung tương ứng ở đây
   return (
     <Box>
@@ -155,7 +153,7 @@ const CommonRooms = ({ houseData }) => {
             </TableFooter>
           </Table>
         </TableContainer> */}
-        <RoomList rooms={displayedData} house={houseData}/>
+        <RoomList house={houseData}/>
       </Box>
     </Box>
   );
