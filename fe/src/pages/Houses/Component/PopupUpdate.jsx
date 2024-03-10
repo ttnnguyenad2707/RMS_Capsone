@@ -31,6 +31,7 @@ const style = {
   p: 5,
   borderRadius: "10px",
   padding: "18px",
+  overflow: "auto",
 };
 const stylesHeader = {
   color: "#1976d2",
@@ -204,7 +205,7 @@ export default function BasicModalUpdate({
       setUtilitiesOther(data);
     }
   };
-  const HandleSubmit = () => {
+  const HandleSubmit = async () => {
     handleInputName();
     handleInputAddress();
     handleInputCostElectric();
@@ -236,8 +237,8 @@ export default function BasicModalUpdate({
         otherUtilities: utilitiesOther,
       };
       const id = data.id;
-      dispatch(updateHouse({ setData, id }));
-      dispatch(fetchHouses());
+      await dispatch(updateHouse({ setData, id }));
+      await dispatch(fetchHouses());
       handleClose();
     }
   };
@@ -458,7 +459,7 @@ export default function BasicModalUpdate({
                   <UtilitiesTab
                     handleInputSelect={handleInputUtilities}
                     dataUtil={data.utils}
-                    dataOrtherUtil= {data.ortherUtils}
+                    dataOrtherUtil={data.ortherUtils}
                     typeUtil={"update"}
                     handleInputSelectOrther={handleInputUtilitiesOrther}
                   />

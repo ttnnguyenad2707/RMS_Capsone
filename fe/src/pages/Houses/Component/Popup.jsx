@@ -34,6 +34,7 @@ const style = {
   p: 5,
   borderRadius: "10px",
   padding: "18px",
+  overflow: "auto"
 };
 const stylesHeader = {
   color: "#1976d2",
@@ -213,7 +214,7 @@ export default function BasicModal() {
       setUtilitiesOther(data);
     }
   };
-  const HandleSubmit = () => {
+  const HandleSubmit = async() => {
     handleInputName();
     handleInputAddress();
     handleInputCostElectric();
@@ -244,8 +245,8 @@ export default function BasicModal() {
         utilities: utilities,
         otherUtilities: utilitiesOther,
       };
-      dispatch(addHouse(setData));
-      dispatch(fetchHouses());
+      await dispatch(addHouse(setData));
+      await dispatch(fetchHouses());
       handleClose();
       setCity("");
       setWard("");

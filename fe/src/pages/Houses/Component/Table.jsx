@@ -447,8 +447,8 @@ export default function BasicTable() {
                 </StyledTableRow>
               </TableHead>
               <TableBody>
-                {rows
-                  ? rows.map((row, index) => (
+                {displayedData
+                  ? displayedData.map((row, index) => (
                       <TableRow
                         key={row.name}
                         sx={{
