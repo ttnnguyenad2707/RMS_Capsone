@@ -3,6 +3,7 @@ import {
   AddNewsService,
   DeleteNewsService,
   GetNewsService,
+  UpdateNewsService,
 } from "../services/newsService";
 
 // Action async gọi API để lấy danh sách nhà
@@ -11,10 +12,17 @@ export const fetchNews = createAsyncThunk("new/fetchNews", async ({ id }) => {
   console.log(response, "response");
   return response.data.data;
 });
-export const addNews = createAsyncThunk("new/addNews", async ({ data }) => {
+export const addNews = createAsyncThunk("new/updateNews", async ({ data }) => {
   const response = await AddNewsService(data);
   console.log(response, "response");
 });
+export const updateNews = createAsyncThunk(
+  "new/addNews",
+  async ({ data, idNews }) => {
+    const response = await UpdateNewsService(data, idNews);
+    console.log(response, "response");
+  }
+);
 export const deleteNews = createAsyncThunk("new/deleteNews", async ({ id }) => {
   const response = await DeleteNewsService(id);
   console.log(response, "response");
@@ -47,6 +55,16 @@ const newSlice = createSlice({
         state.status = "succeeded";
       })
       .addCase(addNews.rejected, (state, action) => {
+        state.status = "failed";
+        state.error = action.error.message;
+      })
+      .addCase(updateNews.pending, (state) => {
+        state.status = "loading";
+      })
+      .addCase(updateNews.fulfilled, (state, action) => {
+        state.status = "succeeded";
+      })
+      .addCase(updateNews.rejected, (state, action) => {
         state.status = "failed";
         state.error = action.error.message;
       })
