@@ -113,7 +113,7 @@ export default function News() {
               }}
             >
               <Box className="d-flex">
-                <b>m_ducs</b>
+                {/* <b>m_ducs</b> */}
                 <Button
                   className="ms-3"
                   sx={{
@@ -126,7 +126,7 @@ export default function News() {
                   }}
                   onClick={() => handleAdd("Add")}
                 >
-                  Đức ơi bạn đang nghĩ gì thế ?
+                  Bạn đang nghĩ gì thế ?
                 </Button>
               </Box>
               <hr></hr>
