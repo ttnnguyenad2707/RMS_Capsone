@@ -11,8 +11,9 @@ import ModalNews from "./Components/Modal";
 import Select from "@mui/material/Select";
 import MenuItem from "@mui/material/MenuItem";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchNews } from "../../reduxToolkit/NewsSlice";
+import { fetchNews, deleteNews } from "../../reduxToolkit/NewsSlice";
 import { fetchHouses } from "../../reduxToolkit/HouseSlice";
+import Notification from "../../CommonComponents/Notification";
 import {
   AiOutlinePlus,
   AiFillDelete,
@@ -55,10 +56,39 @@ export default function News() {
       handleOpen();
     }
   };
+
+  const updateNews = (data) => {
+    if (data) {
+      setDataNews(data);
+      setTypeModal("Update");
+      handleOpen();
+    }
+  };
+
+  const handleDeleteNews = async (idNews) => {
+    Notification("Confirm", "Xác Nhận", "Xóa Tin Tức Này").then(
+      async (result) => {
+        if (result) {
+          const response = await dispatch(deleteNews({ idNews }));
+          if (response.payload === "Success") {
+            Notification("Success", "Đã Xóa", "Tin Tức Thành Công");
+            dispatch(fetchNews({ id }));
+          } else {
+            Notification("Error", "Xảy Ra Lỗi", "Khi Xóa Tin Tức");
+          }
+        } else {
+          console.log("Người dùng đã chọn Cancel");
+          // Xử lý khi người dùng chọn Cancel
+        }
+      }
+    );
+  };
   const handleAdd = (typeModal) => {
     setTypeModal(typeModal);
+    setDataNews([])
     handleOpen();
   };
+  console.log(news, "news");
   return (
     <>
       {isLoading ? (
@@ -70,7 +100,7 @@ export default function News() {
         <Box
           sx={{
             backgroundColor: "#F1F2F7",
-            height: "100vh",
+            height: "100%",
             width: "100vw",
           }}
         >
@@ -165,8 +195,34 @@ export default function News() {
                       <b>m_ducs</b>
                     </p>
                     <p>1 giờ trước</p>
+                    <Button
+                      variant="contained"
+                      color="primary"
+                      onClick={() => updateNews(n)}
+                    >
+                      Cập Nhật
+                    </Button>
+                    <Button
+                      variant="contained"
+                      color="error"
+                      onClick={() => handleDeleteNews(n._id)}
+                    >
+                      Xóa
+                    </Button>
                   </div>
                   <p>{n.content}</p>
+                  <Box
+                    sx={{ width: "100%" }}
+                    className="d-flex justify-content-center mb-4 mt-4"
+                  >
+                    {n.images.length > 0 ? (
+                      <img
+                        src={n.images[0]}
+                        alt="Image"
+                        style={{ width: "45%" }}
+                      />
+                    ) : null}
+                  </Box>
                   <div>
                     <Box sx={{ display: "flex", gap: "10px" }}>
                       <Button variant="outlined">

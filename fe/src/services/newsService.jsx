@@ -11,7 +11,16 @@ export const AddNewsService = async (data) => {
     },
   });
 };
-
+export const UpdateNewsService = async (data,id) => {
+  console.log(data, "service");
+  const token = Cookies.get("accessToken");
+  return await axios.put(`${URL_SERVER}/news/${id}`, data, {
+    withCredentials: true,
+    headers: {
+      authorization: `Bearer ${token}`,
+    },
+  });
+};
 export const GetNewsService = async (id) => {
   const token = Cookies.get("accessToken");
   return await axios.get(`${URL_SERVER}/news/house/${id}`, {

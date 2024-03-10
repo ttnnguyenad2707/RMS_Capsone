@@ -3,6 +3,7 @@ import {
   AddNewsService,
   DeleteNewsService,
   GetNewsService,
+  UpdateNewsService,
 } from "../services/newsService";
 
 // Action async gọi API để lấy danh sách nhà
@@ -11,13 +12,23 @@ export const fetchNews = createAsyncThunk("new/fetchNews", async ({ id }) => {
   console.log(response, "response");
   return response.data.data;
 });
-export const addNews = createAsyncThunk("new/addNews", async ({ data }) => {
+export const addNews = createAsyncThunk("new/updateNews", async ({ data }) => {
   const response = await AddNewsService(data);
-  console.log(response, "response");
+  console.log( response.data.message, "response");
+  return response.data.message;
 });
-export const deleteNews = createAsyncThunk("new/deleteNews", async ({ id }) => {
-  const response = await DeleteNewsService(id);
+export const updateNews = createAsyncThunk(
+  "new/addNews",
+  async ({ data, idNews }) => {
+    const response = await UpdateNewsService(data, idNews);
+    console.log(response, "response");
+    return response.data.message;
+  }
+);
+export const deleteNews = createAsyncThunk("new/deleteNews", async ({ idNews }) => {
+  const response = await DeleteNewsService(idNews);
   console.log(response, "response");
+  return response.data.message;
 });
 const newSlice = createSlice({
   name: "news",
@@ -47,6 +58,16 @@ const newSlice = createSlice({
         state.status = "succeeded";
       })
       .addCase(addNews.rejected, (state, action) => {
+        state.status = "failed";
+        state.error = action.error.message;
+      })
+      .addCase(updateNews.pending, (state) => {
+        state.status = "loading";
+      })
+      .addCase(updateNews.fulfilled, (state, action) => {
+        state.status = "succeeded";
+      })
+      .addCase(updateNews.rejected, (state, action) => {
         state.status = "failed";
         state.error = action.error.message;
       })
