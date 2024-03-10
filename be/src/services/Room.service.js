@@ -32,8 +32,8 @@ const RoomService = {
                         deposit: row.getCell(6).value,
                         area: row.getCell(7).value,
                         houseId: houseId,
-                        utilities: house.utilities,
-                        otherUtilities: house.otherUtilities,
+                        utilities: house?.utilities || [] ,
+                        otherUtilities: house?.otherUtilities || [],
                     });
                     const accountData = await AccountModel.create({
                         username: house.name.replace(/\s/g, '') + row.getCell(1).value,
