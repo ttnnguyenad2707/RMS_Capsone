@@ -16,12 +16,40 @@ import Paper from '@mui/material/Paper';
 import { useEffect, useState } from "react";
 import { formatMoney } from "../../../Utils";
 import PopupInfoRoom from "./PopupInfoRoom";
+import { GetRooms, getFloor } from "../../../services/houses";
 
-const RoomList = ({ rooms }) => {
+const RoomList = ({house }) => {
+    const [rooms,setRooms] = useState([]);
     const [open,setOpen] = useState(false);
+    const [floorSelected,setFloorSelected] = useState(1)
+    const [floors,setFloors] = useState([]);
     const [roomIdSelect,setRoomIdSelect] = useState("");
     const [expanded, setExpanded] = useState({});
-
+    useEffect(() => {
+        async function fetchFloor(){
+            getFloor(house._id).then(data => {
+                setFloors(data.data.data);
+            })
+        }
+        setFloorSelected(1)
+        fetchFloor()
+    },[house])
+    useEffect(() => {
+        async function fetchRoomInFloor(){
+            const filterParams = {
+                floor: floorSelected,
+                page: 1,
+                limit: 30,
+            }
+            GetRooms(house._id,filterParams).then(data => {
+                setRooms(data.data.data);
+            })
+        }
+        fetchRoomInFloor()
+    },[floorSelected,house])
+    const handleChangeFloor = (floor) => {
+        setFloorSelected(floor)
+    }
     const handleOpen = (id) => {
         setRoomIdSelect(id);
         setOpen(true);
@@ -37,11 +65,13 @@ const RoomList = ({ rooms }) => {
     };
 
     useEffect(() => {
-        const initialExpandedState = {};
-        rooms.forEach((room, index) => {
-            initialExpandedState[index] = true;
-        });
-        setExpanded(initialExpandedState);
+        if(rooms){
+            const initialExpandedState = {};
+            rooms.forEach((room, index) => {
+                initialExpandedState[index] = true;
+            });
+            setExpanded(initialExpandedState);
+        }
     }, [rooms]);
     const handleEditButtonClick = (event) => {
         event.stopPropagation();
@@ -53,6 +83,15 @@ const RoomList = ({ rooms }) => {
         <Box sx={{
             p: 5
         }}>
+            <Box sx={{
+                display: "flex",
+                gap: 3
+            }}>
+                {floors?.map((floor,index) => (
+                    <Button variant={floorSelected === floor ? "contained" : "outlined"} key={index} onClick={() => handleChangeFloor(floor)}>Tầng {floor}</Button>
+                ))}
+
+            </Box>
             {rooms?.map((room,index) => (
                 <Accordion key={index} expanded={expanded[index] || false}  onChange={() => handleAccordionChange(index)}>
                     <AccordionSummary

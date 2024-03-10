@@ -181,6 +181,54 @@ const RoomService = {
             throw error
         }
     },
+    getFloor: async (req) => {
+        try {
+            const {houseId} = req.params;
+            const floor = await Rooms.distinct("floor", {houseId})
+            return floor
+        } catch (error) {
+            throw error
+        }
+    },
+    addMember: async (req) => {
+        try {
+            const {roomId} = req.params;
+            const room = await Rooms.findById(roomId);
+            room.members.push({...req.body})
+            await room.save();
+            return room;
+        } catch (error) {
+            throw error            
+        }
+    },
+    removeMember: async (req) => {
+        try {
+            const {roomId} = req.params;
+            const {memberId} = req.body;
+            const room = await Rooms.findById(roomId);
+            room.members = room.members.filter(member => member.id !== memberId);
+            await room.save();
+            return room
+        } catch (error) {
+            throw error
+        }
+    },
+    updateMember: async (req) => {
+        try {
+            const {roomId} = req.params;
+            const {memberId,...updateInfo} = req.body;
+            const room = await Rooms.findById(roomId);            
+            const memberIndex = room.members.findIndex(member => member.id === memberId);            
+            if (memberIndex === -1) {
+                throw new Error("Member not found in the room");
+            }
+            room.members[memberIndex] = {...updateInfo};            
+            await room.save();            
+            return room;
+        } catch (error) {
+            throw error;            
+        }
+    }
     
 };
 

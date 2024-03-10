@@ -153,7 +153,7 @@ const CommonRooms = ({ houseData }) => {
             </TableFooter>
           </Table>
         </TableContainer> */}
-        <RoomList rooms={roomsData}/>
+        <RoomList house={houseData}/>
       </Box>
     </Box>
   );
