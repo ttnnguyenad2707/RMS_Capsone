@@ -94,6 +94,7 @@ export const GetUtilitiesOther = async () => {
 };
 
 export const AddRoom = async (data, id) => {
+  console.log(data,"data");
   const token = Cookies.get("accessToken");
   return await axios.post(`${URL_SERVER}/house/room/addOne/${id}`, data, {
     withCredentials: true,

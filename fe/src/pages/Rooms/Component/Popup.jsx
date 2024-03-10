@@ -128,7 +128,7 @@ export default function SuperModal({
       setErrorWater(true);
     }
   };
-  const HandleSubmit = () => {
+  const HandleSubmit = async () => {
     handleInputName();
     handleMember();
     handlePriceRoom();
@@ -153,8 +153,8 @@ export default function SuperModal({
         area: parseInt(CostArea),
       };
       console.log(setData, "setData");
-      dispatch(addOneRoom({ setData, houseId }));
-      dispatch(fetchRooms({ houseId }));
+      await dispatch(addOneRoom({ setData, houseId }));
+      await dispatch(fetchRooms({ houseId }));
       handleClose();
     }
   };
@@ -164,13 +164,13 @@ export default function SuperModal({
     setSelectedFile(file);
   };
 
-  const handleFileUpload = () => {
+  const handleFileUpload = async () => {
     const formData = new FormData();
     formData.append("excelFile", selectedFile);
     formData.set("houseId", houseId);
     // AddRoomsFileService({data: formData} );
-    dispatch(addRooms({ data: formData }));
-    dispatch(fetchRooms({ houseId }));
+    await dispatch(addRooms({ data: formData }));
+    await dispatch(fetchRooms({ houseId }));
     handleClose();
   };
 
