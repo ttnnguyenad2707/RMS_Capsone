@@ -13,7 +13,7 @@ const imageCCCD = Schema ({
 const member = Schema ({
     name: {
         type: String,
-        require: true ,
+        require: true,
     },
     phone: {
         type: String,
@@ -23,7 +23,7 @@ const member = Schema ({
     },
     gender: {
         type: String,
-        enum: ["Nam","Nữ"]
+        enum: ["male","female"]
     },
     cccd: {
         type: String,

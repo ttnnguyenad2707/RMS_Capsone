@@ -5,6 +5,7 @@ import { Formik, Field, Form, ErrorMessage } from 'formik';
 import { TextField, Select, MenuItem, Button, FormControl, InputLabel, FormHelperText } from "@mui/material";
 import { useMemo, useState } from 'react';
 import { addMember } from '../../../services/houses';
+import Notification from '../../../CommonComponents/Notification';
 
 
 const style = {
@@ -18,7 +19,7 @@ const style = {
     p: 4,
     width: "60vw"
 };
-const ModalAddRenter = ({ handleClose, open }) => {
+const ModalAddRenter = ({ handleClose, open,room,setMembers }) => {
     const [file,setFile] = useState();
     const [imagePreview, setImagePreview] = useState(null);
 
@@ -34,7 +35,6 @@ const ModalAddRenter = ({ handleClose, open }) => {
         } else {
             setImagePreview(null);
         }
-        console.log(imagePreview)
     }
     const initialValues = useMemo(() => {
         return {
@@ -57,10 +57,21 @@ const ModalAddRenter = ({ handleClose, open }) => {
             formData.set("gender",values.gender)
             formData.set("dob",values.dob)
             formData.set("note",values.note)
-            await addMember("65edd72b71ece952e1faf107",formData)
+            await addMember(room._id,formData).then(data => {
+                setMembers(prev => [...prev,{
+                    _id: data.data.data._id,
+                    name: values.name,
+                    phone: values.phone,
+                    cccd: values.cccd,
+                    gender: values.gender,
+                    dob: values.dob,
+                    note: values.note,
+                }])
+            }) 
+            
             handleClose()
             resetForm();
-            
+            Notification("Success", "Thêm Thành Viên", "Thành Công");
         } catch (error) {
             alert('Failed to add member');
             console.error('Error:', error);

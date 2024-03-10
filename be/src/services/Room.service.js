@@ -150,6 +150,7 @@ const RoomService = {
                 .populate("utilities")
                 .populate("otherUtilities")
                 .populate("houseId")
+                .populate("members.avatar")
             return {
                 ...room._doc,
                 currentMember: room.members.length
@@ -203,7 +204,7 @@ const RoomService = {
             await image.save();
             room.members.push({...req.body,avatar: image.id})
             await room.save();
-            return room;
+            return room.members[room.members.length - 1];
         } catch (error) {
             throw error            
         }
@@ -234,6 +235,21 @@ const RoomService = {
             return room;
         } catch (error) {
             throw error;            
+        }
+    },
+    getMember: async (req) => {
+        try {
+            const {roomId,memberId} = req.params;
+            const room = await Rooms.findById(roomId);
+            const memberIndex = await room.members.findIndex(member => member.id == memberId);
+            if (memberIndex === -1) {
+                throw new Error("Member not found in the room");
+            }  
+            return room.members[memberIndex]
+            
+        } catch (error) {
+            throw error;            
+            
         }
     }
     

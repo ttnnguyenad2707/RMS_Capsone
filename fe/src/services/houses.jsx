@@ -144,3 +144,25 @@ export const addMember = async (roomId,formData) => {
     },
   });
 }
+
+export const removeMember = async (memberId,roomId) => {
+  const token = Cookies.get("accessToken");
+  return await axios.put(`${URL_SERVER}/house/room/${roomId}/delete/member`, {
+    memberId
+  },{
+    withCredentials: true,
+    headers: {
+      authorization: `Bearer ${token}`,
+    },
+  });
+}
+
+export const getMember = async (memberId,roomId) => {
+  const token = Cookies.get("accessToken");
+  return await axios.get(`${URL_SERVER}/house/room/${roomId}/member/${memberId}`,{
+    withCredentials: true,
+    headers: {
+      authorization: `Bearer ${token}`,
+    },
+  });
+}

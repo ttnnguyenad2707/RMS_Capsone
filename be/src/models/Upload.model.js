@@ -6,7 +6,6 @@ const Upload = new mongoose.Schema({
     },
     imageData: {
         type: Buffer,
-        required: true
     }
 });
 
