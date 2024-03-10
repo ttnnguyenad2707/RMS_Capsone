@@ -214,7 +214,7 @@ export default function BasicModal() {
       setUtilitiesOther(data);
     }
   };
-  const HandleSubmit = () => {
+  const HandleSubmit = async() => {
     handleInputName();
     handleInputAddress();
     handleInputCostElectric();
@@ -245,8 +245,8 @@ export default function BasicModal() {
         utilities: utilities,
         otherUtilities: utilitiesOther,
       };
-      dispatch(addHouse(setData));
-      dispatch(fetchHouses());
+      await dispatch(addHouse(setData));
+      await dispatch(fetchHouses());
       handleClose();
       setCity("");
       setWard("");
