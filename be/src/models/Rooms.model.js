@@ -18,7 +18,7 @@ const member = Schema ({
     phone: {
         type: String,
     },
-    DOB: {
+    dob: {
         type: String,
     },
     gender: {
@@ -29,7 +29,8 @@ const member = Schema ({
         type: String,
     },
     avatar: {
-        type: String,
+        type: Schema.ObjectId,
+        ref: "Upload"
     },
     imageCCCDs: [imageCCCD],
     note: {

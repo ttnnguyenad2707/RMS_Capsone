@@ -3,6 +3,7 @@ import Rooms from "../models/Rooms.model.js";
 import HousesModel from "../models/Houses.model.js";
 import AccountModel from "../models/Account.model.js";
 import bcrypt from "bcrypt";
+import Image from "../models/Upload.model.js";
 
 
 const RoomService = {
@@ -194,7 +195,13 @@ const RoomService = {
         try {
             const {roomId} = req.params;
             const room = await Rooms.findById(roomId);
-            room.members.push({...req.body})
+            
+            const image = new Image({
+                imageName: req.file.mimetype,
+                imageData: req.file.buffer
+            })
+            await image.save();
+            room.members.push({...req.body,avatar: image.id})
             await room.save();
             return room;
         } catch (error) {

@@ -131,3 +131,15 @@ export const getFloor = async (houseId) => {
     },
   });
 }
+
+export const addMember = async (roomId,formData) => {
+  const token = Cookies.get("accessToken");
+  return await axios.post(`${URL_SERVER}/house/room/${roomId}/member`, formData,{
+    withCredentials: true,
+    headers: {
+      authorization: `Bearer ${token}`,
+      "Content-Type": "multipart/form-data",
+      Accept: "application/json",
+    },
+  });
+}

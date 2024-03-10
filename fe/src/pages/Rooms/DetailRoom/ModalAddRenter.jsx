@@ -3,6 +3,8 @@ import Typography from '@mui/material/Typography';
 import Modal from '@mui/material/Modal';
 import { Formik, Field, Form, ErrorMessage } from 'formik';
 import { TextField, Select, MenuItem, Button, FormControl, InputLabel, FormHelperText } from "@mui/material";
+import { useMemo, useState } from 'react';
+import { addMember } from '../../../services/houses';
 
 
 const style = {
@@ -17,29 +19,67 @@ const style = {
     width: "60vw"
 };
 const ModalAddRenter = ({ handleClose, open }) => {
+    const [file,setFile] = useState();
+    const [imagePreview, setImagePreview] = useState(null);
 
+    const handleChangeFile = (e) => {
+        const file = e.currentTarget.files[0]
+        setFile(file)
+        if (file) {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setImagePreview(reader.result);
+            };
+            reader.readAsDataURL(file);
+        } else {
+            setImagePreview(null);
+        }
+        console.log(imagePreview)
+    }
+    const initialValues = useMemo(() => {
+        return {
+            name: "",
+            phone: "",
+            cccd: "",
+            gender: "",
+            dob: "",
+            note: "",
+            avatar: ""
+        };
+    }, []);
+    const handleSubmit = async (values, {resetForm , setSubmitting}) => {
+        try {
+            const formData = new FormData();
+            formData.append("avatar",file)
+            formData.set("name",values.name)
+            formData.set("phone",values.phone)
+            formData.set("cccd",values.cccd)
+            formData.set("gender",values.gender)
+            formData.set("dob",values.dob)
+            formData.set("note",values.note)
+            await addMember("65edd72b71ece952e1faf107",formData)
+            handleClose()
+            resetForm();
+            
+        } catch (error) {
+            alert('Failed to add member');
+            console.error('Error:', error);
+        } finally {
+            setSubmitting(false)
+        }
+
+    }
     return (<Modal
         open={open}
         onClose={handleClose}
-
     >
         <Box sx={style}>
             <Box>
-
                 <Formik
-                    initialValues={{
-                        name: "",
-                        phone: "",
-                        cccd: "",
-                        gender: "",
-                        dob: "",
-                        note: "",
-                        avatar: ""
-                    }}
+                    initialValues={initialValues}
+                    onSubmit={(values, {resetForm , setSubmitting}) => handleSubmit(values,{resetForm , setSubmitting})}
                 >
-                    <Form
-
-                    >
+                    <Form>
                         <Box sx={{
                             display: 'flex',
                             gap: 2
@@ -53,7 +93,7 @@ const ModalAddRenter = ({ handleClose, open }) => {
                                 }}
                             >
                                 <Typography>Ảnh đại diện khách hàng</Typography>
-                                <img src='https://quanlynhatro.com/frontend3/assets/img/placeholder.png' alt='preview' height="300px" width="100%" />
+                                <img src={imagePreview === null ? "https://quanlynhatro.com/frontend3/assets/img/placeholder.png" : imagePreview} alt='preview' height="300px" width="100%" />
                                 <Button variant='contained' color='success'><label htmlFor='avatar' style={{ width: "100%" }}>Chọn ảnh</label></Button>
 
                                 <Field
@@ -61,6 +101,7 @@ const ModalAddRenter = ({ handleClose, open }) => {
                                     id="avatar"
                                     name="avatar"
                                     hidden
+                                    onChange={handleChangeFile}
                                 />
                             </Box>
 
@@ -76,12 +117,12 @@ const ModalAddRenter = ({ handleClose, open }) => {
                                     fontWeight: "600",
                                     fontSize: "18px",
                                     textAlign: "center",
-                                    
+
                                 }}>Thông tin khách hàng</Typography>
                                 <FormControl fullWidth>
                                     <Field
                                         label="Họ và tên"
-                                        component={TextField}
+                                        as={TextField}
                                         type="text"
                                         id="name"
                                         name="name"
@@ -92,12 +133,12 @@ const ModalAddRenter = ({ handleClose, open }) => {
                                 <FormControl fullWidth>
                                     <Field
                                         label="Số điện thoại"
-                                        component={TextField}
+                                        as={TextField}
                                         type="text"
-                                        id="name"
-                                        name="name"
+                                        id="phone"
+                                        name="phone"
                                     />
-                                    <ErrorMessage name="name" component={FormHelperText} />
+                                    <ErrorMessage name="phone" component={FormHelperText} />
                                 </FormControl>
 
 
@@ -105,7 +146,7 @@ const ModalAddRenter = ({ handleClose, open }) => {
 
                                     <Field
                                         label="Căn cước công dân"
-                                        component={TextField}
+                                        as={TextField}
                                         type="text"
                                         id="cccd"
                                         name="cccd"
@@ -116,7 +157,7 @@ const ModalAddRenter = ({ handleClose, open }) => {
                                 <FormControl fullWidth>
                                     <InputLabel htmlFor="gender">Giới tính:</InputLabel>
                                     <Field
-                                        component={Select}
+                                        as={Select}
                                         id="gender"
                                         name="gender"
                                     >
@@ -130,11 +171,10 @@ const ModalAddRenter = ({ handleClose, open }) => {
 
                                     <Field
                                         label="Ngày sinh"
-                                        component={TextField}
+                                        as={TextField}
                                         type="date"
                                         id="dob"
                                         name="dob"
-                                        defaultValue="2000-01-01"
                                     />
                                     <ErrorMessage name="dob" component={FormHelperText} />
                                 </FormControl>
@@ -162,7 +202,7 @@ const ModalAddRenter = ({ handleClose, open }) => {
                                 gap: 4
                             }}
                         >
-                            <Button type="submit" variant="outlined" color="error" onClick={handleClose}>Huỷ</Button>
+                            <Button variant="outlined" color="error" onClick={handleClose}>Huỷ</Button>
                             <Button type="submit" variant="contained" color="primary">Submit</Button>
                         </Box>
                     </Form>
