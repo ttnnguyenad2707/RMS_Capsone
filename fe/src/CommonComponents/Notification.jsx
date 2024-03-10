@@ -1,6 +1,6 @@
 import Swal from "sweetalert2";
-const Notification = (typeNotification, message, title) => {
-  if (typeNotification === "confirm") {
+const Notification = (typeNotification, title, message) => {
+  if (typeNotification === "Confirm") {
     return new Promise((resolve) => {
       Swal.fire({
         title: title,
@@ -25,7 +25,17 @@ const Notification = (typeNotification, message, title) => {
         icon: "success",
       });
     });
-  } else {
+  } 
+  else if (typeNotification === "Error") {
+    return new Promise((resolve) => {
+      Swal.fire({
+        title: title,
+        text: message,
+        icon: "warning",
+      });
+    });
+  }
+  else {
     return new Promise((resolve) => {
       Swal.fire({
         title: title,

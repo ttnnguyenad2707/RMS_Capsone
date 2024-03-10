@@ -65,20 +65,27 @@ export default function News() {
     }
   };
 
-  const deleteNews = (data) => {
-    console.log(data,"delette");
-    Notification("confirm", "Xóa Tin Tức Này","Xác Nhận").then((result) => {
-      if (result) {
-        console.log("Người dùng đã chọn OK");
-        // Xử lý khi người dùng chọn OK
-      } else {
-        console.log("Người dùng đã chọn Cancel");
-        // Xử lý khi người dùng chọn Cancel
+  const handleDeleteNews = async (idNews) => {
+    Notification("Confirm", "Xác Nhận", "Xóa Tin Tức Này").then(
+      async (result) => {
+        if (result) {
+          const response = await dispatch(deleteNews({ idNews }));
+          if (response.payload === "Success") {
+            Notification("Success", "Đã Xóa", "Tin Tức Thành Công");
+            dispatch(fetchNews({ id }));
+          } else {
+            Notification("Error", "Xảy Ra Lỗi", "Khi Xóa Tin Tức");
+          }
+        } else {
+          console.log("Người dùng đã chọn Cancel");
+          // Xử lý khi người dùng chọn Cancel
+        }
       }
-    });
+    );
   };
   const handleAdd = (typeModal) => {
     setTypeModal(typeModal);
+    setDataNews([])
     handleOpen();
   };
   console.log(news, "news");
@@ -198,7 +205,7 @@ export default function News() {
                     <Button
                       variant="contained"
                       color="error"
-                      onClick={() => deleteNews(n._id)}
+                      onClick={() => handleDeleteNews(n._id)}
                     >
                       Xóa
                     </Button>

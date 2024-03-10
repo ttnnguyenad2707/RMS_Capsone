@@ -34,6 +34,7 @@ const style = {
   p: 5,
   borderRadius: "10px",
   padding: "18px",
+  overflow: "auto"
 };
 const stylesHeader = {
   color: "#1976d2",

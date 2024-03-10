@@ -14,18 +14,21 @@ export const fetchNews = createAsyncThunk("new/fetchNews", async ({ id }) => {
 });
 export const addNews = createAsyncThunk("new/updateNews", async ({ data }) => {
   const response = await AddNewsService(data);
-  console.log(response, "response");
+  console.log( response.data.message, "response");
+  return response.data.message;
 });
 export const updateNews = createAsyncThunk(
   "new/addNews",
   async ({ data, idNews }) => {
     const response = await UpdateNewsService(data, idNews);
     console.log(response, "response");
+    return response.data.message;
   }
 );
-export const deleteNews = createAsyncThunk("new/deleteNews", async ({ id }) => {
-  const response = await DeleteNewsService(id);
+export const deleteNews = createAsyncThunk("new/deleteNews", async ({ idNews }) => {
+  const response = await DeleteNewsService(idNews);
   console.log(response, "response");
+  return response.data.message;
 });
 const newSlice = createSlice({
   name: "news",

@@ -3,7 +3,11 @@ import Box from "@mui/material/Box";
 import Modal from "@mui/material/Modal";
 import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
-import { fetchNews, addNews,updateNews } from "../../../reduxToolkit/NewsSlice";
+import {
+  fetchNews,
+  addNews,
+  updateNews,
+} from "../../../reduxToolkit/NewsSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { v4 as uuidv4 } from "uuid";
 import axios from "axios";
@@ -12,6 +16,7 @@ import {
   fetchCommentNews,
   addCommentNews,
 } from "../../../reduxToolkit/CommentSlice";
+import Notification from "../../../CommonComponents/Notification";
 import "../scss/modal.scss";
 const ModalNews = ({ handleClose, open, typeModal, houseID, dataNews }) => {
   const comments = useSelector((state) => state.comment.comments);
@@ -106,7 +111,8 @@ const ModalNews = ({ handleClose, open, typeModal, houseID, dataNews }) => {
       setImageSrc(dataNews.images);
     }
   }, [dataNews, typeModal, inputContent.current]);
-  const handleInputName = () => {
+  // add news
+  const handleInputName = async () => {
     const inputValue = inputContent.current.value;
     if (inputValue !== "" && typeof inputValue !== "undefined") {
       const data = {
@@ -115,13 +121,21 @@ const ModalNews = ({ handleClose, open, typeModal, houseID, dataNews }) => {
         content: inputValue,
         images: image_src,
       };
-      dispatch(addNews({ data }));
-      const id = houseID;
-      dispatch(fetchNews({ id }));
-      inputContent.current.value = "";
-      handleClose();
+      const response = await dispatch(addNews({ data }));
+      console.log(response, "há");
+      if (response.payload === "Created") {
+        const id = houseID;
+        dispatch(fetchNews({ id }));
+        Notification("Success", "Thêm Tin Tức", "Thành Công");
+        inputContent.current.value = "";
+        setImageSrc([]);
+        handleClose();
+      } else {
+        Notification("Error", "Thêm Tin Tức", "Không Thành Công");
+      }
     }
   };
+  // add comments
   const handleInputComment = () => {
     const inputValue = inputContent.current.value;
     console.log(inputValue, "inputValue");
@@ -136,7 +150,7 @@ const ModalNews = ({ handleClose, open, typeModal, houseID, dataNews }) => {
     }
   };
   // update news to service
-  const handleUpdateNews = () => {
+  const handleUpdateNews = async () => {
     const inputValue = inputContent.current.value;
     if (inputValue !== "" && typeof inputValue !== "undefined") {
       const idNews = dataNews._id;
@@ -144,11 +158,17 @@ const ModalNews = ({ handleClose, open, typeModal, houseID, dataNews }) => {
         content: inputValue,
         images: image_src,
       };
-      dispatch(updateNews({data,idNews}))
-      const id = houseID;
-      dispatch(fetchNews({ id }));
-      inputContent.current.value = "";
-      handleClose();
+      const response = await dispatch(updateNews({ data, idNews }));
+      if (response.payload === "Success") {
+        const id = houseID;
+        dispatch(fetchNews({ id }));
+        Notification("Success", "Cập Nhật Tin Tức", "Thành Công");
+        inputContent.current.value = "";
+        setImageSrc([]);
+        handleClose();
+      } else {
+        Notification("Error", "Cập Nhật Tin Tức", "Không Thành Công");
+      }
     }
   };
   if (typeModal === "Add") {
