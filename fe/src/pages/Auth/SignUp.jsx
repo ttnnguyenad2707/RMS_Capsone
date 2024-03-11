@@ -41,7 +41,10 @@ const Login = () => {
         "Password must contain at least one lowercase letter, one uppercase letter, and one digit"
       )
       .required("password is required"),
+      username: Yup.string().required("name is required"),
+
       name: Yup.string().required("name is required"),
+
   });
 
   const handleSubmit = async (values) => {
@@ -74,6 +77,23 @@ const Login = () => {
               onSubmit={handleSubmit}
             >
               <Form>
+              <div className="mb-3">
+                  <Field
+                    // type="email"
+                    label="Username"
+                    className="form-control"
+                     id="username"
+                    variant="outlined"
+                    name="username"
+                    as={TextField}
+                  />
+
+                  <ErrorMessage
+                    name="username"
+                    component="div"
+                    className="text-danger"
+                  />
+                </div>
               <div className="mb-3">
                   <Field
                     // type="email"
