@@ -26,15 +26,15 @@ const RoomsNavbar = ({ dataHouse, selectHouse }) => {
       setHouse(data);
     }
   }, [dataHouse]);
-  // React.useEffect(() => {
-  //   if (house) {
-  //     const defaultHouse = house[0];
-  //     if (defaultHouse) {
-  //       setHouseSelect(defaultHouse.houseId);
-  //       selectHouse(defaultHouse.houseId);
-  //     }
-  //   }
-  // }, [house, dataHouse]);
+  React.useEffect(() => {
+    if (house) {
+      const defaultHouse = house[0];
+      if (defaultHouse) {
+        setHouseSelect(house[0].houseId);
+        selectHouse(house[0].houseId);
+      }
+    }
+  }, [house, dataHouse]);
   const handleChange = (event) => {
     const inputSelect = event.target.value;
     if (inputSelect !== null) {

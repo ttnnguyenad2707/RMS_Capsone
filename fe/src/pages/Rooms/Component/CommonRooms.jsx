@@ -19,8 +19,8 @@ import RoomList from "./RoomList";
 const CommonRooms = ({ houseData }) => {
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
   const [page, setPage] = React.useState(0);
-  const roomsData = useSelector((state) => state.room.rooms);
-  const dispatch = useDispatch();
+  // const roomsData = useSelector((state) => state.room.rooms);
+  // const dispatch = useDispatch();
   const data = [
     {
       category: "Tên Chủ Nhà",
@@ -48,14 +48,13 @@ const CommonRooms = ({ houseData }) => {
     },
     // Thêm dữ liệu danh mục và nội dung tương ứng ở đây
   ];
-  React.useEffect(()=> {
-    if(houseData){
-      const houseId = houseData._id;
-      console.log(houseId,"houseId");
-      dispatch(fetchRooms({houseId}));
-    }
-  },[houseData])
-  console.log(roomsData,"roomsData");
+  // React.useEffect(()=> {
+  //   if(houseData){
+  //     const houseId = houseData._id;
+  //     console.log(houseId,"houseId");
+  //     dispatch(fetchRooms({houseId}));
+  //   }
+  // },[houseData])
   // Thêm dữ liệu danh mục và nội dung tương ứng ở đây
   return (
     <Box>
@@ -115,7 +114,7 @@ const CommonRooms = ({ houseData }) => {
             Thông Tin Phòng
           </p>
         </Box>
-        <RoomList house={houseData}/>
+        <RoomList house={houseData} />
       </Box>
     </Box>
   );

@@ -91,7 +91,7 @@ export default function SuperModal({
   };
   const handleInputName = () => {
     const inputValue = inputName.current.value;
-    if (validateInput(inputValue) && inputValue != " ") {
+    if (validateInputNumber(inputValue) && inputValue != " ") {
       setName(inputValue);
       setErrorName(false);
     } else {
@@ -134,6 +134,7 @@ export default function SuperModal({
       setErrorWater(true);
     }
   };
+  // Add one rooms
   const HandleSubmit = async () => {
     handleInputName();
     handleMember();
@@ -161,7 +162,7 @@ export default function SuperModal({
       console.log(setData, "setData");
       const response = await dispatch(addOneRoom({ setData, houseId }));
       if (response.payload === "Created") {
-        await dispatch(fetchRooms({ houseId }));
+        // await dispatch(fetchRooms({ houseId }));
         Notification("Success", "Thêm Phòng", "Thành Công");
         handleClose();
       } else {
@@ -171,7 +172,7 @@ export default function SuperModal({
       handleClose();
     }
   };
-
+  // Add list rooms
   const handleFileChange = (event) => {
     const file = event.target.files[0];
     setSelectedFile(file);
@@ -184,7 +185,7 @@ export default function SuperModal({
     // AddRoomsFileService({data: formData} );
     const response = await dispatch(addRooms({ data: formData }));
     if (response.payload === "Created") {
-      await dispatch(fetchRooms({ houseId }));
+      // await dispatch(fetchRooms({ houseId }));
       Notification("Success", "Thêm Danh Sách Phòng", "Thành Công");
       handleClose();
     } else {
