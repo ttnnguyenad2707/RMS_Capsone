@@ -34,9 +34,10 @@ const RenterProblem = () => {
     }
     return (
         <div>
-            <ModalAddProblem/>
+              <ModalAddProblem/> 
             <SelectHouse onSelect={setSelectedHouseId}/>
             <TableData data={dataTable} deleteData={handleDelete}/>
+            
         </div>
     );
 };

@@ -172,6 +172,64 @@ const ModalNews = ({ handleClose, open, typeModal, houseID, dataNews }) => {
   };
   if (typeModal === "Add") {
     return (
+      // <Modal
+      //   open={open}
+      //   onClose={handleClose}
+      //   aria-labelledby="parent-modal-title"
+      //   aria-describedby="parent-modal-description"
+      // >
+      //   <Box sx={{ width: 400 }} sx={style}>
+      //     <Box sx={stylesHeader}>
+      //       <p className="h3">Tạo Bài Viết</p>
+      //     </Box>
+      //     <hr />
+      //     <Box>
+      //       <p>Mr.Duc</p>
+      //       <textarea
+      //         name=""
+      //         id=""
+      //         placeholder="Bạn Đang Nghĩ Gì Thế"
+      //         className="areastyle"
+      //         ref={inputContent}
+      //       ></textarea>
+      //       <div className="d-flex flex-column gap-2">
+      //         <label htmlFor="thumbnail">Thumbnail</label>
+      //         <Box className="d-flex gap-3">
+      //           {image_src.length > 0
+      //             ? image_src.map((image, index) => (
+      //                 <img
+      //                   src={image}
+      //                   key={index}
+      //                   alt="Cloudinary Image"
+      //                   style={{ width: "10%" }}
+      //                 />
+      //               ))
+      //             : null}
+      //         </Box>
+      //         <input
+      //           type="file"
+      //           accept="image/*"
+      //           className="form-control"
+      //           id="thumbnail"
+      //           onChange={handleImageUpload}
+      //           ref={fileRef}
+      //         />
+      //         <button className="btn btn-primary" onClick={handleUpload}>
+      //           Upload
+      //         </button>
+      //       </div>
+      //     </Box>
+      //     <Box>
+      //       <Button
+      //         variant="contained"
+      //         color="primary"
+      //         onClick={() => handleInputName()}
+      //       >
+      //         Đăng tin
+      //       </Button>
+      //     </Box>
+      //   </Box>
+      // </Modal>
       <Modal
         open={open}
         onClose={handleClose}
@@ -183,29 +241,43 @@ const ModalNews = ({ handleClose, open, typeModal, houseID, dataNews }) => {
             <p className="h3">Tạo Bài Viết</p>
           </Box>
           <hr />
-          <Box>
-            <p>MR.Duc</p>
+          <Box sx={{ py: 2 }}>
+            <p>
+              <b>m_ducs</b>
+            </p>
             <textarea
               name=""
               id=""
-              placeholder="Đức Ơi Bạn Đang Nghĩ Gì Thế"
+              rows={3} // Số dòng hiển thị ban đầu (có thể điều chỉnh)
+              placeholder="Bạn đang nghĩ gì thế?"
               className="areastyle"
               ref={inputContent}
+              style={{ width: "100%" }}
             ></textarea>
-            <div className="d-flex flex-column gap-2">
-              <label htmlFor="thumbnail">Thumbnail</label>
-              <Box className="d-flex gap-3">
-                {image_src.length > 0
-                  ? image_src.map((image, index) => (
-                      <img
-                        src={image}
-                        key={index}
-                        alt="Cloudinary Image"
-                        style={{ width: "10%" }}
-                      />
-                    ))
-                  : null}
-              </Box>
+          </Box>
+          <Box
+            sx={{
+              py: 2,
+              border: "2px solid #ccc",
+              borderRadius: "5px",
+              marginBottom: "10px",
+              padding: "10px",
+            }}
+          >
+            <h5>Thêm ảnh vào bài viết của bạn</h5>
+            <Box className="d-flex gap-3">
+              {image_src.length > 0
+                ? image_src.map((image, index) => (
+                    <img
+                      src={image}
+                      key={index}
+                      alt="Cloudinary Image"
+                      style={{ width: "32%" }}
+                    />
+                  ))
+                : null}
+            </Box>
+            <div className="d-flex gap-3">
               <input
                 type="file"
                 accept="image/*"
@@ -219,7 +291,7 @@ const ModalNews = ({ handleClose, open, typeModal, houseID, dataNews }) => {
               </button>
             </div>
           </Box>
-          <Box>
+          <Box sx={{ py: 2 }}>
             <Button
               variant="contained"
               color="primary"
@@ -245,7 +317,7 @@ const ModalNews = ({ handleClose, open, typeModal, houseID, dataNews }) => {
           </Box>
           <hr />
           <Box className="d-flex flex-column">
-            <p>Tác Giả: MR.Duc</p>
+            <p>Tác Giả: Mr.Duc</p>
             <p>{dataNews.content}</p>
           </Box>
           <Box>
@@ -312,7 +384,7 @@ const ModalNews = ({ handleClose, open, typeModal, houseID, dataNews }) => {
           </Box>
           <hr />
           <Box>
-            <p>MR.Duc</p>
+            <p>Mr.Duc</p>
             <Box className="position-relative">
               <textarea
                 name=""
