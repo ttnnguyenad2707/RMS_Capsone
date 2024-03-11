@@ -14,6 +14,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { fetchNews, deleteNews } from "../../reduxToolkit/NewsSlice";
 import { fetchHouses } from "../../reduxToolkit/HouseSlice";
 import Notification from "../../CommonComponents/Notification";
+import { IconButton, Menu } from "@mui/material";
+import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 import {
   AiOutlinePlus,
   AiFillDelete,
@@ -85,10 +87,23 @@ export default function News() {
   };
   const handleAdd = (typeModal) => {
     setTypeModal(typeModal);
-    setDataNews([])
+    setDataNews([]);
     handleOpen();
   };
   console.log(news, "news");
+
+  // Khai báo state
+  const [anchorEl, setAnchorEl] = useState(null);
+
+  // Xử lý sự kiện mở menu
+  const handleMenuOpen = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  // Xử lý sự kiện đóng menu
+  const handleMenuClose = () => {
+    setAnchorEl(null);
+  };
   return (
     <>
       {isLoading ? (
@@ -143,7 +158,7 @@ export default function News() {
               }}
             >
               <Box className="d-flex">
-                <b>m_ducs</b>
+                {/* <b>m_ducs</b> */}
                 <Button
                   className="ms-3"
                   sx={{
@@ -156,7 +171,7 @@ export default function News() {
                   }}
                   onClick={() => handleAdd("Add")}
                 >
-                  Đức ơi bạn đang nghĩ gì thế ?
+                  Bạn đang nghĩ gì thế ?
                 </Button>
               </Box>
               <hr></hr>
@@ -195,20 +210,29 @@ export default function News() {
                       <b>m_ducs</b>
                     </p>
                     <p>1 giờ trước</p>
-                    <Button
-                      variant="contained"
-                      color="primary"
-                      onClick={() => updateNews(n)}
-                    >
-                      Cập Nhật
-                    </Button>
-                    <Button
-                      variant="contained"
-                      color="error"
-                      onClick={() => handleDeleteNews(n._id)}
-                    >
-                      Xóa
-                    </Button>
+                    <div style={{ marginLeft: "auto", marginTop: "-5px" }}>
+                      <IconButton
+                        aria-controls="menu"
+                        aria-haspopup="true"
+                        onClick={handleMenuOpen}
+                      >
+                        <MoreHorizIcon />
+                      </IconButton>
+                      <Menu
+                        id="menu"
+                        anchorEl={anchorEl}
+                        keepMounted
+                        open={Boolean(anchorEl)}
+                        onClose={handleMenuClose}
+                      >
+                        <MenuItem onClick={() => updateNews(n)}>
+                          Cập Nhật
+                        </MenuItem>
+                        <MenuItem onClick={() => handleDeleteNews(n._id)}>
+                          Xóa
+                        </MenuItem>
+                      </Menu>
+                    </div>
                   </div>
                   <p>{n.content}</p>
                   <Box
