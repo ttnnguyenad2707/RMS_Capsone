@@ -77,15 +77,24 @@ const Login = () => {
             >
               <Form>
                 <div className="mb-3">
+                
                   <Field
                     // type="email"
                     label="Username"
                     className="form-control"
-                    id="username"
+                     id="username"
                     variant="outlined"
                     name="username"
                     as={TextField}
                   />
+
+                  <ErrorMessage
+                    name="username"
+                    component="div"
+                    className="text-danger"
+                  />
+                </div>
+              <div className="mb-3">
                   <Field
                     // type="email"
                     label="Name"
