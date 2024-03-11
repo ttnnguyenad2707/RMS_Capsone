@@ -18,11 +18,12 @@ import { login } from "../../reduxToolkit/UserSlice";
 
 const Login = () => {
   const initialValues = {
-    name:"",
+    username: "",
+    name: "",
     email: "",
     password: "",
   };
-//   const dispatch = useDispatch();
+  //   const dispatch = useDispatch();
 
 
   const nav = useNavigate();
@@ -41,19 +42,17 @@ const Login = () => {
         "Password must contain at least one lowercase letter, one uppercase letter, and one digit"
       )
       .required("password is required"),
-      username: Yup.string().required("name is required"),
-
-      name: Yup.string().required("name is required"),
-
+    name: Yup.string().required("name is required"),
+    username: Yup.string().required("username is required"),
   });
 
   const handleSubmit = async (values) => {
     try {
-       console.log(values);
+      console.log(values);
       const res = await registerService(values);
       console.log("res register", res.data.data);
-     
-    //    dispatch(login(res.data.data))
+
+      //    dispatch(login(res.data.data))
       toast.success(res.data.message);
 
       nav("/login");
@@ -65,7 +64,7 @@ const Login = () => {
 
   return (
     <>
-    
+
 
       <div className="container">
         <div className=" row justify-content-center">
@@ -77,7 +76,8 @@ const Login = () => {
               onSubmit={handleSubmit}
             >
               <Form>
-              <div className="mb-3">
+                <div className="mb-3">
+                
                   <Field
                     // type="email"
                     label="Username"
@@ -99,7 +99,7 @@ const Login = () => {
                     // type="email"
                     label="Name"
                     className="form-control"
-                     id="name"
+                    id="name"
                     variant="outlined"
                     name="name"
                     as={TextField}

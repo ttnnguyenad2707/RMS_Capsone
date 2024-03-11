@@ -15,6 +15,8 @@ import Tabs from "@mui/material/Tabs";
 import UtilitiesTab from "./UtilitiesTab";
 import AddIcon from "@mui/icons-material/Add";
 import { UpdateHouseService } from "../../../services/houses";
+import { updateHouse, fetchHouses } from "../../../reduxToolkit/HouseSlice";
+import { useDispatch } from "react-redux";
 import axios from "axios";
 const style = {
   position: "absolute",
@@ -29,9 +31,10 @@ const style = {
   p: 5,
   borderRadius: "10px",
   padding: "18px",
+  overflow: "auto",
 };
 const stylesHeader = {
-  color: "#5A67BA",
+  color: "#1976d2",
   display: "flex",
   position: "relative",
   fontWeight: "Bold",
@@ -55,6 +58,7 @@ export default function BasicModalUpdate({
   const [CostElectricity, setCostElectricity] = React.useState();
   const [CostWater, setCostWater] = React.useState();
   const [utilities, setUtilities] = React.useState();
+  const [utilitiesOther, setUtilitiesOther] = React.useState();
   const [value, setValue] = React.useState("1");
   const [location, setLocation] = React.useState();
   const [city, setCity] = React.useState("");
@@ -67,6 +71,7 @@ export default function BasicModalUpdate({
   const inputAddress = React.useRef();
   const inputCostElectricity = React.useRef();
   const inputCostWater = React.useRef();
+  const dispatch = useDispatch();
   const handleChangeMenu = (event, newValue) => {
     setValue(newValue);
   };
@@ -124,11 +129,9 @@ export default function BasicModalUpdate({
   const settingWard = () => {
     if (location !== null && typeof location !== "undefined") {
       if (city !== null && typeof city !== "undefined") {
-        console.log(city);
         const selectedCity = location.find((c) => c.value === city);
 
         if (selectedCity) {
-          console.log("hello");
           const listWard = selectedCity.children.map((ward) => ({
             title: ward.title,
             value: ward.value,
@@ -192,21 +195,23 @@ export default function BasicModalUpdate({
     }
   };
   const handleInputUtilities = (data) => {
-    setUtilities(data);
-  };
-  const updateService = async(dataUpdate)=>{
-    try {
-      await UpdateHouseService(dataUpdate,data.id)
-    } catch (error) {
-      console.log(error);
+    if (data) {
+      setUtilities(data);
     }
-  }
-  const HandleSubmit = () => {
+  };
+  const handleInputUtilitiesOrther = (data) => {
+    console.log(data, " orther util");
+    if (data) {
+      setUtilitiesOther(data);
+    }
+  };
+  const HandleSubmit = async () => {
     handleInputName();
     handleInputAddress();
     handleInputCostElectric();
     handleInputCostWater();
-
+    handleInputUtilities();
+    console.log(utilities, " sao ");
     if (
       name !== "" &&
       address !== "" &&
@@ -214,7 +219,8 @@ export default function BasicModalUpdate({
       CostWater !== null &&
       city !== "" &&
       county !== "" &&
-      ward !== ""
+      ward !== "" &&
+      utilities
     ) {
       const setData = {
         name: name,
@@ -223,11 +229,16 @@ export default function BasicModalUpdate({
           district: city,
           ward: ward,
           province: county,
+          detailLocation: address,
         },
         electricPrice: CostElectricity,
         waterPrice: CostWater,
+        utilities: utilities,
+        otherUtilities: utilitiesOther,
       };
-      updateService(setData);
+      const id = data.id;
+      await dispatch(updateHouse({ setData, id }));
+      await dispatch(fetchHouses());
       handleClose();
     }
   };
@@ -247,8 +258,38 @@ export default function BasicModalUpdate({
   React.useEffect(() => {
     settingCounty();
   }, [ward]);
+  React.useEffect(() => {
+    if (data) {
+      const cityInput = locationCity.find((c) => c === data.address.city);
+      setCity(cityInput);
+    }
+  }, [data]);
+  React.useEffect(() => {
+    if (locationWard) {
+      const wardInput = locationWard.find(
+        (c) => c.value === data.address.county
+      );
+      if (wardInput) {
+        setWard(wardInput.value);
+      } else {
+        setWard("");
+      }
+    }
+  }, [locationWard]);
+  React.useEffect(() => {
+    if (locationCounty) {
+      const countyInput = locationCounty.find(
+        (c) => c.value === data.address.ward
+      );
+      if (countyInput) {
+        setCounty(countyInput.value);
+      } else {
+        setCounty("");
+      }
+    }
+  }, [locationCounty]);
   const validateInput = (input) => {
-    const pattern = /^[a-zA-Z0-9\s]*$/;
+    const pattern = /^[\p{L}\p{N}\s]+$/u;
     return pattern.test(input);
   };
   const validateInputNumber = (input) => {
@@ -308,7 +349,6 @@ export default function BasicModalUpdate({
                     value={city}
                     label="Tỉnh Thành Phố"
                     onChange={handleChangeCity}
-                    defaultValue={data.address.city}
                   >
                     {locationCity ? (
                       locationCity.map((city) => (
@@ -377,9 +417,9 @@ export default function BasicModalUpdate({
                   error={errorAddress}
                   defaultValue={data.address.streetNumber}
                 />
-                <p style={{ fontWeight: "bold", opacity: "0.5", color: "red" }}>
-                  (Không nhập tên Xã/Phường,Quận/Huyện,Tỉnh/Thành Phố)
-                </p>
+                <p
+                  style={{ fontWeight: "bold", opacity: "0.5", color: "red" }}
+                ></p>
               </Box>
               <Box>
                 <TextField
@@ -416,7 +456,13 @@ export default function BasicModalUpdate({
                   <Tab value="3" label="Item Three" />
                 </Tabs>
                 {value === "1" && (
-                  <UtilitiesTab handleInputSelect={handleInputUtilities} dataUtil={data.utils}/>
+                  <UtilitiesTab
+                    handleInputSelect={handleInputUtilities}
+                    dataUtil={data.utils}
+                    dataOrtherUtil={data.ortherUtils}
+                    typeUtil={"update"}
+                    handleInputSelectOrther={handleInputUtilitiesOrther}
+                  />
                 )}
               </Box>
             </Box>
@@ -440,7 +486,7 @@ export default function BasicModalUpdate({
                 variant="contained"
                 sx={{
                   ml: "10px",
-                  backgroundColor: "#5A67BA",
+                  backgroundColor: "#1976d2",
                   fontWeight: "Bold",
                 }}
                 onClick={() => HandleSubmit()}

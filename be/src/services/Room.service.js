@@ -14,14 +14,15 @@ const RoomService = {
             const buffer = req.file.buffer;
             await workbook.xlsx.load(buffer);
             const worksheet = workbook.worksheets[0];
-            const data = [];
-            const accounts = [];
+            
             const salt = await bcrypt.genSalt(10);
             const hashedPassword = await bcrypt.hash("Rms@12345", salt);
-            worksheet.eachRow({ includeEmpty: true }, (row, rowNumber) => {
+    
+            for (let rowNumber = 1; rowNumber <= worksheet.rowCount; rowNumber++) {
+                const row = worksheet.getRow(rowNumber);
                 if (rowNumber !== 1 && row.getCell(1).value) {
                     const floor = row.getCell(1).value.toString().charAt(0);
-                    const rowData = {
+                    const rowData = await Rooms.create({
                         floor: floor,
                         name: row.getCell(1).value,
                         status: row.getCell(2).value,
@@ -31,27 +32,27 @@ const RoomService = {
                         deposit: row.getCell(6).value,
                         area: row.getCell(7).value,
                         houseId: houseId,
-                        utilities: house.utilities,
-                        otherUtilities: house.otherUtilities,
-                    };
-                    const accountData = {
+                        utilities: house?.utilities || [] ,
+                        otherUtilities: house?.otherUtilities || [],
+                    });
+                    const accountData = await AccountModel.create({
                         username: house.name.replace(/\s/g, '') + row.getCell(1).value,
                         password: hashedPassword,
                         accountType: "renter",
-                    }
-                    accounts.push(accountData);
-                    data.push(rowData);
+                        roomId: rowData.id
+                    })
+                    house.numberOfRoom += 1; 
+                    await house.save();
                 }
-            });
-            await AccountModel.insertMany(accounts)
-            await Rooms.insertMany(data);
-            house.numberOfRoom += data.length; 
-            await house.save();
-            return data;
+            }
+            return {
+                message: "oke"
+            }
         } catch (error) {
             console.log(error);
         }
     },
+    
     addOne : async(req) => {
         try {
             const {houseId} = req.params;
@@ -66,6 +67,15 @@ const RoomService = {
             });
             house.numberOfRoom += 1;
             await house.save();
+            const salt = await bcrypt.genSalt(10);
+            const hashedPassword = await bcrypt.hash("Rms@12345", salt);
+            const accountData = await AccountModel.create({
+                username: house.name.replace(/\s/g, '') + req.body.name,
+                password: hashedPassword,
+                accountType: "renter",
+                roomId: data.id
+            }); 
+
             return data
         } catch (error) {
             throw error
@@ -74,7 +84,7 @@ const RoomService = {
     getRooms: async (req) => {
         try {
             const { houseId } = req.params;
-            const { page, limit } = req.query;
+            const { page, limit, option } = req.query;
             const {floor,name, status,quantityMember,roomType,area} = req.query;
             const pageNumber = parseInt(page) || 1;
             const limitPerPage = parseInt(limit) || 10;
@@ -103,21 +113,30 @@ const RoomService = {
             if (area){
                 query.area =  area
             }
-            const data = await Rooms.find(query)
-                .skip(skip)
-                .limit(limitPerPage)
-                .sort({ createdAt: -1 })
-                .exec();
-
-            return {                
-                pagination: {
-                    currentPage: pageNumber,
-                    totalPages: totalPages,
-                    totalRooms: totalRooms,
-                    roomsPerPage: data.length
-                },
-                room: data
-            };
+            let data;
+            if (String(option) === "all"){
+                data = await Rooms.find(query)
+                    .sort({ createdAt: -1 })
+                    .exec();
+                return data
+                
+            }
+            else{
+                data = await Rooms.find(query)
+                    .skip(skip)
+                    .limit(limitPerPage)
+                    .sort({ createdAt: -1 })
+                    .exec();
+                return {                
+                    pagination: {
+                        currentPage: pageNumber,
+                        totalPages: totalPages,
+                        totalRooms: totalRooms,
+                        roomsPerPage: data.length
+                    },
+                    room: data
+                };
+            }
         } catch (error) {
             console.log(error);
             throw error;
@@ -126,8 +145,14 @@ const RoomService = {
     getOne: async (req) => {
         try {
             const {roomId} = req.params;
-            const room = await Rooms.findById(roomId);
-            return room
+            const room = await Rooms.findById(roomId)
+                .populate("utilities")
+                .populate("otherUtilities")
+                .populate("houseId")
+            return {
+                ...room._doc,
+                currentMember: room.members.length
+            }
         } catch (error) {
             throw error
         }
@@ -155,7 +180,56 @@ const RoomService = {
         } catch (error) {
             throw error
         }
+    },
+    getFloor: async (req) => {
+        try {
+            const {houseId} = req.params;
+            const floor = await Rooms.distinct("floor", {houseId})
+            return floor
+        } catch (error) {
+            throw error
+        }
+    },
+    addMember: async (req) => {
+        try {
+            const {roomId} = req.params;
+            const room = await Rooms.findById(roomId);
+            room.members.push({...req.body})
+            await room.save();
+            return room;
+        } catch (error) {
+            throw error            
+        }
+    },
+    removeMember: async (req) => {
+        try {
+            const {roomId} = req.params;
+            const {memberId} = req.body;
+            const room = await Rooms.findById(roomId);
+            room.members = room.members.filter(member => member.id !== memberId);
+            await room.save();
+            return room
+        } catch (error) {
+            throw error
+        }
+    },
+    updateMember: async (req) => {
+        try {
+            const {roomId} = req.params;
+            const {memberId,...updateInfo} = req.body;
+            const room = await Rooms.findById(roomId);            
+            const memberIndex = room.members.findIndex(member => member.id === memberId);            
+            if (memberIndex === -1) {
+                throw new Error("Member not found in the room");
+            }
+            room.members[memberIndex] = {...updateInfo};            
+            await room.save();            
+            return room;
+        } catch (error) {
+            throw error;            
+        }
     }
+    
 };
 
 export default RoomService;

@@ -23,6 +23,10 @@ const Problems = Schema ({
         type: Schema.ObjectId,
         ref: "Rooms"
     },
+    houseId : {
+        type: Schema.ObjectId,
+        ref: "Houses"
+    },
     creatorId: {
         type: Schema.ObjectId,
         ref: "Account"

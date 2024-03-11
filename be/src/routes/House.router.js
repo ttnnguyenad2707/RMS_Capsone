@@ -11,10 +11,15 @@ const upload = multer({ storage: storage });
 
 const HouseRoute = express.Router();
 
+HouseRoute.get("/:houseId/floor",RoomController.getFloor)
+HouseRoute.get("/downloadTemplate",RoomController.downloadTemplate)
 HouseRoute.post("/room/addOne/:houseId",RoomController.addOne)
 HouseRoute.post("/room",upload.single('excelFile'),RoomController.addRoom)
 HouseRoute.get("/room/:roomId",RoomController.getOne)
-HouseRoute.put("/room/:roomId",validateData(RoomValidate.validateUpdate),RoomController.updateOne)
+HouseRoute.post("/room/:roomId/member",RoomController.addMember)
+HouseRoute.put("/room/:roomId/member",RoomController.updateMember)
+HouseRoute.delete("/room/:roomId/member",RoomController.removeMember)
+HouseRoute.put("/room/:roomId",RoomController.updateOne)
 HouseRoute.get("/:houseId/room",RoomController.getRooms)
 HouseRoute.delete("/room/:roomId",RoomController.deletedOne)
 HouseRoute.get("/:houseId",HouseController.getOne)

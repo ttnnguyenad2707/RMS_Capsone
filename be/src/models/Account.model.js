@@ -41,6 +41,11 @@ const Account = new Schema({
         enum: ["host", "renter", "admin"],
         default: "host"
     },
+    roomId: {
+        type: Schema.ObjectId,
+        default: null,
+        ref: "Rooms"
+    },
     status: {
         type: Boolean,
         default: true,

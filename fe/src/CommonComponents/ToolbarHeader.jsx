@@ -165,21 +165,6 @@ export default function ToolbarHeader() {
         </div>
       ) : (
         <ThemeProvider theme={defaultTheme}>
-          <Typography
-            component="h1"
-            variant="h6"
-            color="#5A67BA" // Thay đổi màu sắc thành primary (màu chủ đạo)
-            noWrap
-            sx={{
-              flexGrow: 1,
-              fontSize: "14px", // Thay đổi kích thước chữ thành 18 pixel
-              fontFamily: "Arial, sans-serif", // Thay đổi phông chữ thành Arial và các phông chữ không-serif khác
-              fontWeight: "bold", // Thay đổi độ đậm của chữ thành bold
-            }}
-          >
-            ROOM MANAGEMENT SYSTEM
-          </Typography>
-
           <Box sx={{ display: "flex" }}>
             {/* <CssBaseline /> */}
             {/* header bên trên */}

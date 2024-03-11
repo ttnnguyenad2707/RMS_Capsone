@@ -6,6 +6,9 @@ import CloseIcon from "@mui/icons-material/Close";
 import TextField from "@mui/material/TextField";
 import * as React from "react";
 import FormControl from "@mui/material/FormControl";
+import { useDispatch, useSelector } from "react-redux";
+import { addHouse } from "../../../reduxToolkit/HouseSlice";
+import { fetchOrtherUtil } from "../../../reduxToolkit/UtilSlice";
 import Select from "@mui/material/Select";
 import InputLabel from "@mui/material/InputLabel";
 import MenuItem from "@mui/material/MenuItem";
@@ -13,10 +16,11 @@ import IconButton from "@mui/material/IconButton";
 import Tab from "@mui/material/Tab";
 import Tabs from "@mui/material/Tabs";
 import UtilitiesTab from "./UtilitiesTab";
+import AddUtil from "./AddUtil";
 import AddIcon from "@mui/icons-material/Add";
 import { ToastContainer, toast } from "react-toastify";
 import axios from "axios";
-import { AddHouseService } from "../../../services/houses";
+import { fetchHouses } from "../../../reduxToolkit/HouseSlice";
 const style = {
   position: "absolute",
   top: "50%",
@@ -30,9 +34,10 @@ const style = {
   p: 5,
   borderRadius: "10px",
   padding: "18px",
+  overflow: "auto"
 };
 const stylesHeader = {
-  color: "#5A67BA",
+  color: "#1976d2",
   display: "flex",
   position: "relative",
   fontWeight: "Bold",
@@ -41,7 +46,7 @@ const stylesBody = {
   width: "100%",
   marginTop: "20px",
 };
-export default function BasicModal({ dataUtils }) {
+export default function BasicModal() {
   const [open, setOpen] = React.useState(false);
   const [errorName, setErrorName] = React.useState(false);
   const [errorAddress, setErrorAddress] = React.useState(false);
@@ -52,6 +57,7 @@ export default function BasicModal({ dataUtils }) {
   const [CostElectricity, setCostElectricity] = React.useState();
   const [CostWater, setCostWater] = React.useState();
   const [utilities, setUtilities] = React.useState();
+  const [utilitiesOther, setUtilitiesOther] = React.useState();
   const [value, setValue] = React.useState("1");
   const [location, setLocation] = React.useState();
   const [city, setCity] = React.useState("");
@@ -64,6 +70,7 @@ export default function BasicModal({ dataUtils }) {
   const inputAddress = React.useRef();
   const inputCostElectricity = React.useRef();
   const inputCostWater = React.useRef();
+  const dispatch = useDispatch();
   const handleChangeMenu = (event, newValue) => {
     setValue(newValue);
   };
@@ -157,6 +164,7 @@ export default function BasicModal({ dataUtils }) {
 
   const handleInputName = () => {
     const inputValue = inputName.current.value;
+    setName(inputValue);
     if (validateInput(inputValue) && inputValue != " ") {
       setName(inputValue);
       setErrorName(false);
@@ -196,24 +204,23 @@ export default function BasicModal({ dataUtils }) {
     }
   };
   const handleInputUtilities = (data) => {
-    setUtilities(data);
-  };
-
-  const submitService = async (data) => {
-    try {
-      await AddHouseService(data);
-      toast.success("Thêm Nhà Thành Công");
-    } catch (error) {
-      console.log(error);
-      toast.error("Thêm Nhà Không Thành Công");
+    if (data) {
+      setUtilities(data);
     }
   };
-  const HandleSubmit = () => {
+  const handleInputUtilitiesOrther = (data) => {
+    console.log(data, " orther util");
+    if (data) {
+      setUtilitiesOther(data);
+    }
+  };
+  const HandleSubmit = async() => {
     handleInputName();
     handleInputAddress();
     handleInputCostElectric();
     handleInputCostWater();
-
+    handleInputUtilities();
+    handleInputUtilitiesOrther();
     if (
       name !== "" &&
       address !== "" &&
@@ -221,7 +228,8 @@ export default function BasicModal({ dataUtils }) {
       CostWater !== null &&
       city !== "" &&
       county !== "" &&
-      ward !== ""
+      ward !== "" &&
+      utilities
     ) {
       const setData = {
         name: name,
@@ -230,12 +238,19 @@ export default function BasicModal({ dataUtils }) {
           district: city,
           ward: ward,
           province: county,
+          detailLocation: address,
         },
         electricPrice: CostElectricity,
         waterPrice: CostWater,
+        utilities: utilities,
+        otherUtilities: utilitiesOther,
       };
-      submitService(setData)
+      await dispatch(addHouse(setData));
+      await dispatch(fetchHouses());
       handleClose();
+      setCity("");
+      setWard("");
+      setCounty("");
     }
   };
   React.useEffect(() => {
@@ -254,9 +269,11 @@ export default function BasicModal({ dataUtils }) {
   React.useEffect(() => {
     settingCounty();
   }, [ward]);
-
+  React.useEffect(() => {
+    dispatch(fetchOrtherUtil());
+  }, []);
   const validateInput = (input) => {
-    const pattern = /^[a-zA-Z0-9\s]*$/;
+    const pattern = /^[\p{L}\p{N}\s]+$/u;
 
     return pattern.test(input);
   };
@@ -390,9 +407,9 @@ export default function BasicModal({ dataUtils }) {
                 inputRef={inputAddress}
                 error={errorAddress}
               />
-              <p style={{ fontWeight: "bold", opacity: "0.5", color: "red" }}>
-                (Không nhập tên Xã/Phường,Quận/Huyện,Tỉnh/Thành Phố)
-              </p>
+              <p
+                style={{ fontWeight: "bold", opacity: "0.5", color: "red" }}
+              ></p>
             </Box>
             <Box>
               <TextField
@@ -422,13 +439,18 @@ export default function BasicModal({ dataUtils }) {
                 indicatorColor="primary"
                 aria-label="secondary tabs example"
               >
-                <Tab value="1" label="Item One" />
-                <Tab value="2" label="Item Two" />
+                <Tab value="1" label="Tiện Ích" />
+                <Tab value="2" label="Item two" />
                 <Tab value="3" label="Item Three" />
               </Tabs>
               {value === "1" && (
-                <UtilitiesTab handleInputSelect={handleInputUtilities} />
+                <UtilitiesTab
+                  handleInputSelect={handleInputUtilities}
+                  handleInputSelectOrther={handleInputUtilitiesOrther}
+                  typeUtil={"add"}
+                />
               )}
+              {value === "2" && <AddUtil />}
             </Box>
           </Box>
           <Box
@@ -451,7 +473,7 @@ export default function BasicModal({ dataUtils }) {
               variant="contained"
               sx={{
                 ml: "10px",
-                backgroundColor: "#5A67BA",
+                backgroundColor: "#1976d2",
                 fontWeight: "Bold",
               }}
               onClick={() => HandleSubmit()}

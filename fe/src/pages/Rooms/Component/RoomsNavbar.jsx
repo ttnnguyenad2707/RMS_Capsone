@@ -6,7 +6,7 @@ import SuperModal from "./Popup";
 import * as React from "react";
 const RoomsNavbar = ({ dataHouse, selectHouse }) => {
   const [house, setHouse] = React.useState();
-  const [houseSelect, setHouseSelect] = React.useState();
+  const [houseSelect, setHouseSelect] = React.useState(dataHouse[0]);
   const [open, setOpen] = React.useState(false);
   const [typeModal, setTypeModal] = React.useState();
   const handleOpen = () => {
@@ -26,11 +26,20 @@ const RoomsNavbar = ({ dataHouse, selectHouse }) => {
       setHouse(data);
     }
   }, [dataHouse]);
+  // React.useEffect(() => {
+  //   if (house) {
+  //     const defaultHouse = house[0];
+  //     if (defaultHouse) {
+  //       setHouseSelect(defaultHouse.houseId);
+  //       selectHouse(defaultHouse.houseId);
+  //     }
+  //   }
+  // }, [house, dataHouse]);
   const handleChange = (event) => {
     const inputSelect = event.target.value;
     if (inputSelect !== null) {
-      setHouseSelect(inputSelect)
-      selectHouse(inputSelect)
+      setHouseSelect(inputSelect);
+      selectHouse(inputSelect);
     }
   };
   const handleSelectModal = (nameModal) => {
@@ -46,20 +55,22 @@ const RoomsNavbar = ({ dataHouse, selectHouse }) => {
     }
   };
   return (
-    <Box sx={{ display: "flex", position: "relative", alignItems: "center" }}>
+    <Box sx={{ display: "flex", position: "relative", alignItems: "center",justifyContent:"space-between" }}>
       <h5 className="me-4">Lựa Chọn Nhà Trọ:</h5>
       <Select
         labelId="demo-simple-select-label"
         id="demo-simple-select"
         value={houseSelect}
-        label="Age"
         onChange={handleChange}
-        defaultValue={10}
         sx={{ width: "20%" }}
         className="me-5"
       >
         {house ? (
-          house.map((h) => (<MenuItem value={h.houseId} key={h.houseId}>{h.name}</MenuItem>))
+          house.map((h) => (
+            <MenuItem value={h.houseId} key={h.houseId}>
+              {h.name}
+            </MenuItem>
+          ))
         ) : (
           <div>Lỗi Dữ Liệu</div>
         )}
@@ -74,7 +85,7 @@ const RoomsNavbar = ({ dataHouse, selectHouse }) => {
           className="me-3"
           onClick={() => handleSelectModal("Thêm Dữ Liệu File")}
         >
-          Nhập Dữ Liệu
+          Import Phòng
         </Button>
         <Button color="info" variant="contained" className="me-3">
           In Tất Cả Hóa Đơn

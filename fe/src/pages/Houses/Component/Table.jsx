@@ -10,9 +10,93 @@ import Button from "@mui/material/Button";
 import { styled } from "@mui/material/styles";
 import { useEffect, useState } from "react";
 import BasicModalUpdate from "./PopupUpdate";
+import { useDispatch, useSelector } from "react-redux";
 import { AiOutlineLoading3Quarters } from "react-icons/ai";
-import { DeleteHouseService } from "../../../services/houses";
 import { ToastContainer, toast } from "react-toastify";
+import { deleteHouse } from "../../../reduxToolkit/HouseSlice";
+import { fetchHouses } from "../../../reduxToolkit/HouseSlice";
+import Box from "@mui/material/Box";
+import Typography from "@mui/material/Typography";
+import Modal from "@mui/material/Modal";
+import CloseIcon from "@mui/icons-material/Close";
+import IconButton from "@mui/material/IconButton";
+import TableFooter from "@mui/material/TableFooter";
+import TablePagination from "@mui/material/TablePagination";
+import FirstPageIcon from "@mui/icons-material/FirstPage";
+import KeyboardArrowLeft from "@mui/icons-material/KeyboardArrowLeft";
+import KeyboardArrowRight from "@mui/icons-material/KeyboardArrowRight";
+import LastPageIcon from "@mui/icons-material/LastPage";
+import { useTheme } from "@mui/material/styles";
+import PropTypes from "prop-types";
+function TablePaginationActions(props) {
+  const theme = useTheme();
+  const { count, page, rowsPerPage, onPageChange } = props;
+
+  const handleFirstPageButtonClick = (event) => {
+    onPageChange(event, 0);
+  };
+
+  const handleBackButtonClick = (event) => {
+    onPageChange(event, page - 1);
+  };
+
+  const handleNextButtonClick = (event) => {
+    onPageChange(event, page + 1);
+  };
+
+  const handleLastPageButtonClick = (event) => {
+    onPageChange(event, Math.max(0, Math.ceil(count / rowsPerPage) - 1));
+  };
+
+  return (
+    <Box sx={{ flexShrink: 0, ml: 2.5 }}>
+      <IconButton
+        onClick={handleFirstPageButtonClick}
+        disabled={page === 0}
+        aria-label="first page"
+      >
+        {theme.direction === "rtl" ? <LastPageIcon /> : <FirstPageIcon />}
+      </IconButton>
+      <IconButton
+        onClick={handleBackButtonClick}
+        disabled={page === 0}
+        aria-label="previous page"
+      >
+        {theme.direction === "rtl" ? (
+          <KeyboardArrowRight />
+        ) : (
+          <KeyboardArrowLeft />
+        )}
+      </IconButton>
+      <IconButton
+        onClick={handleNextButtonClick}
+        disabled={page >= Math.ceil(count / rowsPerPage) - 1}
+        aria-label="next page"
+      >
+        {theme.direction === "rtl" ? (
+          <KeyboardArrowLeft />
+        ) : (
+          <KeyboardArrowRight />
+        )}
+      </IconButton>
+      <IconButton
+        onClick={handleLastPageButtonClick}
+        disabled={page >= Math.ceil(count / rowsPerPage) - 1}
+        aria-label="last page"
+      >
+        {theme.direction === "rtl" ? <FirstPageIcon /> : <LastPageIcon />}
+      </IconButton>
+    </Box>
+  );
+}
+
+TablePaginationActions.propTypes = {
+  count: PropTypes.number.isRequired,
+  onPageChange: PropTypes.func.isRequired,
+  page: PropTypes.number.isRequired,
+  rowsPerPage: PropTypes.number.isRequired,
+};
+
 function createData(
   stt,
   id,
@@ -40,7 +124,7 @@ function createData(
     action,
   };
 }
-export default function BasicTable({ data }) {
+export default function BasicTable() {
   const [rows, setRows] = useState([]);
   const [status, setStatus] = useState([
     {
@@ -52,25 +136,41 @@ export default function BasicTable({ data }) {
       statusSort: true, // sắp xếp xuôi , false sắp xếp ngược
     },
   ]);
-  const dataHouse = data;
+  const dispatch = useDispatch();
   const [dataModelUpdate, setDataModelUpdate] = useState();
   const [open, setOpen] = useState(false);
+  const [houseSelect, setHouseSelect] = useState();
+  const [openConfirm, setOpenConfirm] = useState(false);
+  const [rowsPerPage, setRowsPerPage] = useState(5);
+  const [page, setPage] = useState(0);
+  const houses = useSelector((state) => state.house.houses);
 
+  useEffect(() => {
+    // GetHouse();
+    dispatch(fetchHouses());
+  }, [dispatch, page, rowsPerPage]);
   const handleOpen = () => {
     setOpen(true);
   };
   const handleClose = () => {
     setOpen(false);
   };
-
-  const DeleteHouse = async(id)=> {
+  const handleOpenConfirm = () => {
+    setOpenConfirm(true);
+  };
+  const handleCloseConfirm = () => {
+    setOpenConfirm(false);
+  };
+  const DeleteHouse = async (id) => {
     try {
-      await DeleteHouseService(id);
+      dispatch(deleteHouse({ id }));
+      dispatch(fetchHouses());
       toast.success("Xóa Nhà Thành Công");
+      handleCloseConfirm();
     } catch (error) {
       console.log(error);
     }
-  }
+  };
   const headCells = [
     {
       id: "stt",
@@ -108,21 +208,21 @@ export default function BasicTable({ data }) {
     },
   ];
   useEffect(() => {
-    if (dataHouse) {
-      const dataTable = dataHouse.map((house) => {
+    if (houses) {
+      const dataTable = houses.map((house) => {
         const address =
           house.location.district +
-          "/" +
+          "-" +
           house.location.province +
-          "/" +
+          "-" +
           house.location.ward +
-          "/" +
-          "350";
+          "-" +
+          house.location.detailLocation;
         return createData(
           1,
           house._id,
           house.name,
-          3,
+          house.numberOfRoom,
           address,
           house.hostId.name,
           house.hostId.phone,
@@ -131,7 +231,7 @@ export default function BasicTable({ data }) {
           house.waterPrice,
           <div className="d-flex">
             <Button
-              variant="contained" 
+              variant="contained"
               sx={{ fontWeight: "bold", margin: "10px" }}
               color="warning"
               onClick={() =>
@@ -139,14 +239,15 @@ export default function BasicTable({ data }) {
                   1,
                   house._id,
                   house.name,
-                  3,
+                  house.numberOfRoom,
                   address,
                   house.hostId.name,
                   house.hostId.phone,
                   house.hostId.email,
                   house.electricPrice,
                   house.waterPrice,
-                  house.utilities
+                  house.utilities,
+                  house.otherUtilities
                 )
               }
             >
@@ -156,7 +257,14 @@ export default function BasicTable({ data }) {
               variant="contained"
               sx={{ fontWeight: "bold", margin: "10px" }}
               color="error"
-              onClick={()=> DeleteHouse( house._id,)}
+              onClick={() => {
+                setHouseSelect({
+                  id: house._id,
+                  name: house.name,
+                });
+
+                handleOpenConfirm();
+              }}
             >
               Xóa
             </Button>
@@ -165,7 +273,19 @@ export default function BasicTable({ data }) {
       });
       setRows(dataTable);
     }
-  }, [dataHouse]);
+  }, [houses]);
+  const handleChangePage = (event, newPage) => {
+    setPage(newPage);
+  };
+
+  const handleChangeRowsPerPage = (event) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
+  };
+
+  const startIndex = page * rowsPerPage;
+  const endIndex = startIndex + rowsPerPage;
+  const displayedData = rows.slice(startIndex, endIndex);
   const StyledTableRow = styled(TableRow)(() => ({
     backgroundColor: "#1976d2",
     "td, th": {
@@ -196,11 +316,12 @@ export default function BasicTable({ data }) {
     email,
     costElectricity,
     costWater,
-    utils
+    utils,
+    ortherUtils
   ) => {
     handleOpen();
     console.log(open);
-    const addressParts = address.split("/");
+    const addressParts = address.split("-");
     const City = addressParts[0];
     const Ward = addressParts[1];
     const county = addressParts[2];
@@ -221,7 +342,8 @@ export default function BasicTable({ data }) {
       email: email,
       costElectricity: costElectricity,
       costWater: costWater,
-      utils:utils
+      utils: utils,
+      ortherUtils: ortherUtils,
     };
     setDataModelUpdate(data);
   };
@@ -276,10 +398,31 @@ export default function BasicTable({ data }) {
     // Cập nhật state rows
     setRows(sortedRows);
   };
-  console.log(dataHouse);
+  const style = {
+    position: "absolute",
+    top: "50%",
+    left: "50%",
+    transform: "translate(-50%, -50%)",
+    width: 500,
+    height: "20%",
+    bgcolor: "background.paper",
+    border: "2px solid #grey",
+    boxShadow: 25,
+    p: 5,
+    borderRadius: "10px",
+    padding: "18px",
+  };
+  const stylesHeader = {
+    color: "#1976d2",
+    display: "flex",
+    position: "relative",
+    fontWeight: "Bold",
+  };
+
+  console.log(rows, "rowsPerPage");
   return (
     <>
-      {dataHouse ? (
+      {houses ? (
         <div>
           <TableContainer component={Paper}>
             <Table sx={{ minWidth: 650 }} aria-label="simple table">
@@ -292,6 +435,7 @@ export default function BasicTable({ data }) {
                           active={true}
                           direction="asc"
                           onClick={() => handleSort(headCell.id)}
+                          className="label-header"
                         >
                           {headCell.label}
                         </TableSortLabel>
@@ -303,8 +447,8 @@ export default function BasicTable({ data }) {
                 </StyledTableRow>
               </TableHead>
               <TableBody>
-                {rows
-                  ? rows.map((row) => (
+                {displayedData
+                  ? displayedData.map((row, index) => (
                       <TableRow
                         key={row.name}
                         sx={{
@@ -313,7 +457,7 @@ export default function BasicTable({ data }) {
                           },
                         }}
                       >
-                        <TableCell align="left">{row.stt}</TableCell>
+                        <TableCell align="left">{index + 1}</TableCell>
                         <TableCell align="left">{row.houseName}</TableCell>
                         <TableCell align="left">{row.numberRooms}</TableCell>
                         <TableCell align="left">{row.address}</TableCell>
@@ -327,6 +471,16 @@ export default function BasicTable({ data }) {
                     ))
                   : null}
               </TableBody>
+              <TableFooter>
+                <TablePagination
+                  rowsPerPageOptions={[5, 10, 25]}
+                  count={rows.length}
+                  rowsPerPage={rowsPerPage}
+                  page={page}
+                  onPageChange={handleChangePage}
+                  onRowsPerPageChange={handleChangeRowsPerPage}
+                />
+              </TableFooter>
             </Table>
           </TableContainer>
           <BasicModalUpdate
@@ -335,6 +489,61 @@ export default function BasicTable({ data }) {
             handleClose={handleClose}
             openModal={open}
           />
+          {houseSelect ? (
+            <Modal
+              open={openConfirm}
+              onClose={handleCloseConfirm}
+              aria-labelledby="modal-modal-title"
+              aria-describedby="modal-modal-description"
+            >
+              <Box sx={style}>
+                <Box sx={stylesHeader}>
+                  <Typography
+                    id="modal-modal-title"
+                    variant="h4"
+                    component="h3"
+                    sx={{ fontWeight: "Bold" }}
+                  >
+                    Xác Nhận Xóa Nhà
+                  </Typography>
+                  <IconButton
+                    sx={{ position: "absolute", right: "10px" }}
+                    onClick={handleCloseConfirm}
+                  >
+                    <CloseIcon />
+                  </IconButton>
+                </Box>
+                <Box sx={{ display: "flex", mt: 3, mb: 3 }}>
+                  <Typography
+                    id="modal-modal-title"
+                    sx={{ fontWeight: "Bold", color: "red" }}
+                    component="h3"
+                    variant="h5"
+                  >
+                    Tên Nhà: {houseSelect.name}
+                  </Typography>
+                </Box>
+                <Box sx={{ display: "flex", justifyContent: "end" }}>
+                  <Button
+                    variant="contained"
+                    sx={{ padding: "3px", ml: 3 }}
+                    onClick={handleCloseConfirm}
+                  >
+                    Hủy
+                  </Button>
+                  <Button
+                    variant="contained"
+                    sx={{ padding: "3px", ml: 3 }}
+                    onClick={() => DeleteHouse(houseSelect.id)}
+                  >
+                    Xóa
+                  </Button>
+                </Box>
+              </Box>
+            </Modal>
+          ) : (
+            <div></div>
+          )}
         </div>
       ) : (
         <div className="text-center">

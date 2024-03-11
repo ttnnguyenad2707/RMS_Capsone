@@ -6,7 +6,7 @@ import ToolbarHeader from "../CommonComponents/ToolbarHeader";
 import HousePage from "../pages/Houses/HousePage";
 import Profile from "../pages/Profiles/Profile";
 import RoomsPage from "../pages/Rooms/RoomsPage";
-import RentalProblem from "../pages/ProblemsReport/RentalProblem";
+import RenterProblem from "../pages/ProblemsReport/RenterProblem";
 import News from "../pages/News/News";
 export const appRoutes = createBrowserRouter([
   {
@@ -32,7 +32,7 @@ export const appRoutes = createBrowserRouter([
       },
       {
         path: "/problems",
-        element: <RentalProblem />,
+        element: <RenterProblem />,
       },
       {
         path: "/new",

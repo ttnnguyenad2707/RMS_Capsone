@@ -1,31 +1,21 @@
-import { styled, createTheme, ThemeProvider } from "@mui/material/styles";
-import CssBaseline from "@mui/material/CssBaseline";
-import MuiDrawer from "@mui/material/Drawer";
 import Box from "@mui/material/Box";
-import MuiAppBar from "@mui/material/AppBar";
-import Toolbar from "@mui/material/Toolbar";
-import List from "@mui/material/List";
 import Typography from "@mui/material/Typography";
-import Divider from "@mui/material/Divider";
-import IconButton from "@mui/material/IconButton";
-import Badge from "@mui/material/Badge";
-import Container from "@mui/material/Container";
 import Grid from "@mui/material/Grid";
 import Paper from "@mui/material/Paper";
-import Link from "@mui/material/Link";
-import MenuIcon from "@mui/icons-material/Menu";
-import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
-import NotificationsIcon from "@mui/icons-material/Notifications";
-import { mainListItems, secondaryListItems } from "./Components/listItems";
-import Chart from "./Components/Chart";
-import Deposits from "./Components/Deposits";
-import Orders from "./Components/Orders";
-import { useDispatch, useSelector } from "react-redux";
-import Cookies from "js-cookie";
 import React, { useEffect, useState } from "react";
-import { login } from "../../reduxToolkit/UserSlice";
-import { Outlet, useNavigate } from "react-router-dom";
-import { getCurrentUser } from "../../services/auth";
+import Button from "@mui/material/Button";
+import TextField from "@mui/material/TextField";
+import ThumbUpAltIcon from "@mui/icons-material/ThumbUpAlt";
+import ChatBubbleOutlineIcon from "@mui/icons-material/ChatBubbleOutline";
+import ModalNews from "./Components/Modal";
+import Select from "@mui/material/Select";
+import MenuItem from "@mui/material/MenuItem";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchNews, deleteNews } from "../../reduxToolkit/NewsSlice";
+import { fetchHouses } from "../../reduxToolkit/HouseSlice";
+import Notification from "../../CommonComponents/Notification";
+import { IconButton, Menu } from "@mui/material";
+import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 import {
   AiOutlinePlus,
   AiFillDelete,
@@ -33,99 +23,87 @@ import {
   AiOutlineLoading3Quarters,
 } from "react-icons/ai";
 
-
-
-// const drawerWidth = 240;
-
-// const AppBar = styled(MuiAppBar, {
-//   shouldForwardProp: (prop) => prop !== "open",
-// })(({ theme, open }) => ({
-//   zIndex: theme.zIndex.drawer + 1,
-//   transition: theme.transitions.create(["width", "margin"], {
-//     easing: theme.transitions.easing.sharp,
-//     duration: theme.transitions.duration.leavingScreen,
-//   }),
-//   ...(open && {
-//     marginLeft: drawerWidth,
-//     width: `calc(100% - ${drawerWidth}px)`,
-//     transition: theme.transitions.create(["width", "margin"], {
-//       easing: theme.transitions.easing.sharp,
-//       duration: theme.transitions.duration.enteringScreen,
-//     }),
-//   }),
-// }));
-
-// const Drawer = styled(MuiDrawer, {
-//   shouldForwardProp: (prop) => prop !== "open",
-// })(({ theme, open }) => ({
-//   "& .MuiDrawer-paper": {
-//     position: "relative",
-//     whiteSpace: "nowrap",
-//     width: drawerWidth,
-//     transition: theme.transitions.create("width", {
-//       easing: theme.transitions.easing.sharp,
-//       duration: theme.transitions.duration.enteringScreen,
-//     }),
-//     boxSizing: "border-box",
-//     ...(!open && {
-//       overflowX: "hidden",
-//       transition: theme.transitions.create("width", {
-//         easing: theme.transitions.easing.sharp,
-//         duration: theme.transitions.duration.leavingScreen,
-//       }),
-//       width: theme.spacing(7),
-//       [theme.breakpoints.up("sm")]: {
-//         width: theme.spacing(9),
-//       },
-//     }),
-//   },
-// }));
-
-// TODO remove, this demo shouldn't need to reset the theme.
-// const defaultTheme = createTheme();
-
 export default function News() {
-  // const [open, setOpen] = React.useState(true);
-  // const toggleDrawer = () => {
-  //   setOpen(!open);
-  // };
+  const [open, setOpen] = React.useState(false);
+  const handleOpen = () => setOpen(true);
+  const handleClose = () => setOpen(false);
+  const [id, setID] = React.useState();
+  const [typeModal, setTypeModal] = React.useState();
   const [isLoading, setIsLoading] = useState(false);
+  const [dataNews, setDataNews] = useState();
+  const news = useSelector((state) => state.new.news);
+  const houses = useSelector((state) => state.house.houses);
+  const dispatch = useDispatch();
+  React.useEffect(() => {
+    dispatch(fetchHouses());
+  }, []);
+  React.useEffect(() => {
+    dispatch(fetchNews({ id }));
+  }, [id]);
+  React.useEffect(() => {
+    if (houses && houses.length > 0) {
+      setID(houses[0]._id);
+    }
+  }, [houses]);
+  const handleChange = (event) => {
+    const inputSelect = event.target.value;
+    if (inputSelect !== null) {
+      setID(inputSelect);
+    }
+  };
+  const commentNews = (data) => {
+    if (data) {
+      setDataNews(data);
+      setTypeModal("Comment");
+      handleOpen();
+    }
+  };
 
-  // const navigate = useNavigate();
+  const updateNews = (data) => {
+    if (data) {
+      setDataNews(data);
+      setTypeModal("Update");
+      handleOpen();
+    }
+  };
 
-  // const dispatch = useDispatch();
-  // const userData = useSelector((state) => state.user.data); //state là rootReducer trong store ,counter cái tên đăng kí trong rootReducer
-  // console.log("userData", userData);
-  // const name = userData.name;
+  const handleDeleteNews = async (idNews) => {
+    Notification("Confirm", "Xác Nhận", "Xóa Tin Tức Này").then(
+      async (result) => {
+        if (result) {
+          const response = await dispatch(deleteNews({ idNews }));
+          if (response.payload === "Success") {
+            Notification("Success", "Đã Xóa", "Tin Tức Thành Công");
+            dispatch(fetchNews({ id }));
+          } else {
+            Notification("Error", "Xảy Ra Lỗi", "Khi Xóa Tin Tức");
+          }
+        } else {
+          console.log("Người dùng đã chọn Cancel");
+          // Xử lý khi người dùng chọn Cancel
+        }
+      }
+    );
+  };
+  const handleAdd = (typeModal) => {
+    setTypeModal(typeModal);
+    setDataNews([]);
+    handleOpen();
+  };
+  console.log(news, "news");
 
-  // const accessToken = Cookies.get("accessToken");
-  // console.log("accessToken", accessToken);
+  // Khai báo state
+  const [anchorEl, setAnchorEl] = useState(null);
 
-  // useEffect(() => {
-  //   if (!accessToken) {
-  //     navigate("/login");
-  //     return;
-  //   }
-    
-  //   getCurrentUser(accessToken)
-  //     .then((res) => {
-  //       console.log("getCurrentUser", res);
-  //       dispatch(login(res?.data?.data));
-  //     })
-  //     .catch((error) => {
-  //       if (error.response && error.response.status === 403) {
-  //         navigate("/login");
-  //       }
-  //       console.log(error);
-  //     });
-  // }, [dispatch, accessToken]);
+  // Xử lý sự kiện mở menu
+  const handleMenuOpen = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
 
-  // useEffect(() => {
-  //   if (userData) {
-  //     setIsLoading(false);
-  //   }
-  // }, [userData]);
-
+  // Xử lý sự kiện đóng menu
+  const handleMenuClose = () => {
+    setAnchorEl(null);
+  };
   return (
     <>
       {isLoading ? (
@@ -134,70 +112,167 @@ export default function News() {
           <p>Loading...</p>
         </div>
       ) : (
-        <>
-  
-                  <Grid item xs={12} md={7} lg={8} marginLeft={17}>
-                    <Paper
-                      sx={{
-                        p: 2,
-                        display: "flex",
-                        flexDirection: "column",
-                        height: "auto",
-                      }}
-                    >
-                      {/* <Chart /> */}
-                      <div style={{ display: "flex", alignItems: "center" }}>
-  <p style={{ marginRight: "10px" }}>
-    <b>m_ducs</b>
-  </p>
-  <p>1 giờ trước</p>
-</div>
-                      
-                      <p>
-                        "Em tỏa hương
-                      </p>
-                      <p>
-                        Tôi tưởng hoa.."
-                      </p>
-                    <div>
-                      <button>Bình Luận</button>
+        <Box
+          sx={{
+            backgroundColor: "#F1F2F7",
+            height: "100%",
+            width: "100vw",
+          }}
+        >
+          <Select
+            labelId="demo-simple-select-label"
+            id="demo-simple-select"
+            value={id}
+            onChange={handleChange}
+            sx={{ width: "20%" }}
+            className="me-5"
+          >
+            {houses ? (
+              houses.map((h, index) => (
+                <MenuItem value={h._id} key={index}>
+                  {h.name}
+                </MenuItem>
+              ))
+            ) : (
+              <div>Lỗi Dữ Liệu</div>
+            )}
+          </Select>
+          <Grid
+            item
+            xs={12}
+            md={7}
+            lg={8}
+            sx={{
+              backgroundColor: "#F1F2F7",
+              margin: "auto",
+              mt: 3,
+            }}
+          >
+            <Paper
+              sx={{
+                p: 2,
+                display: "flex",
+                flexDirection: "column",
+                height: "auto",
+                borderRadius: "18px ",
+              }}
+            >
+              <Box className="d-flex">
+                {/* <b>m_ducs</b> */}
+                <Button
+                  className="ms-3"
+                  sx={{
+                    backgroundColor: "#f2f2f2",
+                    width: "95%",
+                    border: "soild 1px #f2f2f2",
+                    borderRadius: "18px",
+                    padding: "10px",
+                    justifyContent: "start",
+                  }}
+                  onClick={() => handleAdd("Add")}
+                >
+                  Bạn đang nghĩ gì thế ?
+                </Button>
+              </Box>
+              <hr></hr>
+              <Box className="d-flex" sx={{ borderTop: "soid 1px #cccccc" }}>
+                <Button>Phát Trực Tiếp</Button>
+                <Button>Phát Trực Tiếp</Button>
+                <Button>Phát Trực Tiếp</Button>
+              </Box>
+            </Paper>
+          </Grid>
+          {news.data ? (
+            news.data.map((n) => (
+              <Grid
+                item
+                xs={12}
+                md={7}
+                lg={8}
+                sx={{
+                  backgroundColor: "#F1F2F7",
+                  margin: "auto",
+                  mt: 3,
+                }}
+              >
+                <Paper
+                  sx={{
+                    p: 2,
+                    display: "flex",
+                    flexDirection: "column",
+                    height: "auto",
+                    borderRadius: "18px ",
+                  }}
+                >
+                  {/* <Chart /> */}
+                  <div style={{ display: "flex", alignItems: "center" }}>
+                    <p style={{ marginRight: "10px" }}>
+                      <b>m_ducs</b>
+                    </p>
+                    <p>1 giờ trước</p>
+                    <div style={{ marginLeft: "auto", marginTop: "-5px" }}>
+                      <IconButton
+                        aria-controls="menu"
+                        aria-haspopup="true"
+                        onClick={handleMenuOpen}
+                      >
+                        <MoreHorizIcon />
+                      </IconButton>
+                      <Menu
+                        id="menu"
+                        anchorEl={anchorEl}
+                        keepMounted
+                        open={Boolean(anchorEl)}
+                        onClose={handleMenuClose}
+                      >
+                        <MenuItem onClick={() => updateNews(n)}>
+                          Cập Nhật
+                        </MenuItem>
+                        <MenuItem onClick={() => handleDeleteNews(n._id)}>
+                          Xóa
+                        </MenuItem>
+                      </Menu>
                     </div>
-                    </Paper>
-                  </Grid>
-                  
-             
-                  <Grid item xs={12} md={7} lg={8} marginLeft={17}>
-                    <Paper
-                      sx={{
-                        p: 2,
-                        display: "flex",
-                        flexDirection: "column",
-                        height: "auto",
-                      }}
-                    >
-                      {/* <Deposits /> */}
-                      <div style={{ display: "flex", alignItems: "center" }}>
-  <p style={{ marginRight: "10px" }}>
-    <b>m_ducs</b>
-  </p>
-  <p>9 giờ trước</p>
-</div>
-                      
-                      <p>(Dân trí) - Nhìn lại chặng đường hơn 3 năm nỗ lực chống đại dịch Covid-19, Thủ tướng Phạm Minh Chính cho rằng chúng ta đã làm được những điều không tưởng, để Việt Nam "đi sau về trước" trong phòng chống dịch.
-Thủ tướng Phạm Minh Chính nhấn mạnh nhận định này khi phát biểu khai mạc Hội nghị tổng kết công tác phòng, chống dịch Covid-19 sáng 29/10.
+                  </div>
+                  <p>{n.content}</p>
+                  <Box
+                    sx={{ width: "100%" }}
+                    className="d-flex justify-content-center mb-4 mt-4"
+                  >
+                    {n.images.length > 0 ? (
+                      <img
+                        src={n.images[0]}
+                        alt="Image"
+                        style={{ width: "45%" }}
+                      />
+                    ) : null}
+                  </Box>
+                  <div>
+                    <Box sx={{ display: "flex", gap: "10px" }}>
+                      <Button variant="outlined">
+                        <ThumbUpAltIcon fontSize="small"></ThumbUpAltIcon>Thích
+                      </Button>
+                      <Button variant="outlined" onClick={() => commentNews(n)}>
+                        <ChatBubbleOutlineIcon fontSize="small"></ChatBubbleOutlineIcon>{" "}
+                        Bình Luận
+                      </Button>
+                    </Box>
+                  </div>
+                </Paper>
+              </Grid>
+            ))
+          ) : (
+            <p className="h3">Không có tin tức </p>
+          )}
 
-Đây là dịp để nhìn lại chặng đường hơn 3 năm cả nước nỗ lực chống Covid-19, đại dịch ghi nhận ca bệnh đầu tiên vào cuối tháng 12/2019 tại Vũ Hán, Trung Quốc.
-
-Hội nghị tổng kết của Ban Chỉ đạo phòng, chống dịch diễn ra trong bối cảnh dịch bệnh đã được kiểm soát tốt nhờ những nỗ lực lớn, những giải pháp quyết liệt, hiệu quả mang tính toàn cầu, toàn dân; kinh tế từng bước phục hồi và phát triển, đời sống người dân trở lại trạng thái bình thường.</p>
-                    <div>
-                      <button>Bình Luận</button>
-                    </div>
-                    </Paper>
-                  </Grid>
-                  
-                 
-        </>
-
+          <ModalNews
+            open={open}
+            handleClose={handleClose}
+            houseID={id}
+            typeModal={typeModal}
+            dataNews={dataNews}
+          />
+        </Box>
       )}
     </>
   );

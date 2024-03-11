@@ -15,16 +15,26 @@ const member = Schema ({
         type: String,
         require: true ,
     },
+    phone: {
+        type: String,
+    },
     DOB: {
         type: String,
+    },
+    gender: {
+        type: String,
+        enum: ["Nam","Nữ"]
     },
     cccd: {
         type: String,
     },
-    imageCCCDs: [imageCCCD],
-    phone: {
+    avatar: {
         type: String,
     },
+    imageCCCDs: [imageCCCD],
+    note: {
+        type: String,
+    }
     
 })
 
@@ -59,7 +69,7 @@ const Rooms = Schema ({
     },
     utilities: [{
         type: Schema.ObjectId,
-        ref: "Utilities",
+        ref: "DefaultUtilities",
     }],
     otherUtilities : [{
         type: Schema.ObjectId,

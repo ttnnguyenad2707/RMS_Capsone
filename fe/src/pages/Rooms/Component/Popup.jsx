@@ -10,11 +10,13 @@ import Select from "@mui/material/Select";
 import InputLabel from "@mui/material/InputLabel";
 import MenuItem from "@mui/material/MenuItem";
 import IconButton from "@mui/material/IconButton";
-import Tab from "@mui/material/Tab";
-import Tabs from "@mui/material/Tabs";
-import AddIcon from "@mui/icons-material/Add";
-import {AddRoomsFileService } from "../../../services/houses";
-
+import { AddRoomsFileService } from "../../../services/houses";
+import { useDispatch } from "react-redux";
+import {
+  fetchRooms,
+  addRooms,
+  addOneRoom,
+} from "../../../reduxToolkit/RoomSlice";
 import axios from "axios";
 import "../Scss/Popup.scss";
 const style = {
@@ -23,7 +25,7 @@ const style = {
   left: "50%",
   transform: "translate(-50%, -50%)",
   width: 1200,
-  height: "80%",
+  height: "50%",
   bgcolor: "background.paper",
   border: "2px solid #grey",
   boxShadow: 25,
@@ -46,116 +48,41 @@ export default function SuperModal({
   handleClose,
   handleOpen,
   typeModal,
-  houseId
+  houseId,
 }) {
   const [errorName, setErrorName] = React.useState(false);
   const [errorAddress, setErrorAddress] = React.useState(false);
   const [errorCostElectric, setErrorCostElectric] = React.useState(false);
   const [errorCostWater, setErrorWater] = React.useState(false);
   const [name, setName] = React.useState("");
-  const [address, setAddress] = React.useState("");
-  const [CostElectricity, setCostElectricity] = React.useState();
-  const [CostWater, setCostWater] = React.useState();
-  const [location, setLocation] = React.useState();
-  const [city, setCity] = React.useState("");
-  const [ward, setWard] = React.useState("");
-  const [county, setCounty] = React.useState("");
-  const [locationCity, setLocationCity] = React.useState("");
-  const [locationWard, setLocationWard] = React.useState("");
-  const [locationCounty, setLocationCounty] = React.useState("");
+  const [member, setMember] = React.useState("");
+  const [priceRoom, setPriceRoom] = React.useState("");
+  const [CostDeposit, setCostDeposit] = React.useState();
+  const [CostArea, setCostArea] = React.useState();
+  const [status, setStatus] = React.useState("");
+  const [roomType, setRoomType] = React.useState("");
   const [selectedFile, setSelectedFile] = React.useState(null);
   const inputName = React.useRef();
-  const inputAddress = React.useRef();
-  const inputCostElectricity = React.useRef();
-  const inputCostWater = React.useRef();
+  const inputMember = React.useRef();
+  const inputPriceRoom = React.useRef();
+  const inputCostDeposit = React.useRef();
+  const inputCostArea = React.useRef();
+  const dispatch = useDispatch();
   const handleChangeMenu = (event, newValue) => {
     setValue(newValue);
   };
-  const handleChangeCity = (event) => {
+  const handleChangeStatus = (event) => {
     const inputSelect = event.target.value;
     if (inputSelect !== null) {
-      setCity(inputSelect);
+      setStatus(inputSelect);
     }
   };
-  const handleChangeWard = (event) => {
+  const handleChangeRoomType = (event) => {
     const inputSelect = event.target.value;
     if (inputSelect !== null) {
-      setWard(inputSelect);
+      setRoomType(inputSelect);
     }
   };
-  const handleChangeCounty = (event) => {
-    const inputSelect = event.target.value;
-    if (inputSelect !== null) {
-      setCounty(inputSelect);
-    }
-  };
-  const fetchLocation = async () => {
-    try {
-      const response = await axios.get(
-        "https://raw.githubusercontent.com/kenzouno1/DiaGioiHanhChinhVN/master/data.json"
-      );
-      const transformedData = response.data.map((item) => ({
-        title: item.Name,
-        value: item.Name,
-        children: item.Districts
-          ? item.Districts.map((child) => ({
-              title: child.Name,
-              value: child.Name,
-              children: child.Wards
-                ? child.Wards.map((wards) => ({
-                    title: wards.Name,
-                    value: wards.Name,
-                  }))
-                : [],
-            }))
-          : [],
-      }));
-
-      setLocation(transformedData);
-    } catch (error) {
-      console.error(error);
-    }
-  };
-  const settingCity = () => {
-    if (location !== null && typeof location !== "undefined") {
-      const listCity = location.map((city) => city.value);
-      setLocationCity(listCity);
-    }
-  };
-  const settingWard = () => {
-    if (location !== null && typeof location !== "undefined") {
-      if (city !== null && typeof city !== "undefined") {
-        console.log(city);
-        const selectedCity = location.find((c) => c.value === city);
-
-        if (selectedCity) {
-          console.log("hello");
-          const listWard = selectedCity.children.map((ward) => ({
-            title: ward.title,
-            value: ward.value,
-            children: ward.children,
-          }));
-          setLocationWard(listWard);
-        }
-      }
-    }
-  };
-  const settingCounty = () => {
-    if (location !== null && typeof location !== "undefined") {
-      if (ward !== null && typeof ward !== "undefined") {
-        const selectedCounty = locationWard.find((c) => c.value === ward);
-
-        if (selectedCounty) {
-          const listCounty = selectedCounty.children.map((county) => ({
-            title: county.title,
-            value: county.value,
-          }));
-          setLocationCounty(listCounty);
-        }
-      }
-    }
-  };
-
   const handleInputName = () => {
     const inputValue = inputName.current.value;
     if (validateInput(inputValue) && inputValue != " ") {
@@ -165,95 +92,91 @@ export default function SuperModal({
       setErrorName(true);
     }
   };
-  const handleInputAddress = () => {
-    const inputValue = inputAddress.current.value;
-    if (validateInput(inputValue) && inputValue != " ") {
-      setAddress(inputValue);
+  const handleMember = () => {
+    const inputValue = inputMember.current.value;
+    if (validateInputNumber(inputValue) && inputValue != " ") {
+      setMember(inputValue);
       setErrorAddress(false);
     } else {
       setErrorAddress(true);
     }
   };
-  const handleInputCostElectric = () => {
-    const inputValue = inputCostElectricity.current.value;
+  const handlePriceRoom = () => {
+    const inputValue = inputPriceRoom.current.value;
     if (validateInputNumber(inputValue) && inputValue != " ") {
-      setCostElectricity(inputValue);
+      setPriceRoom(inputValue);
+      setErrorAddress(false);
+    } else {
+      setErrorAddress(true);
+    }
+  };
+  const handleInputCostDeposit = () => {
+    const inputValue = inputCostDeposit.current.value;
+    if (validateInputNumber(inputValue) && inputValue != " ") {
+      setCostDeposit(inputValue);
       setErrorCostElectric(false);
     } else {
       setErrorCostElectric(true);
     }
   };
-  const handleInputCostWater = () => {
-    const inputValue = inputCostWater.current.value;
+  const handleInputCostArea = () => {
+    const inputValue = inputCostArea.current.value;
     if (validateInputNumber(inputValue) && inputValue != " ") {
-      setCostWater(inputValue);
+      setCostArea(inputValue);
       setErrorWater(false);
     } else {
       setErrorWater(true);
     }
   };
-  const HandleSubmit = () => {
+  const HandleSubmit = async () => {
     handleInputName();
-    handleInputAddress();
-    handleInputCostElectric();
-    handleInputCostWater();
-
+    handleMember();
+    handlePriceRoom();
+    handleInputCostDeposit();
+    handleInputCostArea();
     if (
       name !== "" &&
-      address !== "" &&
-      CostElectricity !== null &&
-      CostWater !== null &&
-      city !== "" &&
-      county !== "" &&
-      ward !== ""
+      member !== "" &&
+      priceRoom !== null &&
+      CostDeposit !== null &&
+      CostArea !== "" &&
+      status !== "" &&
+      roomType !== ""
     ) {
       const setData = {
         name: name,
-        status: true,
-        location: {
-          district: city,
-          ward: ward,
-          province: county,
-        },
-        electricPrice: CostElectricity,
-        waterPrice: CostWater,
+        status: status,
+        quantityMember: parseInt(priceRoom),
+        roomType: roomType,
+        roomPrice: parseInt(priceRoom),
+        deposit: parseInt(CostDeposit),
+        area: parseInt(CostArea),
       };
-      updateService(setData);
+      console.log(setData, "setData");
+      await dispatch(addOneRoom({ setData, houseId }));
+      await dispatch(fetchRooms({ houseId }));
       handleClose();
     }
   };
-  React.useEffect(() => {
-    fetchLocation();
-  }, []);
 
-  React.useEffect(() => {
-    settingCity();
-  }, [location]);
-
-  React.useEffect(() => {
-    setWard("");
-    setCounty("");
-    settingWard();
-  }, [city]);
-  React.useEffect(() => {
-    settingCounty();
-  }, [ward]);
   const handleFileChange = (event) => {
     const file = event.target.files[0];
     setSelectedFile(file);
   };
 
-  const handleFileUpload = () => {
-    console.log(houseId,"lllllll");
+  const handleFileUpload = async () => {
     const formData = new FormData();
-    formData.append('excelFile', selectedFile);
-    formData.append('houseID', houseId);
-    console.log(formData,'ha');
-    AddRoomsFileService({formData});
+    formData.append("excelFile", selectedFile);
+    formData.set("houseId", houseId);
+    // AddRoomsFileService({data: formData} );
+    await dispatch(addRooms({ data: formData }));
+    await dispatch(fetchRooms({ houseId }));
+    handleClose();
   };
+
   const validateInput = (input) => {
-    const pattern = /^[a-zA-Z0-9\s]*$/;
-    return pattern.test(input);
+    const regex = /^[\p{L}\d\s]+$/u;
+    return regex.test(input);
   };
   const validateInputNumber = (input) => {
     return !isNaN(input);
@@ -275,7 +198,7 @@ export default function SuperModal({
                 component="h3"
                 sx={{ fontWeight: "Bold" }}
               >
-                Cập Nhật
+                Thêm Phòng
               </Typography>
               <IconButton
                 sx={{ position: "absolute", right: "10px" }}
@@ -285,14 +208,14 @@ export default function SuperModal({
               </IconButton>
             </Box>
             <Typography id="modal-modal-description" sx={stylesHeader}>
-              Cập nhật nhà vào hệ thống
+              Thêm Phòng Vào Nhà
             </Typography>
             <Box sx={stylesBody}>
               <Box sx={{ display: "flex" }}>
                 <TextField
                   required
                   id="outlined-basic"
-                  label="Tên Nhà"
+                  label="Tên Phòng"
                   variant="outlined"
                   sx={{ width: "100%" }}
                   inputRef={inputName}
@@ -302,102 +225,81 @@ export default function SuperModal({
               <Box sx={{ mt: "20px", display: "flex" }}>
                 <FormControl fullWidth sx={{ width: "30%" }}>
                   <InputLabel id="demo-simple-select-label">
-                    Tỉnh/Thành Phố
+                    Trạng Thái
                   </InputLabel>
                   <Select
                     labelId="demo-simple-select-label"
                     id="demo-simple-select"
-                    value={city}
-                    label="Tỉnh Thành Phố"
-                    onChange={handleChangeCity}
+                    value={status}
+                    label="Trạng Thái Nhà"
+                    onChange={handleChangeStatus}
                   >
-                    {locationCity ? (
-                      locationCity.map((city) => (
-                        <MenuItem value={city} key={city}>
-                          {city}
-                        </MenuItem>
-                      ))
-                    ) : (
-                      <div>Không Có Dữ Liệu</div>
-                    )}
+                    <MenuItem value={"Empty"} key={"Empty"}>
+                      Phòng Trống
+                    </MenuItem>
                   </Select>
                 </FormControl>
                 <FormControl fullWidth sx={{ width: "35%", ml: "20px" }}>
                   <InputLabel id="demo-simple-select-label">
-                    Quận/Huyện
+                    Loại Phòng
                   </InputLabel>
                   <Select
                     labelId="demo-simple-select-label"
                     id="demo-simple-select"
-                    value={ward}
-                    label="Quận Huyện"
-                    onChange={handleChangeWard}
+                    value={roomType}
+                    label="Loại Phòng"
+                    onChange={handleChangeRoomType}
                   >
-                    {locationWard ? (
-                      locationWard.map((city) => (
-                        <MenuItem value={city.value} key={city.title}>
-                          {city.title}
-                        </MenuItem>
-                      ))
-                    ) : (
-                      <div>Không Có Dữ Liệu</div>
-                    )}
+                    <MenuItem value={"normal"} key={"normal"}>
+                      Bình Thường
+                    </MenuItem>
                   </Select>
                 </FormControl>
-                <FormControl fullWidth sx={{ width: "35%", ml: "20px" }}>
-                  <InputLabel id="demo-simple-select-label">
-                    Phường/Xã
-                  </InputLabel>
-                  <Select
-                    labelId="demo-simple-select-label"
-                    id="demo-simple-select"
-                    value={county}
-                    label="Phường/Xã"
-                    onChange={handleChangeCounty}
-                  >
-                    {locationCounty ? (
-                      locationCounty.map((city) => (
-                        <MenuItem value={city.value} key={city.title}>
-                          {city.title}
-                        </MenuItem>
-                      ))
-                    ) : (
-                      <div>Không Có Dữ Liệu </div>
-                    )}
-                  </Select>
-                </FormControl>
+
+                <TextField
+                  required
+                  id="outlined-basic"
+                  label="Số Lượng Thành Viên"
+                  variant="outlined"
+                  sx={{ width: "35%", ml: "20px" }}
+                  inputRef={inputMember}
+                  error={errorAddress}
+                />
+                <p
+                  style={{ fontWeight: "bold", opacity: "0.5", color: "red" }}
+                ></p>
               </Box>
               <Box sx={{ mt: "20px" }}>
                 <TextField
                   required
                   id="outlined-basic"
-                  label="Địa Chỉ"
+                  label="Tiền Phòng"
                   variant="outlined"
                   sx={{ width: "100%" }}
-                  inputRef={inputAddress}
+                  inputRef={inputPriceRoom}
                   error={errorAddress}
                 />
-                <p style={{ fontWeight: "bold", opacity: "0.5", color: "red" }}>
-                  (Không nhập tên Xã/Phường,Quận/Huyện,Tỉnh/Thành Phố)
-                </p>
+                <p
+                  style={{ fontWeight: "bold", opacity: "0.5", color: "red" }}
+                ></p>
               </Box>
               <Box>
                 <TextField
                   required
                   id="outlined-basic"
-                  label="Tiền Điện Trên 1kwH"
+                  label="deposit"
                   variant="outlined"
                   sx={{ width: "50%", mr: "1%" }}
-                  inputRef={inputCostElectricity}
+                  inputRef={inputCostDeposit}
                   error={errorCostElectric}
                 />
                 <TextField
                   required
                   id="outlined-basic"
-                  label="Tiền Nước Trên 1 Khối"
+                  label="Diện Tích"
                   variant="outlined"
                   sx={{ width: "49%" }}
-                  inputRef={inputCostWater}
+                  inputRef={inputCostArea}
                   error={errorCostWater}
                 />
               </Box>
@@ -427,7 +329,7 @@ export default function SuperModal({
                 }}
                 onClick={() => HandleSubmit()}
               >
-                Cập Nhật
+                Thêm Phòng
               </Button>
             </Box>
           </Box>
@@ -464,7 +366,7 @@ export default function SuperModal({
                 onChange={handleFileChange}
                 className="input-file"
               />
-              <Button variant="contained" onClick={()=>handleFileUpload()}>
+              <Button variant="contained" onClick={() => handleFileUpload()}>
                 Upload
               </Button>
             </Box>
