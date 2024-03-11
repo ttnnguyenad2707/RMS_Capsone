@@ -10,8 +10,11 @@ import Select from "@mui/material/Select";
 import InputLabel from "@mui/material/InputLabel";
 import MenuItem from "@mui/material/MenuItem";
 import IconButton from "@mui/material/IconButton";
-import { AddRoomsFileService } from "../../../services/houses";
+import Tab from "@mui/material/Tab";
+import Tabs from "@mui/material/Tabs";
+import Notification from "../../../CommonComponents/Notification";
 import { useDispatch } from "react-redux";
+
 import {
   fetchRooms,
   addRooms,
@@ -25,13 +28,14 @@ const style = {
   left: "50%",
   transform: "translate(-50%, -50%)",
   width: 1200,
-  height: "50%",
+  height: "60%",
   bgcolor: "background.paper",
   border: "2px solid #grey",
   boxShadow: 25,
   p: 5,
   borderRadius: "10px",
   padding: "18px",
+  overflow: "auto",
 };
 const stylesHeader = {
   color: "#5A67BA",
@@ -42,6 +46,7 @@ const stylesHeader = {
 const stylesBody = {
   width: "100%",
   marginTop: "20px",
+  overflow: "auto",
 };
 export default function SuperModal({
   openModal,
@@ -61,6 +66,7 @@ export default function SuperModal({
   const [CostArea, setCostArea] = React.useState();
   const [status, setStatus] = React.useState("");
   const [roomType, setRoomType] = React.useState("");
+  const [value, setValue] = React.useState("2");
   const [selectedFile, setSelectedFile] = React.useState(null);
   const inputName = React.useRef();
   const inputMember = React.useRef();
@@ -153,7 +159,14 @@ export default function SuperModal({
         area: parseInt(CostArea),
       };
       console.log(setData, "setData");
-      await dispatch(addOneRoom({ setData, houseId }));
+      const response = await dispatch(addOneRoom({ setData, houseId }));
+      if (response.payload === "Created") {
+        await dispatch(fetchRooms({ houseId }));
+        Notification("Success", "Thêm Phòng", "Thành Công");
+        handleClose();
+      } else {
+        Notification("Error", "Thêm Danh Sách Phòng", "Thất Bại");
+      }
       await dispatch(fetchRooms({ houseId }));
       handleClose();
     }
@@ -169,9 +182,14 @@ export default function SuperModal({
     formData.append("excelFile", selectedFile);
     formData.set("houseId", houseId);
     // AddRoomsFileService({data: formData} );
-    await dispatch(addRooms({ data: formData }));
-    await dispatch(fetchRooms({ houseId }));
-    handleClose();
+    const response = await dispatch(addRooms({ data: formData }));
+    if (response.payload === "Created") {
+      await dispatch(fetchRooms({ houseId }));
+      Notification("Success", "Thêm Danh Sách Phòng", "Thành Công");
+      handleClose();
+    } else {
+      Notification("Error", "Thêm Danh Sách Phòng", "Thất Bại");
+    }
   };
 
   const validateInput = (input) => {
@@ -183,7 +201,7 @@ export default function SuperModal({
   };
   return (
     <div>
-      {typeModal === "Thêm Một Phòng" ? (
+      {typeModal === "Thêm Phòng" ? (
         <Modal
           open={openModal}
           onClose={handleClose}
@@ -210,169 +228,166 @@ export default function SuperModal({
             <Typography id="modal-modal-description" sx={stylesHeader}>
               Thêm Phòng Vào Nhà
             </Typography>
-            <Box sx={stylesBody}>
-              <Box sx={{ display: "flex" }}>
-                <TextField
-                  required
-                  id="outlined-basic"
-                  label="Tên Phòng"
-                  variant="outlined"
-                  sx={{ width: "100%" }}
-                  inputRef={inputName}
-                  error={errorName}
-                />
-              </Box>
-              <Box sx={{ mt: "20px", display: "flex" }}>
-                <FormControl fullWidth sx={{ width: "30%" }}>
-                  <InputLabel id="demo-simple-select-label">
-                    Trạng Thái
-                  </InputLabel>
-                  <Select
-                    labelId="demo-simple-select-label"
-                    id="demo-simple-select"
-                    value={status}
-                    label="Trạng Thái Nhà"
-                    onChange={handleChangeStatus}
-                  >
-                    <MenuItem value={"Empty"} key={"Empty"}>
-                      Phòng Trống
-                    </MenuItem>
-                  </Select>
-                </FormControl>
-                <FormControl fullWidth sx={{ width: "35%", ml: "20px" }}>
-                  <InputLabel id="demo-simple-select-label">
-                    Loại Phòng
-                  </InputLabel>
-                  <Select
-                    labelId="demo-simple-select-label"
-                    id="demo-simple-select"
-                    value={roomType}
-                    label="Loại Phòng"
-                    onChange={handleChangeRoomType}
-                  >
-                    <MenuItem value={"normal"} key={"normal"}>
-                      Bình Thường
-                    </MenuItem>
-                  </Select>
-                </FormControl>
-
-                <TextField
-                  required
-                  id="outlined-basic"
-                  label="Số Lượng Thành Viên"
-                  variant="outlined"
-                  sx={{ width: "35%", ml: "20px" }}
-                  inputRef={inputMember}
-                  error={errorAddress}
-                />
-                <p
-                  style={{ fontWeight: "bold", opacity: "0.5", color: "red" }}
-                ></p>
-              </Box>
-              <Box sx={{ mt: "20px" }}>
-                <TextField
-                  required
-                  id="outlined-basic"
-                  label="Tiền Phòng"
-                  variant="outlined"
-                  sx={{ width: "100%" }}
-                  inputRef={inputPriceRoom}
-                  error={errorAddress}
-                />
-                <p
-                  style={{ fontWeight: "bold", opacity: "0.5", color: "red" }}
-                ></p>
-              </Box>
-              <Box>
-                <TextField
-                  required
-                  id="outlined-basic"
-                  label="deposit"
-                  variant="outlined"
-                  sx={{ width: "50%", mr: "1%" }}
-                  inputRef={inputCostDeposit}
-                  error={errorCostElectric}
-                />
-                <TextField
-                  required
-                  id="outlined-basic"
-                  label="Diện Tích"
-                  variant="outlined"
-                  sx={{ width: "49%" }}
-                  inputRef={inputCostArea}
-                  error={errorCostWater}
-                />
-              </Box>
-            </Box>
-            <Box
-              sx={{
-                display: "flex",
-                position: "absolute",
-                right: "18px",
-                bottom: "18px",
-              }}
+            <hr />
+            <Tabs
+              value={value}
+              onChange={handleChangeMenu}
+              textColor="primary"
+              indicatorColor="primary"
+              aria-label="secondary tabs example"
             >
-              <Button
-                variant="contained"
-                color="error"
-                sx={{ ml: "10px", fontWeight: "Bold" }}
-                onClick={() => handleClose()}
-              >
-                Hủy
-              </Button>
-              <Button
-                variant="contained"
-                sx={{
-                  ml: "10px",
-                  backgroundColor: "#5A67BA",
-                  fontWeight: "Bold",
-                }}
-                onClick={() => HandleSubmit()}
-              >
-                Thêm Phòng
-              </Button>
-            </Box>
+              <Tab value="1" label="Thêm Phòng" />
+              <Tab value="2" label="Thêm Danh Sách Phòng" />
+              <Tab value="3" label="Item Three" />
+            </Tabs>
+            {value === "1" && (
+              <Box sx={stylesBody}>
+                <Box sx={{ display: "flex" }}>
+                  <TextField
+                    required
+                    id="outlined-basic"
+                    label="Tên Phòng"
+                    variant="outlined"
+                    sx={{ width: "100%" }}
+                    inputRef={inputName}
+                    error={errorName}
+                  />
+                </Box>
+                <Box sx={{ mt: "20px", display: "flex" }}>
+                  <FormControl fullWidth sx={{ width: "30%" }}>
+                    <InputLabel id="demo-simple-select-label">
+                      Trạng Thái
+                    </InputLabel>
+                    <Select
+                      labelId="demo-simple-select-label"
+                      id="demo-simple-select"
+                      value={status}
+                      label="Trạng Thái Nhà"
+                      onChange={handleChangeStatus}
+                    >
+                      <MenuItem value={"Empty"} key={"Empty"}>
+                        Phòng Trống
+                      </MenuItem>
+                    </Select>
+                  </FormControl>
+                  <FormControl fullWidth sx={{ width: "35%", ml: "20px" }}>
+                    <InputLabel id="demo-simple-select-label">
+                      Loại Phòng
+                    </InputLabel>
+                    <Select
+                      labelId="demo-simple-select-label"
+                      id="demo-simple-select"
+                      value={roomType}
+                      label="Loại Phòng"
+                      onChange={handleChangeRoomType}
+                    >
+                      <MenuItem value={"normal"} key={"normal"}>
+                        Bình Thường
+                      </MenuItem>
+                    </Select>
+                  </FormControl>
+
+                  <TextField
+                    required
+                    id="outlined-basic"
+                    label="Số Lượng Thành Viên"
+                    variant="outlined"
+                    sx={{ width: "35%", ml: "20px" }}
+                    inputRef={inputMember}
+                    error={errorAddress}
+                  />
+                  <p
+                    style={{
+                      fontWeight: "bold",
+                      opacity: "0.5",
+                      color: "red",
+                    }}
+                  ></p>
+                </Box>
+                <Box sx={{ mt: "20px" }}>
+                  <TextField
+                    required
+                    id="outlined-basic"
+                    label="Tiền Phòng"
+                    variant="outlined"
+                    sx={{ width: "100%" }}
+                    inputRef={inputPriceRoom}
+                    error={errorAddress}
+                  />
+                  <p
+                    style={{
+                      fontWeight: "bold",
+                      opacity: "0.5",
+                      color: "red",
+                    }}
+                  ></p>
+                </Box>
+                <Box>
+                  <TextField
+                    required
+                    id="outlined-basic"
+                    label="deposit"
+                    variant="outlined"
+                    sx={{ width: "50%", mr: "1%" }}
+                    inputRef={inputCostDeposit}
+                    error={errorCostElectric}
+                  />
+                  <TextField
+                    required
+                    id="outlined-basic"
+                    label="Diện Tích"
+                    variant="outlined"
+                    sx={{ width: "49%" }}
+                    inputRef={inputCostArea}
+                    error={errorCostWater}
+                  />
+                </Box>
+                <Box
+                  sx={{
+                    display: "flex",
+                    justifyContent: "end",
+                    marginTop: "5%",
+                  }}
+                >
+                  <Button
+                    variant="contained"
+                    color="error"
+                    sx={{ ml: "10px", fontWeight: "Bold" }}
+                    onClick={() => handleClose()}
+                  >
+                    Hủy
+                  </Button>
+                  <Button
+                    variant="contained"
+                    sx={{
+                      ml: "10px",
+                      backgroundColor: "#5A67BA",
+                      fontWeight: "Bold",
+                    }}
+                    onClick={() => HandleSubmit()}
+                  >
+                    Thêm Phòng
+                  </Button>
+                </Box>
+              </Box>
+            )}
+            {value === "2" && (
+              <Box sx={stylesBody}>
+                <Typography variant="h5">Add File</Typography>
+                <input
+                  type="file"
+                  accept=".xlsx"
+                  onChange={handleFileChange}
+                  className="input-file"
+                />
+                <Button variant="contained" onClick={() => handleFileUpload()}>
+                  Upload
+                </Button>
+              </Box>
+            )}
           </Box>
         </Modal>
-      ) : (
-        <Modal
-          open={openModal}
-          onClose={handleClose}
-          aria-labelledby="modal-modal-title"
-          aria-describedby="modal-modal-description"
-        >
-          <Box sx={style}>
-            <Box sx={stylesHeader}>
-              <Typography
-                id="modal-modal-title"
-                variant="h4"
-                component="h3"
-                sx={{ fontWeight: "Bold" }}
-              >
-                Thêm File
-              </Typography>
-              <IconButton
-                sx={{ position: "absolute", right: "10px" }}
-                onClick={handleClose}
-              >
-                <CloseIcon />
-              </IconButton>
-            </Box>
-            <Box sx={stylesBody}>
-              <Typography variant="h5">Add File</Typography>
-              <input
-                type="file"
-                accept=".xlsx"
-                onChange={handleFileChange}
-                className="input-file"
-              />
-              <Button variant="contained" onClick={() => handleFileUpload()}>
-                Upload
-              </Button>
-            </Box>
-          </Box>
-        </Modal>
-      )}
+      ) : null}
     </div>
   );
 }

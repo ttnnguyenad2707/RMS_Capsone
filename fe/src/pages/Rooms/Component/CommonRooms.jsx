@@ -115,44 +115,6 @@ const CommonRooms = ({ houseData }) => {
             Thông Tin Phòng
           </p>
         </Box>
-        {/* <TableContainer component={Paper} sx={{ mt: "20px" }}>
-          <Table>
-            <TableHead>
-              <TableRow>
-                <TableCell>Tầng</TableCell>
-                <TableCell>Tên</TableCell>
-                <TableCell>Trạng thái</TableCell>
-                <TableCell>Số lượng người</TableCell>
-                <TableCell>Diện Tích</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {displayedData ? (
-                displayedData.map((room, index) => (
-                  <TableRow key={index}>
-                    <TableCell>{room.floor}</TableCell>
-                    <TableCell>{room.name}</TableCell>
-                    <TableCell>{room.status}</TableCell>
-                    <TableCell>{room.quantityMember}</TableCell>
-                    <TableCell>{room.area}</TableCell>
-                  </TableRow>
-                ))
-              ) : (
-                <Box>Không Có Dữ Liệu</Box>
-              )}
-            </TableBody>
-            <TableFooter>
-              <TablePagination
-                rowsPerPageOptions={[5, 10, 25]}
-                count={roomsData.length}
-                rowsPerPage={rowsPerPage}
-                page={page}
-                onPageChange={handleChangePage}
-                onRowsPerPageChange={handleChangeRowsPerPage}
-              />
-            </TableFooter>
-          </Table>
-        </TableContainer> */}
         <RoomList house={houseData}/>
       </Box>
     </Box>

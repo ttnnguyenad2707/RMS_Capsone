@@ -11,12 +11,11 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 import { v4 as uuidv4 } from "uuid";
 import axios from "axios";
-import Slider from "react-slick";
+import Notification from "../../../CommonComponents/Notification";
 import {
   fetchCommentNews,
   addCommentNews,
 } from "../../../reduxToolkit/CommentSlice";
-import Notification from "../../../CommonComponents/Notification";
 import "../scss/modal.scss";
 const ModalNews = ({ handleClose, open, typeModal, houseID, dataNews }) => {
   const comments = useSelector((state) => state.comment.comments);
