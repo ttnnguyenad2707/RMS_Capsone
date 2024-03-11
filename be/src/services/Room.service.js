@@ -4,7 +4,7 @@ import HousesModel from "../models/Houses.model.js";
 import AccountModel from "../models/Account.model.js";
 import bcrypt from "bcrypt";
 import Image from "../models/Upload.model.js";
-
+import {v2 as cloudinary} from 'cloudinary';
 
 const RoomService = {
     addRoom: async (req) => {
@@ -196,10 +196,11 @@ const RoomService = {
         try {
             const {roomId} = req.params;
             const room = await Rooms.findById(roomId);
-            
+            const result = await cloudinary.uploader.upload(req.file.path);
+
             const image = new Image({
                 imageName: req.file.mimetype,
-                imageData: req.file.buffer
+                imageData: result.secure_url
             })
             await image.save();
             room.members.push({...req.body,avatar: image.id})
