@@ -20,7 +20,7 @@ import {
   addRooms,
   addOneRoom,
 } from "../../../reduxToolkit/RoomSlice";
-import axios from "axios";
+import UtilitiesTab from "../../Houses/Component/UtilitiesTab";
 import "../Scss/Popup.scss";
 const style = {
   position: "absolute",
@@ -66,7 +66,7 @@ export default function SuperModal({
   const [CostArea, setCostArea] = React.useState();
   const [status, setStatus] = React.useState("");
   const [roomType, setRoomType] = React.useState("");
-  const [value, setValue] = React.useState("2");
+  const [value, setValue] = React.useState("1");
   const [selectedFile, setSelectedFile] = React.useState(null);
   const inputName = React.useRef();
   const inputMember = React.useRef();
@@ -177,7 +177,7 @@ export default function SuperModal({
     const file = event.target.files[0];
     setSelectedFile(file);
   };
-
+  // Upload file to be
   const handleFileUpload = async () => {
     const formData = new FormData();
     formData.append("excelFile", selectedFile);
@@ -192,203 +192,237 @@ export default function SuperModal({
       Notification("Error", "Thêm Danh Sách Phòng", "Thất Bại");
     }
   };
-
-  const validateInput = (input) => {
-    const regex = /^[\p{L}\d\s]+$/u;
-    return regex.test(input);
-  };
+  // const validateInput = (input) => {
+  //   const regex = /^[\p{L}\d\s]+$/u;
+  //   return regex.test(input);
+  // };
   const validateInputNumber = (input) => {
     return !isNaN(input);
   };
-  return (
-    <div>
-      {typeModal === "Thêm Phòng" ? (
-        <Modal
-          open={openModal}
-          onClose={handleClose}
-          aria-labelledby="modal-modal-title"
-          aria-describedby="modal-modal-description"
-        >
-          <Box sx={style}>
-            <Box sx={stylesHeader}>
-              <Typography
-                id="modal-modal-title"
-                variant="h4"
-                component="h3"
-                sx={{ fontWeight: "Bold" }}
-              >
-                Thêm Phòng
-              </Typography>
-              <IconButton
-                sx={{ position: "absolute", right: "10px" }}
-                onClick={handleClose}
-              >
-                <CloseIcon />
-              </IconButton>
-            </Box>
-            <Typography id="modal-modal-description" sx={stylesHeader}>
-              Thêm Phòng Vào Nhà
-            </Typography>
-            <hr />
-            <Tabs
-              value={value}
-              onChange={handleChangeMenu}
-              textColor="primary"
-              indicatorColor="primary"
-              aria-label="secondary tabs example"
+  if (typeModal === "Thêm Phòng") {
+    return (
+      <Modal
+        open={openModal}
+        onClose={handleClose}
+        aria-labelledby="modal-modal-title"
+        aria-describedby="modal-modal-description"
+      >
+        <Box sx={style}>
+          <Box sx={stylesHeader}>
+            <Typography
+              id="modal-modal-title"
+              variant="h4"
+              component="h3"
+              sx={{ fontWeight: "Bold" }}
             >
-              <Tab value="1" label="Thêm Phòng" />
-              <Tab value="2" label="Thêm Danh Sách Phòng" />
-              <Tab value="3" label="Item Three" />
-            </Tabs>
-            {value === "1" && (
-              <Box sx={stylesBody}>
-                <Box sx={{ display: "flex" }}>
-                  <TextField
-                    required
-                    id="outlined-basic"
-                    label="Tên Phòng"
-                    variant="outlined"
-                    sx={{ width: "100%" }}
-                    inputRef={inputName}
-                    error={errorName}
-                  />
-                </Box>
-                <Box sx={{ mt: "20px", display: "flex" }}>
-                  <FormControl fullWidth sx={{ width: "30%" }}>
-                    <InputLabel id="demo-simple-select-label">
-                      Trạng Thái
-                    </InputLabel>
-                    <Select
-                      labelId="demo-simple-select-label"
-                      id="demo-simple-select"
-                      value={status}
-                      label="Trạng Thái Nhà"
-                      onChange={handleChangeStatus}
-                    >
-                      <MenuItem value={"Empty"} key={"Empty"}>
-                        Phòng Trống
-                      </MenuItem>
-                    </Select>
-                  </FormControl>
-                  <FormControl fullWidth sx={{ width: "35%", ml: "20px" }}>
-                    <InputLabel id="demo-simple-select-label">
-                      Loại Phòng
-                    </InputLabel>
-                    <Select
-                      labelId="demo-simple-select-label"
-                      id="demo-simple-select"
-                      value={roomType}
-                      label="Loại Phòng"
-                      onChange={handleChangeRoomType}
-                    >
-                      <MenuItem value={"normal"} key={"normal"}>
-                        Bình Thường
-                      </MenuItem>
-                    </Select>
-                  </FormControl>
-
-                  <TextField
-                    required
-                    id="outlined-basic"
-                    label="Số Lượng Thành Viên"
-                    variant="outlined"
-                    sx={{ width: "35%", ml: "20px" }}
-                    inputRef={inputMember}
-                    error={errorAddress}
-                  />
-                  <p
-                    style={{
-                      fontWeight: "bold",
-                      opacity: "0.5",
-                      color: "red",
-                    }}
-                  ></p>
-                </Box>
-                <Box sx={{ mt: "20px" }}>
-                  <TextField
-                    required
-                    id="outlined-basic"
-                    label="Tiền Phòng"
-                    variant="outlined"
-                    sx={{ width: "100%" }}
-                    inputRef={inputPriceRoom}
-                    error={errorAddress}
-                  />
-                  <p
-                    style={{
-                      fontWeight: "bold",
-                      opacity: "0.5",
-                      color: "red",
-                    }}
-                  ></p>
-                </Box>
-                <Box>
-                  <TextField
-                    required
-                    id="outlined-basic"
-                    label="deposit"
-                    variant="outlined"
-                    sx={{ width: "50%", mr: "1%" }}
-                    inputRef={inputCostDeposit}
-                    error={errorCostElectric}
-                  />
-                  <TextField
-                    required
-                    id="outlined-basic"
-                    label="Diện Tích"
-                    variant="outlined"
-                    sx={{ width: "49%" }}
-                    inputRef={inputCostArea}
-                    error={errorCostWater}
-                  />
-                </Box>
-                <Box
-                  sx={{
-                    display: "flex",
-                    justifyContent: "end",
-                    marginTop: "5%",
-                  }}
-                >
-                  <Button
-                    variant="contained"
-                    color="error"
-                    sx={{ ml: "10px", fontWeight: "Bold" }}
-                    onClick={() => handleClose()}
-                  >
-                    Hủy
-                  </Button>
-                  <Button
-                    variant="contained"
-                    sx={{
-                      ml: "10px",
-                      backgroundColor: "#5A67BA",
-                      fontWeight: "Bold",
-                    }}
-                    onClick={() => HandleSubmit()}
-                  >
-                    Thêm Phòng
-                  </Button>
-                </Box>
-              </Box>
-            )}
-            {value === "2" && (
-              <Box sx={stylesBody}>
-                <Typography variant="h5">Add File</Typography>
-                <input
-                  type="file"
-                  accept=".xlsx"
-                  onChange={handleFileChange}
-                  className="input-file"
+              Thêm Phòng
+            </Typography>
+            <IconButton
+              sx={{ position: "absolute", right: "10px" }}
+              onClick={handleClose}
+            >
+              <CloseIcon />
+            </IconButton>
+          </Box>
+          <Typography id="modal-modal-description" sx={stylesHeader}>
+            Thêm Phòng Vào Nhà
+          </Typography>
+          <hr />
+          <Tabs
+            value={value}
+            onChange={handleChangeMenu}
+            textColor="primary"
+            indicatorColor="primary"
+            aria-label="secondary tabs example"
+          >
+            <Tab value="1" label="Thêm Phòng" />
+            <Tab value="2" label="Thêm Danh Sách Phòng" />
+            <Tab value="3" label="Item Three" />
+          </Tabs>
+          {value === "1" && (
+            <Box sx={stylesBody}>
+              <Box sx={{ display: "flex" }}>
+                <TextField
+                  required
+                  id="outlined-basic"
+                  label="Tên Phòng"
+                  variant="outlined"
+                  sx={{ width: "100%" }}
+                  inputRef={inputName}
+                  error={errorName}
                 />
-                <Button variant="contained" onClick={() => handleFileUpload()}>
-                  Upload
+              </Box>
+              <Box sx={{ mt: "20px", display: "flex" }}>
+                <FormControl fullWidth sx={{ width: "30%" }}>
+                  <InputLabel id="demo-simple-select-label">
+                    Trạng Thái
+                  </InputLabel>
+                  <Select
+                    labelId="demo-simple-select-label"
+                    id="demo-simple-select"
+                    value={status}
+                    label="Trạng Thái Nhà"
+                    onChange={handleChangeStatus}
+                  >
+                    <MenuItem value={"Empty"} key={"Empty"}>
+                      Phòng Trống
+                    </MenuItem>
+                  </Select>
+                </FormControl>
+                <FormControl fullWidth sx={{ width: "35%", ml: "20px" }}>
+                  <InputLabel id="demo-simple-select-label">
+                    Loại Phòng
+                  </InputLabel>
+                  <Select
+                    labelId="demo-simple-select-label"
+                    id="demo-simple-select"
+                    value={roomType}
+                    label="Loại Phòng"
+                    onChange={handleChangeRoomType}
+                  >
+                    <MenuItem value={"normal"} key={"normal"}>
+                      Bình Thường
+                    </MenuItem>
+                  </Select>
+                </FormControl>
+
+                <TextField
+                  required
+                  id="outlined-basic"
+                  label="Số Lượng Thành Viên"
+                  variant="outlined"
+                  sx={{ width: "35%", ml: "20px" }}
+                  inputRef={inputMember}
+                  error={errorAddress}
+                />
+                <p
+                  style={{
+                    fontWeight: "bold",
+                    opacity: "0.5",
+                    color: "red",
+                  }}
+                ></p>
+              </Box>
+              <Box sx={{ mt: "20px" }}>
+                <TextField
+                  required
+                  id="outlined-basic"
+                  label="Tiền Phòng"
+                  variant="outlined"
+                  sx={{ width: "100%" }}
+                  inputRef={inputPriceRoom}
+                  error={errorAddress}
+                />
+                <p
+                  style={{
+                    fontWeight: "bold",
+                    opacity: "0.5",
+                    color: "red",
+                  }}
+                ></p>
+              </Box>
+              <Box>
+                <TextField
+                  required
+                  id="outlined-basic"
+                  label="deposit"
+                  variant="outlined"
+                  sx={{ width: "50%", mr: "1%" }}
+                  inputRef={inputCostDeposit}
+                  error={errorCostElectric}
+                />
+                <TextField
+                  required
+                  id="outlined-basic"
+                  label="Diện Tích"
+                  variant="outlined"
+                  sx={{ width: "49%" }}
+                  inputRef={inputCostArea}
+                  error={errorCostWater}
+                />
+              </Box>
+              <Box
+                sx={{
+                  display: "flex",
+                  justifyContent: "end",
+                  marginTop: "5%",
+                }}
+              >
+                <Button
+                  variant="contained"
+                  color="error"
+                  sx={{ ml: "10px", fontWeight: "Bold" }}
+                  onClick={() => handleClose()}
+                >
+                  Hủy
+                </Button>
+                <Button
+                  variant="contained"
+                  sx={{
+                    ml: "10px",
+                    backgroundColor: "#5A67BA",
+                    fontWeight: "Bold",
+                  }}
+                  onClick={() => HandleSubmit()}
+                >
+                  Thêm Phòng
                 </Button>
               </Box>
-            )}
+            </Box>
+          )}
+          {value === "2" && (
+            <Box sx={stylesBody}>
+              <Typography variant="h5">Add File</Typography>
+              <input
+                type="file"
+                accept=".xlsx"
+                onChange={handleFileChange}
+                className="input-file"
+                style={{ width: "50%" }}
+              />
+              <Button
+                variant="contained"
+                sx={{ ml: 2 }}
+                onClick={() => handleFileUpload()}
+              >
+                Upload
+              </Button>
+            </Box>
+          )}
+        </Box>
+      </Modal>
+    );
+  } else if (typeModal === "Cấu Hình Bảng Giá") {
+    return (
+      <Modal
+        open={openModal}
+        onClose={handleClose}
+        aria-labelledby="modal-modal-title"
+        aria-describedby="modal-modal-description"
+      >
+        <Box sx={style}>
+          <Box sx={stylesHeader}>
+            <Typography
+              id="modal-modal-title"
+              variant="h4"
+              component="h3"
+              sx={{ fontWeight: "Bold" }}
+            >
+              Thêm Phòng
+            </Typography>
+            <IconButton
+              sx={{ position: "absolute", right: "10px" }}
+              onClick={handleClose}
+            >
+              <CloseIcon />
+            </IconButton>
           </Box>
-        </Modal>
-      ) : null}
-    </div>
-  );
+          <Typography id="modal-modal-description" sx={stylesHeader}>
+            Thêm Phòng Vào Nhà
+          </Typography>
+          <hr />
+        </Box>
+      </Modal>
+    );
+  }
 }
