@@ -11,6 +11,8 @@ import problemRoute from "./problem.router.js";
 import newsRouter from "./news.router.js";
 import defaultPriceRoute from "./Defaultprice.route.js";
 import paymentRoute from "./Payment.route.js";
+import BillController from "../controllers/Bill.controller.js";
+import billRoute from "./Bill.route.js";
 
 const indexRouter = express.Router();
 
@@ -24,4 +26,5 @@ indexRouter.use("/auth/facebook",FacebookAuthRoute)
 indexRouter.use("/auth", AuthRoute);
 indexRouter.use("/defaultPrice",defaultPriceRoute)
 indexRouter.use("/payment",paymentRoute)
+indexRouter.use("/bill",billRoute)
 export default indexRouter;
