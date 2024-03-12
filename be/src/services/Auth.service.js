@@ -4,7 +4,7 @@ import bcrypt from "bcrypt";
 import TokenService from "./Token.service.js";
 import { customAlphabet } from "nanoid";
 import sendEmail from "../utils/mailer.js";
-
+ 
 class AuthService {
     async login(req, res) {
         try {
