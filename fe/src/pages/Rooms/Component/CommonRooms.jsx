@@ -19,8 +19,8 @@ import RoomList from "./RoomList";
 const CommonRooms = ({ houseData }) => {
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
   const [page, setPage] = React.useState(0);
-  const roomsData = useSelector((state) => state.room.rooms);
-  const dispatch = useDispatch();
+  // const roomsData = useSelector((state) => state.room.rooms);
+  // const dispatch = useDispatch();
   const data = [
     {
       category: "Tên Chủ Nhà",
@@ -48,14 +48,13 @@ const CommonRooms = ({ houseData }) => {
     },
     // Thêm dữ liệu danh mục và nội dung tương ứng ở đây
   ];
-  React.useEffect(()=> {
-    if(houseData){
-      const houseId = houseData._id;
-      console.log(houseId,"houseId");
-      dispatch(fetchRooms({houseId}));
-    }
-  },[houseData])
-  console.log(roomsData,"roomsData");
+  // React.useEffect(()=> {
+  //   if(houseData){
+  //     const houseId = houseData._id;
+  //     console.log(houseId,"houseId");
+  //     dispatch(fetchRooms({houseId}));
+  //   }
+  // },[houseData])
   // Thêm dữ liệu danh mục và nội dung tương ứng ở đây
   return (
     <Box>
@@ -115,45 +114,7 @@ const CommonRooms = ({ houseData }) => {
             Thông Tin Phòng
           </p>
         </Box>
-        {/* <TableContainer component={Paper} sx={{ mt: "20px" }}>
-          <Table>
-            <TableHead>
-              <TableRow>
-                <TableCell>Tầng</TableCell>
-                <TableCell>Tên</TableCell>
-                <TableCell>Trạng thái</TableCell>
-                <TableCell>Số lượng người</TableCell>
-                <TableCell>Diện Tích</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {displayedData ? (
-                displayedData.map((room, index) => (
-                  <TableRow key={index}>
-                    <TableCell>{room.floor}</TableCell>
-                    <TableCell>{room.name}</TableCell>
-                    <TableCell>{room.status}</TableCell>
-                    <TableCell>{room.quantityMember}</TableCell>
-                    <TableCell>{room.area}</TableCell>
-                  </TableRow>
-                ))
-              ) : (
-                <Box>Không Có Dữ Liệu</Box>
-              )}
-            </TableBody>
-            <TableFooter>
-              <TablePagination
-                rowsPerPageOptions={[5, 10, 25]}
-                count={roomsData.length}
-                rowsPerPage={rowsPerPage}
-                page={page}
-                onPageChange={handleChangePage}
-                onRowsPerPageChange={handleChangeRowsPerPage}
-              />
-            </TableFooter>
-          </Table>
-        </TableContainer> */}
-        <RoomList house={houseData}/>
+        <RoomList house={houseData} />
       </Box>
     </Box>
   );

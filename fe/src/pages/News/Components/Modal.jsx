@@ -11,11 +11,11 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 import { v4 as uuidv4 } from "uuid";
 import axios from "axios";
+import Notification from "../../../CommonComponents/Notification";
 import {
   fetchCommentNews,
   addCommentNews,
 } from "../../../reduxToolkit/CommentSlice";
-import Notification from "../../../CommonComponents/Notification";
 import "../scss/modal.scss";
 const ModalNews = ({ handleClose, open, typeModal, houseID, dataNews }) => {
   const comments = useSelector((state) => state.comment.comments);
@@ -322,7 +322,23 @@ const ModalNews = ({ handleClose, open, typeModal, houseID, dataNews }) => {
           </Box>
           <Box>
             {dataNews.images.length >= 0 ? (
-              dataNews.images.length >= 3 ? null : ( // </Slider> //   ))} //     <img src={image} alt="Ảnh miêu tả" key={index} /> //   {dataNews.images.map((image, index) => ( // <Slider {...settings}>
+              dataNews.images.length >= 3 ? // <ImageList
+              //   sx={{ width: 500, height: 450 }}
+              //   cols={3}
+              //   rowHeight={164}
+              // >
+              //   {images.map((item) => (
+              //     <ImageListItem key={item.img}>
+              //       <img
+              //         srcSet={`${item.img}?w=164&h=164&fit=crop&auto=format&dpr=2 2x`}
+              //         src={`${item.img}?w=164&h=164&fit=crop&auto=format`}
+              //         alt={item.title}
+              //         loading="lazy"
+              //       />
+              //     </ImageListItem>
+              //   ))}
+              // </ImageList>
+              null : (
                 <Box className="d-flex">
                   {dataNews.images.map((image, index) => (
                     <img
