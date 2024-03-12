@@ -1,5 +1,15 @@
 import { Schema, model } from "mongoose";
 
+const priceItemSchema = Schema({
+    base: {
+        type: Schema.ObjectId,
+        ref: "DefaultPrice",
+    },
+    sum: {
+        type: Number,
+    } 
+})
+
 const Bills = Schema({
     roomId : {
         type: Schema.ObjectId,
@@ -21,6 +31,9 @@ const Bills = Schema({
         type: Number,
         require: true,
     },
+    priceList: [{
+        type : priceItemSchema
+    }],
     debt: {
         type: Number,
         require: true,
@@ -29,7 +42,7 @@ const Bills = Schema({
         type: String,
         default: ""
     },
-    paid: {
+    isPaid: {
         type: Boolean,
         default: false,
     },

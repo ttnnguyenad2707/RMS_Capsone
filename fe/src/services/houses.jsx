@@ -123,12 +123,68 @@ export const getOneRoom = async (id) => {
   });
 }
 
+export const removeRoom = async (id) => {
+  const token = Cookies.get("accessToken");
+  return await axios.delete(`${URL_SERVER}/house/room/${id}`, {
+    withCredentials: true,
+    headers: {
+      authorization: `Bearer ${token}`,
+    },
+  });
+}
+
 export const getFloor = async (houseId) => {
   const token = Cookies.get("accessToken");
   return await axios.get(`${URL_SERVER}/house/${houseId}/floor`, {
     withCredentials: true,
     headers: {
       authorization: `Bearer ${token}`,
+    },
+  });
+}
+
+export const addMember = async (roomId,formData) => {
+  const token = Cookies.get("accessToken");
+  return await axios.post(`${URL_SERVER}/house/room/${roomId}/member`, formData,{
+    withCredentials: true,
+    headers: {
+      authorization: `Bearer ${token}`,
+      "Content-Type": "multipart/form-data",
+      Accept: "application/json",
+    },
+  });
+}
+
+export const removeMember = async (memberId,roomId) => {
+  const token = Cookies.get("accessToken");
+  return await axios.put(`${URL_SERVER}/house/room/${roomId}/delete/member`, {
+    memberId
+  },{
+    withCredentials: true,
+    headers: {
+      authorization: `Bearer ${token}`,
+    },
+  });
+}
+
+export const getMember = async (memberId,roomId) => {
+  const token = Cookies.get("accessToken");
+  return await axios.get(`${URL_SERVER}/house/room/${roomId}/member/${memberId}`,{
+    withCredentials: true,
+    headers: {
+      authorization: `Bearer ${token}`,
+    },
+  });
+}
+
+export const updateInfoMember = async (roomId,formData) => {
+  const token = Cookies.get("accessToken");
+  return await axios.put(`${URL_SERVER}/house/room/${roomId}/member`,formData,{
+    withCredentials: true,
+    headers: {
+      authorization: `Bearer ${token}`,
+      "Content-Type": "multipart/form-data",
+      Accept: "application/json",
     },
   });
 }

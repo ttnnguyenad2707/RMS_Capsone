@@ -1,17 +1,24 @@
-import HousesModel from "../models/Houses.model.js";
+import BillsModel from "../models/Bills.model.js";
+import RoomsModel from "../models/Rooms.model.js";
 
 const BillService = {
-    createBills : async (req) => {
+    addBillInRoom : async (req) => {
         try {
+            const {roomId} = req.params;
+            const room = await RoomsModel.findById(roomId).populate("houseId");
+            const {electricNumber, waterUnit} = req.body;
             
-            const {houseId} = req.params;
-            const house = await HousesModel.findById(houseId);
-            if (!house) {
-                throw new Error("House Not Found")
-            }
-            else {
-                
-            }
+            
+            const bill = new BillsModel({
+                roomId,
+                roomPrice: room.roomPrice,
+                electricPrice: room.houseId.electricPrice * electricNumber,
+                waterPrice: room.houseId.waterPrice * waterUnit,
+                priceList: [
+                    {}
+                ]
+
+            })
         } catch (error) {
             throw error
         }

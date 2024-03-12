@@ -3,7 +3,8 @@ import Rooms from "../models/Rooms.model.js";
 import HousesModel from "../models/Houses.model.js";
 import AccountModel from "../models/Account.model.js";
 import bcrypt from "bcrypt";
-
+import Image from "../models/Upload.model.js";
+import {v2 as cloudinary} from 'cloudinary';
 
 const RoomService = {
     addRoom: async (req) => {
@@ -21,7 +22,7 @@ const RoomService = {
             for (let rowNumber = 1; rowNumber <= worksheet.rowCount; rowNumber++) {
                 const row = worksheet.getRow(rowNumber);
                 if (rowNumber !== 1 && row.getCell(1).value) {
-                    const floor = row.getCell(1).value.toString().charAt(0);
+                    const floor = row.getCell(1).value.toString().trim().charAt(0);
                     const rowData = await Rooms.create({
                         floor: floor,
                         name: row.getCell(1).value,
@@ -60,7 +61,7 @@ const RoomService = {
 
             const data = await Rooms.create({
                 houseId,
-                floor: req.body.name.charAt(0), 
+                floor: req.body.name.trim().charAt(0), 
                 ...req.body,
                 utilities: house.utilities,
                 otherUtilities: house.otherUtilities,
@@ -149,6 +150,7 @@ const RoomService = {
                 .populate("utilities")
                 .populate("otherUtilities")
                 .populate("houseId")
+                .populate("members.avatar")
             return {
                 ...room._doc,
                 currentMember: room.members.length
@@ -194,9 +196,19 @@ const RoomService = {
         try {
             const {roomId} = req.params;
             const room = await Rooms.findById(roomId);
-            room.members.push({...req.body})
+            const result = await cloudinary.uploader.upload(req.file.path);
+
+            const image = new Image({
+                imageName: req.file.mimetype,
+                imageData: result.secure_url
+            })
+            await image.save();
+            room.members.push({...req.body,avatar: image.id})
             await room.save();
-            return room;
+            return {
+                ...(room.members[room.members.length - 1])._doc,
+                avatar: image.imageData
+            };
         } catch (error) {
             throw error            
         }
@@ -217,16 +229,47 @@ const RoomService = {
         try {
             const {roomId} = req.params;
             const {memberId,...updateInfo} = req.body;
-            const room = await Rooms.findById(roomId);            
+            const room = await Rooms.findById(roomId).populate("members.avatar");  
+            let image;  
+            if (req.file) {
+                const result = await cloudinary.uploader.upload(req.file.path);
+
+                image = new Image({
+                    imageName: req.file.mimetype,
+                    imageData: result.secure_url
+                })
+                await image.save();
+            }        
             const memberIndex = room.members.findIndex(member => member.id === memberId);            
             if (memberIndex === -1) {
                 throw new Error("Member not found in the room");
             }
-            room.members[memberIndex] = {...updateInfo};            
-            await room.save();            
-            return room;
+            if (image) {
+                room.members[memberIndex] = { ...updateInfo, avatar: image.id };
+            } else {
+                room.members[memberIndex] = { ...updateInfo, avatar: room.members[memberIndex].avatar };
+            }
+           
+            await room.save();       
+            const roomUpdate = await Rooms.findById(roomId).populate("members.avatar");
+            return roomUpdate.members[memberIndex];
         } catch (error) {
             throw error;            
+        }
+    },
+    getMember: async (req) => {
+        try {
+            const {roomId,memberId} = req.params;
+            const room = await Rooms.findById(roomId).populate("members.avatar");
+            const memberIndex = await room.members.findIndex(member => member.id == memberId);
+            if (memberIndex === -1) {
+                throw new Error("Member not found in the room");
+            }  
+            return room.members[memberIndex]
+            
+        } catch (error) {
+            throw error;            
+            
         }
     }
     

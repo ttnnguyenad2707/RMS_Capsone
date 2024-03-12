@@ -4,7 +4,9 @@
   padding: 2rem;
   text-align: center;
 }
-
+div:where(.swal2-container){
+  z-index: 1400 !important;
+}
 .logo {
   height: 6em;
   padding: 1.5em;

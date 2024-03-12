@@ -13,23 +13,24 @@ const imageCCCD = Schema ({
 const member = Schema ({
     name: {
         type: String,
-        require: true ,
+        require: true,
     },
     phone: {
         type: String,
     },
-    DOB: {
+    dob: {
         type: String,
     },
     gender: {
         type: String,
-        enum: ["Nam","Nữ"]
+        enum: ["male","female"]
     },
     cccd: {
         type: String,
     },
     avatar: {
-        type: String,
+        type: Schema.ObjectId,
+        ref: "Upload"
     },
     imageCCCDs: [imageCCCD],
     note: {

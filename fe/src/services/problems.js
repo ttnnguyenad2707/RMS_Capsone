@@ -20,3 +20,13 @@ export const deleteProblem = async (problemId) => {
         },
     });
 };
+export const addProblemsInHouse = async (data) => {
+    // console.log("houseId" + houseId);
+    const token = Cookies.get("accessToken");
+    return await axios.post(`${URL_SERVER}/problem/`,data, {
+        withCredentials: true,
+        headers: {
+            authorization: `Bearer ${token}`,
+        },
+    });
+};

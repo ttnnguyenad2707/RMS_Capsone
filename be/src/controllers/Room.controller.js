@@ -98,7 +98,7 @@ const RoomController = {
             else res.status(404).json(response.errorResponse(404));
             
         } catch (error) {
-            return res.status(500).json(response.errorResponse(500));
+            return res.status(500).json(response.errorResponse(500,error.toString()));
         }
     }),
     removeMember: asyncHandler(async (req,res,next) => {
@@ -115,6 +115,17 @@ const RoomController = {
     updateMember: asyncHandler(async (req,res,next) => {
         try {
             const member = await RoomService.updateMember(req);
+
+            if (member) { return res.status(200).json(response.successResponse(200,member))}
+            else res.status(404).json(response.errorResponse(404));
+            
+        } catch (error) {
+            return res.status(500).json(response.errorResponse(500,error.toString()));
+        }
+    }),
+    getMember: asyncHandler(async (req,res,next) => {
+        try {
+            const member = await RoomService.getMember(req);
 
             if (member) { return res.status(200).json(response.successResponse(200,member))}
             else res.status(404).json(response.errorResponse(404));
