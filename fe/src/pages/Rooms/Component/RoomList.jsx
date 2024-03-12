@@ -16,8 +16,8 @@ import Paper from '@mui/material/Paper';
 import { useEffect, useState } from "react";
 import { formatMoney } from "../../../Utils";
 import PopupInfoRoom from "./PopupInfoRoom";
-import { GetRooms, getFloor } from "../../../services/houses";
-
+import { GetRooms, getFloor, removeRoom } from "../../../services/houses";
+import Notification from "../../../CommonComponents/Notification";
 const RoomList = ({house }) => {
     const [rooms,setRooms] = useState([]);
     const [open,setOpen] = useState(false);
@@ -76,8 +76,31 @@ const RoomList = ({house }) => {
     const handleEditButtonClick = (event) => {
         event.stopPropagation();
     };
-    const handleDeleteButtonClick = (event) => {
-        event.stopPropagation();
+    const handleDeleteButtonClick = async (e,roomId,roomName) => {
+        e.stopPropagation();
+        
+            Notification("Confirm","Xác nhận","Xoá phòng "+ roomName ).then(
+                async (result) => {
+                    if (result) {
+                        await removeRoom(roomId).then(data => {
+                            if (data.data.message === 'Updated'){
+                                Notification("Success", "Đã Xóa", "Thành Công");
+                                setRooms(prev => prev.filter(room => room._id !== roomId) )
+
+                            }
+                            else{
+                                Notification("Error", "Xảy ra lỗi", data.data.message);
+
+
+                            }
+                        })
+                        
+                    }else{
+                        Notification("Error", "Xảy ra lỗi", "");
+                    }
+                }
+                
+            )
     };
     return (
         <Box sx={{
@@ -85,7 +108,8 @@ const RoomList = ({house }) => {
         }}>
             <Box sx={{
                 display: "flex",
-                gap: 3
+                gap: 3,
+                mb: 3
             }}>
                 {floors?.map((floor,index) => (
                     <Button variant={floorSelected === floor ? "contained" : "outlined"} key={index} onClick={() => handleChangeFloor(floor)}>Tầng {floor}</Button>
@@ -93,17 +117,20 @@ const RoomList = ({house }) => {
 
             </Box>
             {rooms?.map((room,index) => (
-                <Accordion key={index} expanded={expanded[index] || false}  onChange={() => handleAccordionChange(index)}>
+                <Accordion  key={index} expanded={expanded[index] || false}  onChange={() => handleAccordionChange(index)}>
                     <AccordionSummary
-                        expandIcon={<ExpandMoreIcon />}
+                        sx={{
+                            background: room.members.length === 0 ?"#183446":"#1abc9c"
+                        }}
+                        expandIcon={<ExpandMoreIcon style={{color: "#FFF"}}/>}
                     >
                         <Box sx={{
                             display: "flex",
                             justifyContent: "space-between",
                             width: "100%",
-                            p: 1
+                            p: 0
                         }}>
-                            <Typography sx={{ fontSize: "20px" }}>
+                            <Typography sx={{ fontSize: "20px",color: "#FFF" }}>
                                 Phòng {room.name} - {room.members.length === 0 ? "Đang trống" : "Đang ở"}
                             </Typography>
                             <Box sx={{
@@ -111,7 +138,7 @@ const RoomList = ({house }) => {
                                 gap: 3
                             }}>
                                 <Button variant="contained" onClick={handleEditButtonClick}>Sửa thông tin</Button>
-                                <Button variant="contained" color="error" onClick={handleDeleteButtonClick}>Xoá</Button>
+                                <Button variant="contained" color="error" onClick={(e) => handleDeleteButtonClick(e,room._id,room.name)}>Xoá</Button>
 
                             </Box>
                         </Box>

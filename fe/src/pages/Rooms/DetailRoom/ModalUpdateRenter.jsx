@@ -3,9 +3,9 @@ import Typography from '@mui/material/Typography';
 import Modal from '@mui/material/Modal';
 import { Formik, Field, Form, ErrorMessage } from 'formik';
 import { TextField, Select, MenuItem, Button, FormControl, InputLabel, FormHelperText } from "@mui/material";
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useLayoutEffect, useMemo, useState } from 'react';
 import Notification from '../../../CommonComponents/Notification';
-import { getMember } from '../../../services/houses';
+import { getMember, updateInfoMember } from '../../../services/houses';
 
 
 const style = {
@@ -22,13 +22,16 @@ const style = {
 const ModalUpdateRenter = ({ handleClose, open, room, setMembers, memberId }) => {
     const [file, setFile] = useState();
     const [imagePreview, setImagePreview] = useState(null);
-    const [member, setMember] = useState()
     const [initialValues, setInitialValues] = useState()
     const [isLoading, setIsLoading] = useState(true);
+
+    console.log(initialValues)
     useEffect(() => {
         async function fetchMember() {
+            setImagePreview(null);
+            setInitialValues(null);
+            setIsLoading(true);
             await getMember(memberId, room._id).then(data => {
-                setMember(data.data.data);
                 setInitialValues({
                     name: data.data.data.name,
                     phone: data.data.data.phone,
@@ -36,13 +39,18 @@ const ModalUpdateRenter = ({ handleClose, open, room, setMembers, memberId }) =>
                     gender: data.data.data.gender,
                     dob: data.data.data.dob,
                     note: data.data.data.note,
-                    avatar: ""
                 });
+                if(data.data.data.avatar.imageData){
+                    setImagePreview(data.data.data.avatar.imageData)
+                }
+                else{
+                    setImagePreview(null)
+                }
                 setIsLoading(false);
             });
         }
         fetchMember();
-    }, [memberId,open])
+    }, [memberId])
     const handleChangeFile = (e) => {
         const file = e.currentTarget.files[0]
         setFile(file)
@@ -61,31 +69,34 @@ const ModalUpdateRenter = ({ handleClose, open, room, setMembers, memberId }) =>
     const handleSubmit = async (values, { resetForm, setSubmitting }) => {
         try {
             const formData = new FormData();
-            formData.append("avatar", file)
+            if (file){
+                formData.append("avatar", file)
+            }
+            formData.set("memberId",memberId)
             formData.set("name", values.name)
             formData.set("phone", values.phone)
             formData.set("cccd", values.cccd)
             formData.set("gender", values.gender)
             formData.set("dob", values.dob)
             formData.set("note", values.note)
-            await addMember(room._id, formData).then(data => {
-                setMembers(prev => [...prev, {
-                    _id: data.data.data._id,
-                    name: values.name,
-                    phone: values.phone,
-                    cccd: values.cccd,
-                    gender: values.gender,
-                    dob: values.dob,
-                    note: values.note,
-                }])
+            await updateInfoMember(room._id, formData).then(data => {
+                console.log(data.data.data)
+                setMembers(prevMembers => {
+                    const updatedMembers = prevMembers.map(member => {
+                        if (member._id === memberId) {
+                            return data.data.data;
+                        }
+                        return member;
+                    });
+                    return updatedMembers;
+                });
             })
 
             handleClose()
             resetForm();
-            Notification("Success", "Thêm Thành Viên", "Thành Công");
+            Notification("Success", "Sửa thông tin", "Thành Công");
         } catch (error) {
             alert('Failed to add member');
-            console.error('Error:', error);
         } finally {
             setSubmitting(false)
         }
@@ -227,7 +238,7 @@ const ModalUpdateRenter = ({ handleClose, open, room, setMembers, memberId }) =>
                                         }}
                                     >
                                         <Button variant="outlined" color="error" onClick={handleClose}>Huỷ</Button>
-                                        <Button type="submit" variant="contained" color="primary">Submit</Button>
+                                        <Button type="submit" variant="contained" color="primary">Sửa</Button>
                                     </Box>
                                 </Form>
                             </Formik>

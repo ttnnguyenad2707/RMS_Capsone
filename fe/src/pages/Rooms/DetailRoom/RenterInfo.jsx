@@ -4,18 +4,24 @@ import Button from '@mui/material/Button';
 import { FaUser } from "react-icons/fa";
 import { useEffect, useState } from 'react';
 import ModalAddRenter from './ModalAddRenter';
-import { removeMember } from '../../../services/houses';
+import { getOneRoom, removeMember } from '../../../services/houses';
 import Notification from '../../../CommonComponents/Notification';
 import ModalUpdateRenter from './ModalUpdateRenter';
 
 
 const RenterInfo = (props) => {
     const { children, value, index, room, ...other } = props;
-    const [members,setMembers] = useState([]);
-    const [memberIdUpdate,setMemberIdUpdate] = useState()
+    const [members, setMembers] = useState([]);
+    const [memberIdUpdate, setMemberIdUpdate] = useState()
     useEffect(() => {
-        setMembers(room.members) 
-    },[props])
+        async function fetchRoom () {
+
+            await getOneRoom(room._id).then(data => {
+                setMembers(data.data.data.members)
+            })
+        }
+        fetchRoom()
+    }, [props])
     const [open, setOpen] = useState(false);
     const handleOpen = () => setOpen(true);
     const handleClose = () => setOpen(false);
@@ -27,22 +33,22 @@ const RenterInfo = (props) => {
     };
     const handleCloseUpdate = () => setOpenUpdate(false);
 
-    const handleRemoveMember = async (memberId,roomId) => {
-        
+    const handleRemoveMember = async (memberId, roomId) => {
+
         Notification("Confirm", "Xác nhận", "Xoá khách thuê này").then(
-            async(result) => {
+            async (result) => {
                 if (result) {
-                    await removeMember(memberId,roomId).then(data => {
-                        if (data.data.message === "Success"){
+                    await removeMember(memberId, roomId).then(data => {
+                        if (data.data.message === "Success") {
                             Notification("Success", "Đã Xóa", "Thành Công");
                         }
-                        else{
+                        else {
                             Notification("Error", "Xảy ra lỗi", "");
                         }
                     });
                     setMembers(prev => prev.filter(member => member._id !== memberId))
                 }
-                else{
+                else {
                     console.log("cancel")
                 }
             }
@@ -55,7 +61,7 @@ const RenterInfo = (props) => {
             id={`simple-tabpanel-${index}`}
             aria-labelledby={`simple-tab-${index}`}
             {...other}
-            
+
         >
             {value === index && (
                 <>
@@ -70,14 +76,14 @@ const RenterInfo = (props) => {
                             height: "600px",
                             overflowY: "auto"
                         }}>
-                            {members?.map((member,index) => (
+                            {members?.map((member, index) => (
                                 <Box key={index} sx={{
                                     mt: 3,
                                     border: "1px solid #CCC"
                                 }}>
                                     <Typography sx={{
                                         p: 1,
-                                        background: index === 0 ? "#e7505a": "#26c281",
+                                        background: index === 0 ? "#e7505a" : "#26c281",
                                         color: "#FFF",
                                         fontSize: "18px"
                                     }}>
@@ -88,7 +94,7 @@ const RenterInfo = (props) => {
                                         gap: 2,
                                         p: 2
                                     }}>
-                                        <img src="https://quanlynhatro.com/frontend3/assets/img/avatar_thue@1x.png" alt="avatar" height="100px" width="100px" />
+                                        <img src={member?.avatar?.imageData ? member?.avatar?.imageData : "https://quanlynhatro.com/frontend3/assets/img/avatar_thue@1x.png"} alt="avatar" height="100px" width="100px" />
                                         <Box sx={{
                                             width: "100%",
                                             display: "flex",
@@ -97,16 +103,16 @@ const RenterInfo = (props) => {
                                             <Typography>Họ và tên : {member?.name}</Typography>
                                             <Typography>CCCD : {member?.cccd}</Typography>
                                             <Typography>SĐT : {member?.phone}</Typography>
-                                            <Typography>Giới tính  : {member?.gender}</Typography>
+                                            <Typography>Giới tính  : {member?.gender === "male" ? "Nam" : "Nữ"}</Typography>
                                             <Typography>Ngày sinh  : {member?.dob}</Typography>
                                             <Button variant='outlined' sx={{ mt: 2 }} onClick={() => handleOpenUpdate(member._id)}>Cập nhật thông tin khách thuê</Button>
-                                            <Button variant='outlined' color='error' sx={{ mt: 2 }} onClick={()=> handleRemoveMember(member._id,room._id)}>Xoá khách thuê</Button>
+                                            <Button variant='outlined' color='error' sx={{ mt: 2 }} onClick={() => handleRemoveMember(member._id, room._id)}>Xoá khách thuê</Button>
                                         </Box>
                                     </Box>
                                 </Box>
                             ))}
-                            
-                            
+
+
                         </Box>
 
 

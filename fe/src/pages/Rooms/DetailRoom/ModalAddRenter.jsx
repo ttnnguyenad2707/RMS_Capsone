@@ -3,9 +3,10 @@ import Typography from '@mui/material/Typography';
 import Modal from '@mui/material/Modal';
 import { Formik, Field, Form, ErrorMessage } from 'formik';
 import { TextField, Select, MenuItem, Button, FormControl, InputLabel, FormHelperText } from "@mui/material";
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { addMember } from '../../../services/houses';
 import Notification from '../../../CommonComponents/Notification';
+import * as Yup from 'yup';
 
 
 const style = {
@@ -22,7 +23,12 @@ const style = {
 const ModalAddRenter = ({ handleClose, open,room,setMembers }) => {
     const [file,setFile] = useState();
     const [imagePreview, setImagePreview] = useState(null);
-
+    useEffect(() => {
+        if (open === false) {
+            setImagePreview(null);
+        }
+    },[open])
+    
     const handleChangeFile = (e) => {
         const file = e.currentTarget.files[0]
         setFile(file)
@@ -42,11 +48,20 @@ const ModalAddRenter = ({ handleClose, open,room,setMembers }) => {
             phone: "",
             cccd: "",
             gender: "",
-            dob: "",
+            dob: "01-01-2000",
             note: "",
             avatar: ""
         };
     }, []);
+    const validationSchema = Yup.object({
+        name: Yup.string().required('Vui lòng nhập họ và tên'),
+        phone: Yup.string()
+          .matches(/^[0-9]{10}$/, 'Số điện thoại phải có 10 chữ số'),
+        cccd: Yup.string()
+          .matches(/^[0-9]{12}$/, 'CCCD phải có 12 chữ số'),
+        gender: Yup.string(),
+        dob: Yup.date(),
+      });
     const handleSubmit = async (values, {resetForm , setSubmitting}) => {
         try {
             const formData = new FormData();
@@ -58,6 +73,7 @@ const ModalAddRenter = ({ handleClose, open,room,setMembers }) => {
             formData.set("dob",values.dob)
             formData.set("note",values.note)
             await addMember(room._id,formData).then(data => {
+                console.log(data.data.data)
                 setMembers(prev => [...prev,{
                     _id: data.data.data._id,
                     name: values.name,
@@ -66,11 +82,15 @@ const ModalAddRenter = ({ handleClose, open,room,setMembers }) => {
                     gender: values.gender,
                     dob: values.dob,
                     note: values.note,
+                    avatar: {
+                        imageData: data.data.data.avatar
+                    }
                 }])
             }) 
             
             handleClose()
             resetForm();
+            setImagePreview(null)
             Notification("Success", "Thêm Thành Viên", "Thành Công");
         } catch (error) {
             alert('Failed to add member');
@@ -89,6 +109,7 @@ const ModalAddRenter = ({ handleClose, open,room,setMembers }) => {
                 <Formik
                     initialValues={initialValues}
                     onSubmit={(values, {resetForm , setSubmitting}) => handleSubmit(values,{resetForm , setSubmitting})}
+                    validationSchema={validationSchema}
                 >
                     <Form>
                         <Box sx={{
