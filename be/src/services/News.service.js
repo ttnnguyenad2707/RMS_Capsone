@@ -29,7 +29,8 @@ const NewsService = {
             if (content) {
                 query.content = { $regex: content, $options: "i" };
             }
-            const data = await getPaginationData(NewsModel, page, limit, query);
+            const populateField = ['authorId']
+            const data = await getPaginationData(NewsModel, page, limit, query,populateField);
             return data;
         } catch (error) {
             throw error;
