@@ -10,7 +10,7 @@ const PaymentController = {
         const payos = new PayOS(PAYOS_CLIENT_ID, PAYOS_API_KEY, PAYOS_CHECK_SUM_KEY);
 
         const requestData = {
-            orderCode: 10002,
+            orderCode: 10003,
             amount: 10000,
             description: "testing",
             cancelUrl: "http://localhost:5173/",
