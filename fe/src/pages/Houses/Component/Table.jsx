@@ -27,6 +27,7 @@ import KeyboardArrowLeft from "@mui/icons-material/KeyboardArrowLeft";
 import KeyboardArrowRight from "@mui/icons-material/KeyboardArrowRight";
 import LastPageIcon from "@mui/icons-material/LastPage";
 import { useTheme } from "@mui/material/styles";
+import Notification from "../../../CommonComponents/Notification";
 import PropTypes from "prop-types";
 function TablePaginationActions(props) {
   const theme = useTheme();
@@ -138,9 +139,8 @@ export default function BasicTable() {
   ]);
   const dispatch = useDispatch();
   const [dataModelUpdate, setDataModelUpdate] = useState();
-  const [open, setOpen] = useState(false);
   const [houseSelect, setHouseSelect] = useState();
-  const [openConfirm, setOpenConfirm] = useState(false);
+  const [open, setOpen] = useState(false);
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [page, setPage] = useState(0);
   const houses = useSelector((state) => state.house.houses);
@@ -155,21 +155,23 @@ export default function BasicTable() {
   const handleClose = () => {
     setOpen(false);
   };
-  const handleOpenConfirm = () => {
-    setOpenConfirm(true);
-  };
-  const handleCloseConfirm = () => {
-    setOpenConfirm(false);
-  };
-  const DeleteHouse = async (id) => {
-    try {
-      dispatch(deleteHouse({ id }));
-      dispatch(fetchHouses());
-      toast.success("Xóa Nhà Thành Công");
-      handleCloseConfirm();
-    } catch (error) {
-      console.log(error);
-    }
+  const DeleteHouse = async () => {
+    Notification("Confirm", "Xác Nhận", "Xóa Nhà").then(async (result) => {
+      if (result) {
+        try {
+          const id = houseSelect.id;
+          console.log(houseSelect, "aaa");
+          dispatch(deleteHouse({ id }));
+          dispatch(fetchHouses());
+          Notification("Success", "Đã Xóa", "Nhà Thành Công");
+        } catch (error) {
+          console.log(error);
+        }
+      } else {
+        console.log("Người dùng đã chọn Cancel");
+        // Xử lý khi người dùng chọn Cancel
+      }
+    });
   };
   const headCells = [
     {
@@ -262,8 +264,8 @@ export default function BasicTable() {
                   id: house._id,
                   name: house.name,
                 });
-
-                handleOpenConfirm();
+                console.log(houseSelect, "houseSelect");
+                DeleteHouse();
               }}
             >
               Xóa
@@ -489,61 +491,6 @@ export default function BasicTable() {
             handleClose={handleClose}
             openModal={open}
           />
-          {houseSelect ? (
-            <Modal
-              open={openConfirm}
-              onClose={handleCloseConfirm}
-              aria-labelledby="modal-modal-title"
-              aria-describedby="modal-modal-description"
-            >
-              <Box sx={style}>
-                <Box sx={stylesHeader}>
-                  <Typography
-                    id="modal-modal-title"
-                    variant="h4"
-                    component="h3"
-                    sx={{ fontWeight: "Bold" }}
-                  >
-                    Xác Nhận Xóa Nhà
-                  </Typography>
-                  <IconButton
-                    sx={{ position: "absolute", right: "10px" }}
-                    onClick={handleCloseConfirm}
-                  >
-                    <CloseIcon />
-                  </IconButton>
-                </Box>
-                <Box sx={{ display: "flex", mt: 3, mb: 3 }}>
-                  <Typography
-                    id="modal-modal-title"
-                    sx={{ fontWeight: "Bold", color: "red" }}
-                    component="h3"
-                    variant="h5"
-                  >
-                    Tên Nhà: {houseSelect.name}
-                  </Typography>
-                </Box>
-                <Box sx={{ display: "flex", justifyContent: "end" }}>
-                  <Button
-                    variant="contained"
-                    sx={{ padding: "3px", ml: 3 }}
-                    onClick={handleCloseConfirm}
-                  >
-                    Hủy
-                  </Button>
-                  <Button
-                    variant="contained"
-                    sx={{ padding: "3px", ml: 3 }}
-                    onClick={() => DeleteHouse(houseSelect.id)}
-                  >
-                    Xóa
-                  </Button>
-                </Box>
-              </Box>
-            </Modal>
-          ) : (
-            <div></div>
-          )}
         </div>
       ) : (
         <div className="text-center">

@@ -24,8 +24,9 @@ export const updateHouse = createAsyncThunk('houses/updateHouse', async ({setDat
 
 // Action async gọi API để xóa nhà
 export const deleteHouse = createAsyncThunk('houses/deleteHouse', async ({id}) => {
-  await DeleteHouseService(id);
-  return id;
+  const response = await DeleteHouseService(id);
+  console.log(response,"response");
+  return response.data.message;
 });
 
 const houseSlice = createSlice({

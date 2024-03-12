@@ -21,6 +21,7 @@ import AddIcon from "@mui/icons-material/Add";
 import { ToastContainer, toast } from "react-toastify";
 import axios from "axios";
 import { fetchHouses } from "../../../reduxToolkit/HouseSlice";
+import Notification from "../../../CommonComponents/Notification";
 const style = {
   position: "absolute",
   top: "50%",
@@ -34,7 +35,7 @@ const style = {
   p: 5,
   borderRadius: "10px",
   padding: "18px",
-  overflow: "auto"
+  overflow: "auto",
 };
 const stylesHeader = {
   color: "#1976d2",
@@ -214,7 +215,7 @@ export default function BasicModal() {
       setUtilitiesOther(data);
     }
   };
-  const HandleSubmit = async() => {
+  const HandleSubmit = async () => {
     handleInputName();
     handleInputAddress();
     handleInputCostElectric();
@@ -245,12 +246,18 @@ export default function BasicModal() {
         utilities: utilities,
         otherUtilities: utilitiesOther,
       };
-      await dispatch(addHouse(setData));
-      await dispatch(fetchHouses());
-      handleClose();
-      setCity("");
-      setWard("");
-      setCounty("");
+      const response = await dispatch(addHouse(setData));
+      console.log(response, "response");
+      if (response) {
+        await dispatch(fetchHouses());
+        Notification("Success", "Thêm Nhà", "Thành Công");
+        handleClose();
+        setCity("");
+        setWard("");
+        setCounty("");
+      } else {
+        Notification("Error", "Thêm Nhà", "Thất Bại");
+      }
     }
   };
   React.useEffect(() => {
@@ -450,7 +457,6 @@ export default function BasicModal() {
                   typeUtil={"add"}
                 />
               )}
-              {value === "2" && <AddUtil />}
             </Box>
           </Box>
           <Box

@@ -14,14 +14,16 @@ export const fetchRooms = createAsyncThunk(
 //   return addedHouse.data.data;
 // });
 export const addRooms = createAsyncThunk("rooms/addRooms", async ({ data }) => {
-  await AddRoomsFileService({ data });
+  const response = await AddRoomsFileService({ data });
+  console.log(response, "response");
+  return response.data.message;
 });
 
 export const addOneRoom = createAsyncThunk(
   "rooms/addOneRoom",
   async ({ setData, houseId }) => {
-    const add = await AddRoom(setData, houseId);
-    console.log(add, "add");
+    const response = await AddRoom(setData, houseId);
+    return response.data.message;
   }
 );
 const roomSlice = createSlice({

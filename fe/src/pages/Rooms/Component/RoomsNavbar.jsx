@@ -26,15 +26,15 @@ const RoomsNavbar = ({ dataHouse, selectHouse }) => {
       setHouse(data);
     }
   }, [dataHouse]);
-  // React.useEffect(() => {
-  //   if (house) {
-  //     const defaultHouse = house[0];
-  //     if (defaultHouse) {
-  //       setHouseSelect(defaultHouse.houseId);
-  //       selectHouse(defaultHouse.houseId);
-  //     }
-  //   }
-  // }, [house, dataHouse]);
+  React.useEffect(() => {
+    if (house) {
+      const defaultHouse = house[0];
+      if (defaultHouse) {
+        setHouseSelect(house[0].houseId);
+        selectHouse(house[0].houseId);
+      }
+    }
+  }, [house, dataHouse]);
   const handleChange = (event) => {
     const inputSelect = event.target.value;
     if (inputSelect !== null) {
@@ -43,19 +43,18 @@ const RoomsNavbar = ({ dataHouse, selectHouse }) => {
     }
   };
   const handleSelectModal = (nameModal) => {
-    switch (nameModal) {
-      case "Thêm Một Phòng":
-        setTypeModal(nameModal);
-        handleOpen();
-        break;
-      case "Thêm Dữ Liệu File":
-        setTypeModal(nameModal);
-        handleOpen();
-        break;
-    }
+    setTypeModal(nameModal);
+    handleOpen();
   };
   return (
-    <Box sx={{ display: "flex", position: "relative", alignItems: "center",justifyContent:"space-between" }}>
+    <Box
+      sx={{
+        display: "flex",
+        position: "relative",
+        alignItems: "center",
+        justifyContent: "space-between",
+      }}
+    >
       <h5 className="me-4">Lựa Chọn Nhà Trọ:</h5>
       <Select
         labelId="demo-simple-select-label"
@@ -83,7 +82,7 @@ const RoomsNavbar = ({ dataHouse, selectHouse }) => {
           color="success"
           variant="contained"
           className="me-3"
-          onClick={() => handleSelectModal("Thêm Dữ Liệu File")}
+          onClick={() => handleSelectModal("Thêm Phòng")}
         >
           Import Phòng
         </Button>
@@ -94,7 +93,7 @@ const RoomsNavbar = ({ dataHouse, selectHouse }) => {
           color="error"
           variant="contained"
           className="me-3"
-          onClick={() => handleSelectModal("Thêm Một Phòng")}
+          onClick={() => handleSelectModal("Thêm Phòng")}
         >
           Thêm phòng
         </Button>
