@@ -60,6 +60,15 @@ const Account = new Schema({
         default: null,
         ref: "PasswordResetCode",
     },
+    payosClientId: {
+        type: String,
+    },
+    payosAPIKey: {
+        type: String,
+    },
+    payosCheckSum: {
+        type: String,
+    }
     
 }, { timestamps: true });
 export default model("Account", Account)

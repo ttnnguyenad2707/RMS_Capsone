@@ -16,6 +16,24 @@ const BillController = {
         } catch (error) {
             return res.status(500).json(response.errorResponse(500,error.toString()))
         }
+    }),
+    getBill: asyncHandler(async(req,res)=> {
+        try {
+            const bill = await BillService.getBill(req);
+            if (bill) return res.status(200).json(response.successResponse(200,bill));
+            else return res.status(404).json(response.errorResponse(404));
+        } catch (error) {
+            return res.status(500).json(response.errorResponse(500,error.toString()))
+        }
+    }),
+    getBills: asyncHandler(async(req,res)=> {
+        try {
+            const bills = await BillService.getBills(req);
+            if (bills) return res.status(200).json(response.successResponse(200,bills));
+            else return res.status(404).json(response.errorResponse(404));
+        } catch (error) {
+            return res.status(500).json(response.errorResponse(500,error.toString()))
+        }
     })
 }
 
