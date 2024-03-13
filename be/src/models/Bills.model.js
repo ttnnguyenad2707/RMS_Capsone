@@ -5,7 +5,16 @@ const priceItemSchema = Schema({
         type: Schema.ObjectId,
         ref: "DefaultPrice",
     },
-    sum: {
+    unitPrice: {
+        type: Number
+    },
+    startUnit: {
+        type: Number,
+    },
+    endUnit: {
+        type: Number,
+    },
+    totalUnit: {
         type: Number,
     } 
 })
@@ -15,21 +24,12 @@ const Bills = Schema({
         type: Schema.ObjectId,
         ref: "Rooms"
     },
+    billCode: {
+        type: Number
+    },
     roomPrice: {
         type: Number,
         require : true,
-    },
-    electricPrice: {
-        type: Number,
-        require: true,
-    },
-    waterPrice: {
-        type: Number,
-        require: true,
-    },
-    servicePrice: {
-        type: Number,
-        require: true,
     },
     priceList: [{
         type : priceItemSchema
@@ -38,9 +38,16 @@ const Bills = Schema({
         type: Number,
         require: true,
     },
+    total: {
+        type: Number,
+    },
     note: {
         type: String,
         default: ""
+    },
+    paymentLink: {
+        type: Object,
+
     },
     isPaid: {
         type: Boolean,
