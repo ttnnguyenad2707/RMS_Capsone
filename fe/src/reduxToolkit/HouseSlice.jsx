@@ -33,6 +33,7 @@ export const updateHouse = createAsyncThunk(
   "houses/updateHouse",
   async ({ setData, id }) => {
     const updatedHouse = await UpdateHouseService(setData, id);
+    console.log(updatedHouse,"updatedHouse");
     return updatedHouse.data.data;
   }
 );

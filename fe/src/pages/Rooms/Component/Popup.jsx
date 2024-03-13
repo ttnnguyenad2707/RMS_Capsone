@@ -21,11 +21,8 @@ import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import TableSortLabel from "@mui/material/TableSortLabel";
-import TableFooter from "@mui/material/TableFooter";
-import TablePagination from "@mui/material/TablePagination";
-import { useTheme } from "@mui/material/styles";
 import { styled } from "@mui/material/styles";
-import PropTypes from "prop-types";
+
 import { useSelector } from "react-redux";
 import { fetchOneHouse, updateHouse } from "../../../reduxToolkit/HouseSlice";
 import { fetchDefaultPrice } from "../../../reduxToolkit/DefaultPrice";
@@ -209,7 +206,7 @@ export default function SuperModal({
     const inputSelect = event.target.value;
     if (inputSelect !== null) {
       setUnit(inputSelect);
-      console.log(unit,"unit");
+      console.log(unit, "unit");
     }
   };
   const handleChangeRoomType = (event) => {
@@ -261,6 +258,34 @@ export default function SuperModal({
       setErrorWater(false);
     } else {
       setErrorWater(true);
+    }
+  };
+
+  // add price
+  const handleAddPrice = async () => {
+    const Expense = inputExpense.current.value;
+    const UnitPrice = inputUnitPrice.current.value;
+    if (
+      typeof Expense !== "undefined" &&
+      typeof UnitPrice !== "undefined" &&
+      typeof unit !== "undefined"
+    ) {
+      const getUnit = defaultPriceSystem.find((price) => unit === price._id);
+      const newPrice = {
+        base: {
+          id: getUnit._id,
+          name: Expense,
+          unit: getUnit.unit,
+        },
+        price: parseInt(UnitPrice),
+      };
+      defaultPrice.push(newPrice);
+      const setData = {
+        priceList: defaultPrice,
+      };
+      const id = houseId;
+      const response = await dispatch(updateHouse({ setData, id }));
+      console.log(response, "response");
     }
   };
   const handleOpenAdd = () => setOpenAdd(true);
@@ -393,7 +418,7 @@ export default function SuperModal({
   const validateInputNumber = (input) => {
     return !isNaN(input);
   };
-
+  console.log(defaultPrice,"dè");
   if (typeModal === "Thêm Phòng") {
     return (
       <Modal
@@ -582,6 +607,13 @@ export default function SuperModal({
               >
                 Upload
               </Button>
+              <Button
+                variant="contained"
+                sx={{ ml: 2 }}
+                onClick={() => window.open("http://localhost:5000/api/v1/house/downloadTemplate", "_blank")}
+              >
+                Download teamplate
+              </Button>
             </Box>
           )}
         </Box>
@@ -740,10 +772,20 @@ export default function SuperModal({
                 </Select>
               </Box>
               <Box className="d-flex">
-                <Button variant="contained" color="primary" className="mt-3">
+                <Button
+                  variant="contained"
+                  color="primary"
+                  className="mt-3"
+                  onClick={() => handleAddPrice()}
+                >
                   Thêm Kính Phí
                 </Button>
-                <Button variant="contained" color="warning" className="mt-3 ms-3" onClick={handleCloseAdd}>
+                <Button
+                  variant="contained"
+                  color="warning"
+                  className="mt-3 ms-3"
+                  onClick={handleCloseAdd}
+                >
                   Hủy
                 </Button>
               </Box>

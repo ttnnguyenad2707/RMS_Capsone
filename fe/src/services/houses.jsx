@@ -34,6 +34,7 @@ export const GetHouseService = async (page, limit) => {
 };
 export const UpdateHouseService = async (data, id) => {
   const token = Cookies.get("accessToken");
+  console.log(data, id,"service");
   return await axios.post(`${URL_SERVER}/house/${id}`, data, {
     withCredentials: true,
     headers: {
