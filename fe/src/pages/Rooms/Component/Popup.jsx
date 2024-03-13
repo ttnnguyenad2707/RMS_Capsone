@@ -14,7 +14,22 @@ import Tab from "@mui/material/Tab";
 import Tabs from "@mui/material/Tabs";
 import Notification from "../../../CommonComponents/Notification";
 import { useDispatch } from "react-redux";
-
+import Table from "@mui/material/Table";
+import TableBody from "@mui/material/TableBody";
+import TableCell from "@mui/material/TableCell";
+import TableContainer from "@mui/material/TableContainer";
+import TableHead from "@mui/material/TableHead";
+import TableRow from "@mui/material/TableRow";
+import TableSortLabel from "@mui/material/TableSortLabel";
+import TableFooter from "@mui/material/TableFooter";
+import TablePagination from "@mui/material/TablePagination";
+import { useTheme } from "@mui/material/styles";
+import { styled } from "@mui/material/styles";
+import PropTypes from "prop-types";
+import { useSelector } from "react-redux";
+import { fetchOneHouse, updateHouse } from "../../../reduxToolkit/HouseSlice";
+import { fetchDefaultPrice } from "../../../reduxToolkit/DefaultPrice";
+import Paper from "@mui/material/Paper";
 import {
   fetchRooms,
   addRooms,
@@ -48,6 +63,30 @@ const stylesBody = {
   marginTop: "20px",
   overflow: "auto",
 };
+const styleAddUnit = {
+  position: "absolute",
+  top: "50%",
+  left: "50%",
+  transform: "translate(-50%, -50%)",
+  width: 1000,
+  height: "30%",
+  bgcolor: "background.paper",
+  border: "2px solid #grey",
+  boxShadow: 25,
+  p: 5,
+  borderRadius: "10px",
+  padding: "18px",
+  overflow: "auto",
+};
+function createData(stt, typePrice, unitPrice, unit, action) {
+  return {
+    stt,
+    typePrice,
+    unitPrice,
+    unit,
+    action,
+  };
+}
 export default function SuperModal({
   openModal,
   handleClose,
@@ -61,19 +100,102 @@ export default function SuperModal({
   const [errorCostWater, setErrorWater] = React.useState(false);
   const [name, setName] = React.useState("");
   const [member, setMember] = React.useState("");
+  const [openAdd, setOpenAdd] = React.useState(false);
   const [priceRoom, setPriceRoom] = React.useState("");
   const [CostDeposit, setCostDeposit] = React.useState();
   const [CostArea, setCostArea] = React.useState();
   const [status, setStatus] = React.useState("");
+  const [unit, setUnit] = React.useState("");
   const [roomType, setRoomType] = React.useState("");
   const [value, setValue] = React.useState("1");
+  const [defaultPrice, setDefaultPrice] = React.useState();
+  const [defaultPriceSystem, setDefaultPriceSystem] = React.useState();
   const [selectedFile, setSelectedFile] = React.useState(null);
+  const [rows, setRows] = React.useState([]);
   const inputName = React.useRef();
   const inputMember = React.useRef();
   const inputPriceRoom = React.useRef();
   const inputCostDeposit = React.useRef();
   const inputCostArea = React.useRef();
+  const inputUnitPrice = React.useRef();
+  const inputExpense = React.useRef();
   const dispatch = useDispatch();
+  const headCells = [
+    {
+      id: "stt",
+      label: "STT",
+    },
+    {
+      id: "typePrice",
+      label: "Loại Phí",
+    },
+    {
+      id: "unitPrice",
+      label: "Đơn Giá",
+    },
+    {
+      id: "unit",
+      label: "Đơn Vị",
+    },
+    {
+      id: "action",
+      label: "Thao Tác",
+    },
+  ];
+  const StyledTableRow = styled(TableRow)(() => ({
+    backgroundColor: "#1976d2",
+    "td, th": {
+      fontWeight: "bold",
+      color: "#ffffff",
+    },
+  }));
+  const gethouse = async () => {
+    const response = await dispatch(fetchOneHouse({ houseId }));
+    setDefaultPrice(response.payload.priceList);
+  };
+  const getDefaultHouse = async () => {
+    const response = await dispatch(fetchDefaultPrice());
+    console.log(response);
+    setDefaultPriceSystem(response.payload);
+  };
+  React.useEffect(() => {
+    if (typeModal === "Cấu Hình Bảng Giá") {
+      gethouse();
+      getDefaultHouse();
+    }
+  }, [typeModal, openAdd]);
+  React.useEffect(() => {
+    if (defaultPrice) {
+      const dataTable = defaultPrice.map((house, index) => {
+        return createData(
+          index + 1,
+          house.base.name,
+          house.price,
+          house.base.unit,
+          <div className="d-flex">
+            <Button
+              variant="contained"
+              sx={{ fontWeight: "bold", margin: "10px" }}
+              color="warning"
+              onClick={() => {}}
+            >
+              Cập Nhật
+            </Button>
+            <Button
+              variant="contained"
+              sx={{ fontWeight: "bold", margin: "10px" }}
+              color="error"
+              onClick={() => {}}
+            >
+              Xóa
+            </Button>
+          </div>
+        );
+      });
+      setRows(dataTable);
+    }
+  }, [defaultPrice]);
+
   const handleChangeMenu = (event, newValue) => {
     setValue(newValue);
   };
@@ -81,6 +203,13 @@ export default function SuperModal({
     const inputSelect = event.target.value;
     if (inputSelect !== null) {
       setStatus(inputSelect);
+    }
+  };
+  const handleChangeUnit = (event) => {
+    const inputSelect = event.target.value;
+    if (inputSelect !== null) {
+      setUnit(inputSelect);
+      console.log(unit,"unit");
     }
   };
   const handleChangeRoomType = (event) => {
@@ -134,6 +263,8 @@ export default function SuperModal({
       setErrorWater(true);
     }
   };
+  const handleOpenAdd = () => setOpenAdd(true);
+  const handleCloseAdd = () => setOpenAdd(false);
   // Add one rooms
   const HandleSubmit = async () => {
     handleInputName();
@@ -196,9 +327,73 @@ export default function SuperModal({
   //   const regex = /^[\p{L}\d\s]+$/u;
   //   return regex.test(input);
   // };
+  const sortCharacter = (character1, character2) => {
+    return character1.toLowerCase().localeCompare(character2.toLowerCase());
+  };
+  const sortCharacterBack = (character1, character2) => {
+    return -character1.toLowerCase().localeCompare(character2.toLowerCase());
+  };
+  const sortNumber = (number1, number2) => {
+    return number1 - number2;
+  };
+  const sortNumberBack = (number1, number2) => {
+    return -number1 - number2;
+  };
+  const handleSort = (cellId) => {
+    const sortedRows = rows.slice();
+    console.log(cellId);
+
+    // Sắp xếp mảng sao chép
+    switch (cellId) {
+      case "houseName":
+        const updateHouseName = status.map((s) => {
+          if (s.cellId === "houseName") {
+            if (s.statusSort === true) {
+              sortedRows.sort((a, b) =>
+                sortCharacterBack(a.houseName, b.houseName)
+              );
+              s.statusSort = false;
+            } else {
+              sortedRows.sort((a, b) =>
+                sortCharacter(a.houseName, b.houseName)
+              );
+              s.statusSort = true;
+            }
+          }
+          return s;
+        });
+        setStatus(updateHouseName);
+        break;
+      case "numberRooms":
+        const updateNumberRooms = status.map((s) => {
+          if (s.cellId === "numberRooms") {
+            if (s.statusSort === true) {
+              sortedRows.sort((a, b) =>
+                sortNumberBack(a.numberRooms, b.numberRooms)
+              );
+              s.statusSort = false;
+            } else {
+              sortedRows.sort((a, b) =>
+                sortNumber(a.numberRooms, b.numberRooms)
+              );
+              s.statusSort = true;
+            }
+          }
+          return s;
+        });
+        setStatus(updateNumberRooms);
+        break;
+      default:
+        break;
+    }
+
+    // Cập nhật state rows
+    setRows(sortedRows);
+  };
   const validateInputNumber = (input) => {
     return !isNaN(input);
   };
+
   if (typeModal === "Thêm Phòng") {
     return (
       <Modal
@@ -408,7 +603,7 @@ export default function SuperModal({
               component="h3"
               sx={{ fontWeight: "Bold" }}
             >
-              Thêm Phòng
+              Cấu Hình Bảng Giá
             </Typography>
             <IconButton
               sx={{ position: "absolute", right: "10px" }}
@@ -417,10 +612,143 @@ export default function SuperModal({
               <CloseIcon />
             </IconButton>
           </Box>
-          <Typography id="modal-modal-description" sx={stylesHeader}>
-            Thêm Phòng Vào Nhà
-          </Typography>
           <hr />
+          <Box>
+            <TableContainer component={Paper}>
+              <Table sx={{ minWidth: 650 }} aria-label="simple table">
+                <TableHead>
+                  <StyledTableRow>
+                    {headCells.map((headCell) => (
+                      <TableCell key={headCell.id} align="left">
+                        {headCell.sort === true ? (
+                          <TableSortLabel
+                            active={true}
+                            direction="asc"
+                            onClick={() => handleSort(headCell.id)}
+                            className="label-header"
+                          >
+                            {headCell.label}
+                          </TableSortLabel>
+                        ) : (
+                          headCell.label
+                        )}
+                      </TableCell>
+                    ))}
+                  </StyledTableRow>
+                </TableHead>
+                <TableBody>
+                  {rows
+                    ? rows.map((row, index) => (
+                        <TableRow
+                          key={row.stt}
+                          sx={{
+                            "&:last-child td, &:last-child th": {
+                              border: 0,
+                            },
+                          }}
+                        >
+                          <TableCell align="left" sx={{ width: "10%" }}>
+                            {row.stt}
+                          </TableCell>
+                          <TableCell align="left" sx={{ width: "20%" }}>
+                            {row.typePrice}
+                          </TableCell>
+                          <TableCell align="left" sx={{ width: "20%" }}>
+                            {row.unitPrice}
+                          </TableCell>
+                          <TableCell align="left" sx={{ width: "20%" }}>
+                            {row.unit}
+                          </TableCell>
+                          <TableCell align="left" sx={{ width: "30%" }}>
+                            {row.action}
+                          </TableCell>
+                        </TableRow>
+                      ))
+                    : null}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          </Box>
+          <Button
+            variant="contained"
+            color="primary"
+            className="mt-3"
+            onClick={() => handleOpenAdd()}
+          >
+            Thêm Kính Phí
+          </Button>
+          <Modal
+            open={openAdd}
+            onClose={handleCloseAdd}
+            aria-labelledby="modal-modal-title"
+            aria-describedby="modal-modal-description"
+          >
+            <Box sx={styleAddUnit}>
+              <Box sx={stylesHeader}>
+                <Typography
+                  id="modal-modal-title"
+                  variant="h4"
+                  component="h3"
+                  sx={{ fontWeight: "Bold" }}
+                >
+                  Cấu Hình Bảng Giá
+                </Typography>
+                <IconButton
+                  sx={{ position: "absolute", right: "10px" }}
+                  onClick={handleCloseAdd}
+                >
+                  <CloseIcon />
+                </IconButton>
+              </Box>
+              <hr />
+              <Box sx={{ display: "flex" }}>
+                <TextField
+                  required
+                  id="outlined-basic"
+                  label="Loại Phí"
+                  variant="outlined"
+                  sx={{ width: "40%" }}
+                  inputRef={inputExpense}
+                  className="me-4"
+                />
+                <TextField
+                  required
+                  id="outlined-basic"
+                  label="Đơn Giá"
+                  variant="outlined"
+                  sx={{ width: "35%" }}
+                  inputRef={inputUnitPrice}
+                  className="me-4"
+                />
+                <Select
+                  labelId="demo-simple-select-label"
+                  id="demo-simple-select"
+                  value={unit}
+                  label="Trạng đơn vị"
+                  onChange={handleChangeUnit}
+                  sx={{ width: "25%" }}
+                >
+                  {defaultPriceSystem ? (
+                    defaultPriceSystem.map((d, index) => (
+                      <MenuItem value={d._id} key={index}>
+                        {d.unit}
+                      </MenuItem>
+                    ))
+                  ) : (
+                    <div>Không có dữ liệu</div>
+                  )}
+                </Select>
+              </Box>
+              <Box className="d-flex">
+                <Button variant="contained" color="primary" className="mt-3">
+                  Thêm Kính Phí
+                </Button>
+                <Button variant="contained" color="warning" className="mt-3 ms-3" onClick={handleCloseAdd}>
+                  Hủy
+                </Button>
+              </Box>
+            </Box>
+          </Modal>
         </Box>
       </Modal>
     );

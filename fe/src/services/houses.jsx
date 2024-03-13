@@ -72,15 +72,18 @@ export const AddRoomsFileService = async ({ data }) => {
   });
 };
 
-export const GetRooms = async (data,filterParams) => {
+export const GetRooms = async (data, filterParams) => {
   const token = Cookies.get("accessToken");
   const queryParams = new URLSearchParams(filterParams).toString();
-  return await axios.get(`${URL_SERVER}/house/${data}/room?option=all&${queryParams}`, {
-    withCredentials: true,
-    headers: {
-      authorization: `Bearer ${token}`,
-    },
-  });
+  return await axios.get(
+    `${URL_SERVER}/house/${data}/room?option=all&${queryParams}`,
+    {
+      withCredentials: true,
+      headers: {
+        authorization: `Bearer ${token}`,
+      },
+    }
+  );
 };
 
 export const GetUtilitiesOther = async () => {
@@ -94,7 +97,7 @@ export const GetUtilitiesOther = async () => {
 };
 
 export const AddRoom = async (data, id) => {
-  console.log(data,"data");
+  console.log(data, "data");
   const token = Cookies.get("accessToken");
   return await axios.post(`${URL_SERVER}/house/room/addOne/${id}`, data, {
     withCredentials: true,
@@ -121,7 +124,7 @@ export const getOneRoom = async (id) => {
       authorization: `Bearer ${token}`,
     },
   });
-}
+};
 
 export const removeRoom = async (id) => {
   const token = Cookies.get("accessToken");
@@ -131,7 +134,7 @@ export const removeRoom = async (id) => {
       authorization: `Bearer ${token}`,
     },
   });
-}
+};
 
 export const getFloor = async (houseId) => {
   const token = Cookies.get("accessToken");
@@ -141,50 +144,75 @@ export const getFloor = async (houseId) => {
       authorization: `Bearer ${token}`,
     },
   });
-}
+};
 
-export const addMember = async (roomId,formData) => {
+export const addMember = async (roomId, formData) => {
   const token = Cookies.get("accessToken");
-  return await axios.post(`${URL_SERVER}/house/room/${roomId}/member`, formData,{
+  return await axios.post(
+    `${URL_SERVER}/house/room/${roomId}/member`,
+    formData,
+    {
+      withCredentials: true,
+      headers: {
+        authorization: `Bearer ${token}`,
+        "Content-Type": "multipart/form-data",
+        Accept: "application/json",
+      },
+    }
+  );
+};
+
+export const removeMember = async (memberId, roomId) => {
+  const token = Cookies.get("accessToken");
+  return await axios.put(
+    `${URL_SERVER}/house/room/${roomId}/delete/member`,
+    {
+      memberId,
+    },
+    {
+      withCredentials: true,
+      headers: {
+        authorization: `Bearer ${token}`,
+      },
+    }
+  );
+};
+
+export const getMember = async (memberId, roomId) => {
+  const token = Cookies.get("accessToken");
+  return await axios.get(
+    `${URL_SERVER}/house/room/${roomId}/member/${memberId}`,
+    {
+      withCredentials: true,
+      headers: {
+        authorization: `Bearer ${token}`,
+      },
+    }
+  );
+};
+
+export const updateInfoMember = async (roomId, formData) => {
+  const token = Cookies.get("accessToken");
+  return await axios.put(
+    `${URL_SERVER}/house/room/${roomId}/member`,
+    formData,
+    {
+      withCredentials: true,
+      headers: {
+        authorization: `Bearer ${token}`,
+        "Content-Type": "multipart/form-data",
+        Accept: "application/json",
+      },
+    }
+  );
+};
+
+export const GetOneHouse = async (houseId) => {
+  const token = Cookies.get("accessToken");
+  return await axios.get(`${URL_SERVER}/house/${houseId}`, {
     withCredentials: true,
     headers: {
       authorization: `Bearer ${token}`,
-      "Content-Type": "multipart/form-data",
-      Accept: "application/json",
     },
   });
-}
-
-export const removeMember = async (memberId,roomId) => {
-  const token = Cookies.get("accessToken");
-  return await axios.put(`${URL_SERVER}/house/room/${roomId}/delete/member`, {
-    memberId
-  },{
-    withCredentials: true,
-    headers: {
-      authorization: `Bearer ${token}`,
-    },
-  });
-}
-
-export const getMember = async (memberId,roomId) => {
-  const token = Cookies.get("accessToken");
-  return await axios.get(`${URL_SERVER}/house/room/${roomId}/member/${memberId}`,{
-    withCredentials: true,
-    headers: {
-      authorization: `Bearer ${token}`,
-    },
-  });
-}
-
-export const updateInfoMember = async (roomId,formData) => {
-  const token = Cookies.get("accessToken");
-  return await axios.put(`${URL_SERVER}/house/room/${roomId}/member`,formData,{
-    withCredentials: true,
-    headers: {
-      authorization: `Bearer ${token}`,
-      "Content-Type": "multipart/form-data",
-      Accept: "application/json",
-    },
-  });
-}
+};
