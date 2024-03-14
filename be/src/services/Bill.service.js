@@ -104,8 +104,8 @@ const BillService = {
                 const orderCode = Date.now();
                 const requestData = {
                     orderCode: Number(orderCode),
-                    // amount: room.roomPrice + totalUnits + debt,
-                    amount: 10000,
+                    amount: room.roomPrice + totalUnits + debt,
+                    // amount: 10000,
                     description: "Thanh toán tiền phòng" + room.name,
                     cancelUrl: "http://localhost:5173/" + bill.id ,
                     returnUrl: "http://localhost:5173/bill/" + bill.id ,
