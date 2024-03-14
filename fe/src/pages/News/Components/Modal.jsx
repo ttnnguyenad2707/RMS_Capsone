@@ -16,6 +16,9 @@ import {
   fetchCommentNews,
   addCommentNews,
 } from "../../../reduxToolkit/CommentSlice";
+import CancelIcon from "@mui/icons-material/Cancel";
+import ImageList from "@mui/material/ImageList";
+import ImageListItem from "@mui/material/ImageListItem";
 import "../scss/modal.scss";
 const ModalNews = ({ handleClose, open, typeModal, houseID, dataNews }) => {
   const comments = useSelector((state) => state.comment.comments);
@@ -87,12 +90,6 @@ const ModalNews = ({ handleClose, open, typeModal, houseID, dataNews }) => {
     fontWeight: "Bold",
     justifyContent: "center",
     color: "#1976d2",
-  };
-  const settings = {
-    centerMode: true,
-    infinite: true,
-    slidesToShow: 2,
-    speed: 500,
   };
   React.useEffect(() => {
     if (dataNews) {
@@ -169,6 +166,11 @@ const ModalNews = ({ handleClose, open, typeModal, houseID, dataNews }) => {
         Notification("Error", "Cập Nhật Tin Tức", "Không Thành Công");
       }
     }
+  };
+  // update image
+  const handleDeleteImage = (imageDelete) => {
+    const newlistImages = image_src.filter((image) => image !== imageDelete);
+    setImageSrc(newlistImages);
   };
   if (typeModal === "Add") {
     return (
@@ -265,17 +267,26 @@ const ModalNews = ({ handleClose, open, typeModal, houseID, dataNews }) => {
             }}
           >
             <h5>Thêm ảnh vào bài viết của bạn</h5>
-            <Box className="d-flex gap-3">
-              {image_src.length > 0
-                ? image_src.map((image, index) => (
-                    <img
-                      src={image}
-                      key={index}
-                      alt="Cloudinary Image"
-                      style={{ width: "32%" }}
-                    />
-                  ))
-                : null}
+            <Box sx={{ width: "100%", height: 450, overflowY: "scroll" }}>
+              {image_src.map.length > 0 ? (
+                <ImageList variant="masonry" cols={3} gap={8}>
+                  {image_src.map((image, index) => (
+                    <ImageListItem key={index} className="position-relative">
+                      <img
+                        src={`${image}?w=248&fit=crop&auto=format`}
+                        alt={"Hình Ảnh"}
+                        loading="lazy"
+                      />
+                      <Button
+                        className="position-absolute top-0 end-0"
+                        onClick={() => handleDeleteImage(image)}
+                      >
+                        <CancelIcon />
+                      </Button>
+                    </ImageListItem>
+                  ))}
+                </ImageList>
+              ) : null}
             </Box>
             <div className="d-flex gap-3">
               <input
@@ -322,23 +333,21 @@ const ModalNews = ({ handleClose, open, typeModal, houseID, dataNews }) => {
           </Box>
           <Box>
             {dataNews.images.length >= 0 ? (
-              dataNews.images.length >= 3 ? // <ImageList
-              //   sx={{ width: 500, height: 450 }}
-              //   cols={3}
-              //   rowHeight={164}
-              // >
-              //   {images.map((item) => (
-              //     <ImageListItem key={item.img}>
-              //       <img
-              //         srcSet={`${item.img}?w=164&h=164&fit=crop&auto=format&dpr=2 2x`}
-              //         src={`${item.img}?w=164&h=164&fit=crop&auto=format`}
-              //         alt={item.title}
-              //         loading="lazy"
-              //       />
-              //     </ImageListItem>
-              //   ))}
-              // </ImageList>
-              null : (
+              dataNews.images.length >= 3 ? (
+                <Box sx={{ width: "100%", height: 450, overflowY: "scroll" }}>
+                  <ImageList variant="masonry" cols={3} gap={8}>
+                    {dataNews.images.map((item) => (
+                      <ImageListItem key={item.img}>
+                        <img
+                          src={`${item}?w=248&fit=crop&auto=format`}
+                          alt={"Hình Ảnh"}
+                          loading="lazy"
+                        />
+                      </ImageListItem>
+                    ))}
+                  </ImageList>
+                </Box>
+              ) : (
                 <Box className="d-flex">
                   {dataNews.images.map((image, index) => (
                     <img
@@ -411,17 +420,26 @@ const ModalNews = ({ handleClose, open, typeModal, houseID, dataNews }) => {
             </Box>
             <div className="d-flex flex-column gap-2">
               <label htmlFor="thumbnail">Thumbnail</label>
-              <Box className="d-flex gap-3">
-                {image_src.length > 0
-                  ? image_src.map((image, index) => (
-                      <img
-                        src={image}
-                        key={index}
-                        alt="Cloudinary Image"
-                        style={{ width: "10%" }}
-                      />
-                    ))
-                  : null}
+              <Box sx={{ width: "100%", height: 450, overflowY: "scroll" }}>
+                {image_src.map.length > 0 ? (
+                  <ImageList variant="masonry" cols={3} gap={8}>
+                    {image_src.map((image, index) => (
+                      <ImageListItem key={index} className="position-relative">
+                        <img
+                          src={`${image}?w=248&fit=crop&auto=format`}
+                          alt={"Hình Ảnh"}
+                          loading="lazy"
+                        />
+                        <Button
+                          className="position-absolute top-0 end-0"
+                          onClick={() => handleDeleteImage(image)}
+                        >
+                          <CancelIcon />
+                        </Button>
+                      </ImageListItem>
+                    ))}
+                  </ImageList>
+                ) : null}
               </Box>
               <input
                 type="file"

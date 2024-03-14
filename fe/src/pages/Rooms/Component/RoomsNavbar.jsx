@@ -43,8 +43,13 @@ const RoomsNavbar = ({ dataHouse, selectHouse }) => {
     }
   };
   const handleSelectModal = (nameModal) => {
-    setTypeModal(nameModal);
-    handleOpen();
+    if (nameModal === "Thêm Phòng") {
+      setTypeModal(nameModal);
+      handleOpen();
+    } else if (nameModal === "Cấu Hình Bảng Giá") {
+      setTypeModal(nameModal);
+      handleOpen();
+    }
   };
   return (
     <Box
@@ -75,29 +80,26 @@ const RoomsNavbar = ({ dataHouse, selectHouse }) => {
         )}
       </Select>
       <Box sx={{ display: "flex" }}>
-        <Button color="secondary" variant="contained" className="me-3">
+        <Button color="info" variant="contained" className="me-3">
           Tất Cả Hóa Đơn Tiền Nhà
-        </Button>
-        <Button
-          color="success"
-          variant="contained"
-          className="me-3"
-          onClick={() => handleSelectModal("Thêm Phòng")}
-        >
-          Import Phòng
         </Button>
         <Button color="info" variant="contained" className="me-3">
           In Tất Cả Hóa Đơn
         </Button>
         <Button
-          color="error"
+          color="info"
           variant="contained"
           className="me-3"
           onClick={() => handleSelectModal("Thêm Phòng")}
         >
           Thêm phòng
         </Button>
-        <Button color="warning" variant="contained" className="me-3">
+        <Button
+          color="info"
+          variant="contained"
+          className="me-3"
+          onClick={() => handleSelectModal("Cấu Hình Bảng Giá")}
+        >
           Cấu hình bảng giá
         </Button>
       </Box>

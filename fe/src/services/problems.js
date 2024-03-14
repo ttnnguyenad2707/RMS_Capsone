@@ -30,3 +30,13 @@ export const addProblemsInHouse = async (data) => {
         },
     });
 };
+export const updateStatusProblemsInHouse = async (problemId,data) => {
+    // console.log("houseId" + houseId);
+    const token = Cookies.get("accessToken");
+    return await axios.put(`${URL_SERVER}/problem/${problemId}`,data, {
+        withCredentials: true,
+        headers: {
+            authorization: `Bearer ${token}`,
+        },
+    });
+};
