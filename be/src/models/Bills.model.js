@@ -24,6 +24,10 @@ const Bills = Schema({
         type: Schema.ObjectId,
         ref: "Rooms"
     },
+    houseId: {
+        type: Schema.ObjectId,
+        ref: "Houses"
+    },
     billCode: {
         type: Number
     },

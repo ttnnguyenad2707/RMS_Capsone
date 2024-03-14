@@ -92,6 +92,7 @@ const BillService = {
                 debt: debt,
                 total: room.roomPrice + totalUnits + debt,
                 note,
+                houseId: room.houseId._id,
             })
             await bill.save();
 
@@ -141,17 +142,20 @@ const BillService = {
     },
     getBills: async (req) => {
         try {
-            const {roomId,option} = req.query;
+            const {roomId,option,houseId} = req.query;
             let data;
             const query = {};
             if (roomId){
                 query.roomId = roomId
             }
+            if (houseId){
+                query.houseId = houseId
+            }
             if (String(option) === "all" ){
-                data = await BillsModel.find({}).populate({path: "roomId",select: "name"}).populate("priceList.base");
+                data = await BillsModel.find({}).populate({path: "roomId",select: "name"}).populate("priceList.base").sort({ createdAt: -1 });
             } 
             else {
-                data = await BillsModel.find(query).populate({path: "roomId",select: "name"}).populate("priceList.base");
+                data = await BillsModel.find(query).populate({path: "roomId",select: "name"}).populate("priceList.base").sort({ createdAt: -1 });
             }
             return data
         } catch (error) {
