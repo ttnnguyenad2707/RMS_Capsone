@@ -183,7 +183,7 @@ export default function News() {
             </Paper>
           </Grid>
           {news.data ? (
-            news.data.map((n) => (
+            news.data.map((n,index) => (
               <Grid
                 item
                 xs={12}
@@ -194,6 +194,7 @@ export default function News() {
                   margin: "auto",
                   mt: 3,
                 }}
+                key={index}
               >
                 <Paper
                   sx={{
@@ -207,9 +208,9 @@ export default function News() {
                   {/* <Chart /> */}
                   <div style={{ display: "flex", alignItems: "center" }}>
                     <p style={{ marginRight: "10px" }}>
-                      <b>m_ducs</b>
+                      <b>{n.authorId.name}</b>
                     </p>
-                    <p>1 giờ trước</p>
+                    <p>{n.createdAt}</p>
                     <div style={{ marginLeft: "auto", marginTop: "-5px" }}>
                       <IconButton
                         aria-controls="menu"
