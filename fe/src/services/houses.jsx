@@ -188,3 +188,12 @@ export const updateInfoMember = async (roomId,formData) => {
     },
   });
 }
+export const getMemberShipInHouse = async (houseId) => {
+  const token = Cookies.get("accessToken");
+  return await axios.get(`${URL_SERVER}/house/${houseId}/membership`,{
+    withCredentials: true,
+    headers: {
+      authorization: `Bearer ${token}`,
+    },
+  });
+}

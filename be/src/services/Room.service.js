@@ -151,6 +151,7 @@ const RoomService = {
                 .populate("otherUtilities")
                 .populate("houseId")
                 .populate("members.avatar")
+                .populate({path:"houseId", populate: {path: "priceList", populate: "base"} })
             return {
                 ...room._doc,
                 currentMember: room.members.length
@@ -271,6 +272,31 @@ const RoomService = {
             throw error;            
             
         }
+    },
+    countRoomsByMembership : async (req) => {
+        try {
+            
+            const {houseId} = req.params;
+            const rooms = await Rooms.find({ houseId: houseId,deleted: false });
+            let countWithMembers = 0;
+            let countWithoutMembers = 0;
+    
+            rooms.forEach(room => {
+                if (room.members && room.members.length > 0) {
+                    countWithMembers++;
+                } else {
+                    countWithoutMembers++;
+                }
+            });
+            return {
+                totalRooms: rooms.length,
+                withMembers: countWithMembers,
+                withoutMembers: countWithoutMembers,
+            };
+        } catch (error) {
+            throw error;
+        }
+
     }
     
 };

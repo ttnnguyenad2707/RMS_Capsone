@@ -23,13 +23,17 @@ const Profile = () => {
       .nullable(),
     // Các quy tắc cho các trường dữ liệu khác
   });
-  // if (userData) {
+  console.log(userData.name)
+    // if (userData) {
   //   var userID = userData._id;
   // }
   // console.log("userData1", userData.avatar);
   const initialValues = {
     name: userData.name || "",
     phone: userData.phone || "",
+    payosClientId: userData.payosClientId || "",
+    payosAPIKey: userData.payosAPIKey || "",
+    payosCheckSum: userData.payosCheckSum || "",
     // email: userData.email || "",
     // avatar: null,
   };
@@ -56,7 +60,6 @@ const Profile = () => {
       // console.log("chya vao effect");
     }
   }, [userData]);
-  console.log("isEditMode", isEditMode);
   return (
     <>
       {isLoading ? (
@@ -135,6 +138,7 @@ const Profile = () => {
                             id="name"
                             name="name"
                             className="form-control"
+
                             disabled={!isEditMode}
                           />
                           <ErrorMessage name="name" component="div" />
@@ -171,7 +175,52 @@ const Profile = () => {
                           />
                           <ErrorMessage name="email" component="div" />
                         </div>
+                      </div>       
+                      <div className=" form-group row mb-3">
+                        <label className="col-md-2" htmlFor="payosClientId">
+                          payosClientId:
+                        </label>
+                        <div className="col-md-7">
+                          <Field
+                            type="text"
+                            id="payosClientId"
+                            name="payosClientId"
+                            className="form-control"
+                            disabled={!isEditMode}
+                          />
+                          <ErrorMessage name="payosClientId" component="div" />
+                        </div>
                       </div>
+                      <div className=" form-group row mb-3">
+                        <label className="col-md-2" htmlFor="payosAPIKey">
+                          payosAPIKey:
+                        </label>
+                        <div className="col-md-7">
+                          <Field
+                            type="text"
+                            id="payosAPIKey"
+                            name="payosAPIKey"
+                            className="form-control"
+                            disabled={!isEditMode}
+                          />
+                          <ErrorMessage name="payosClientId" component="div" />
+                        </div>
+                      </div>
+                      <div className=" form-group row mb-3">
+                        <label className="col-md-2" htmlFor="payosCheckSum">
+                          payosCheckSum:
+                        </label>
+                        <div className="col-md-7">
+                          <Field
+                            type="text"
+                            id="payosCheckSum"
+                            name="payosCheckSum"
+                            className="form-control"
+                            disabled={!isEditMode}
+                          />
+                          <ErrorMessage name="payosClientId" component="div" />
+                        </div>
+                      </div>             
 
                       {/* <button type="submit">Lưu</button> */}
                       <div className="profile-action">

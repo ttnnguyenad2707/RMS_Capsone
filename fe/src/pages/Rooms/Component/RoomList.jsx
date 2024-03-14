@@ -18,13 +18,15 @@ import { formatMoney } from "../../../Utils";
 import PopupInfoRoom from "./PopupInfoRoom";
 import { GetRooms, getFloor, removeRoom } from "../../../services/houses";
 import Notification from "../../../CommonComponents/Notification";
-const RoomList = ({house }) => {
+import ModalBillCreate from "../Bills/ModalBillCreate";
+const RoomList = ({ house }) => {
     const [rooms,setRooms] = useState([]);
     const [open,setOpen] = useState(false);
     const [floorSelected,setFloorSelected] = useState(1)
     const [floors,setFloors] = useState([]);
     const [roomIdSelect,setRoomIdSelect] = useState("");
     const [expanded, setExpanded] = useState({});
+    const [openBill,setOpenBill] = useState(false);
     useEffect(() => {
         async function fetchFloor(){
             getFloor(house._id).then(data => {
@@ -56,6 +58,14 @@ const RoomList = ({house }) => {
     }
     const handleClose = () => {
         setOpen(false)
+    }
+    const handleOpenBill = (id) => {
+        setRoomIdSelect(id);
+        setOpenBill(true);
+
+    }
+    const handleCloseBill = () => {
+        setOpenBill(false)
     }
     const handleAccordionChange = (id) => {
         setExpanded(prevState => ({
@@ -96,7 +106,7 @@ const RoomList = ({house }) => {
                         })
                         
                     }else{
-                        Notification("Error", "Xảy ra lỗi", "");
+                        
                     }
                 }
                 
@@ -174,13 +184,14 @@ const RoomList = ({house }) => {
                             mt: 3
                         }}>
                             <Button variant="contained" onClick={() => handleOpen(room._id)}>Thông tin phòng</Button>
-                            <Button variant="contained" color="warning">Tạo hoá đơn</Button>
+                            <Button variant="contained" color="warning" onClick={() => handleOpenBill(room._id)}>Tạo hoá đơn</Button>
 
                         </Box>
                     </AccordionDetails>
                 </Accordion>
             ))}
             <PopupInfoRoom open={open} handleClose = {handleClose} roomId={roomIdSelect}/>
+            <ModalBillCreate open={openBill} handleClose={handleCloseBill} roomId={roomIdSelect}/>
 
         </Box>
     );

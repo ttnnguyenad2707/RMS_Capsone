@@ -134,6 +134,18 @@ const RoomController = {
             return res.status(500).json(response.errorResponse(500,error.toString()));
         }
     }),
+    countRoomsByMembership: asyncHandler(async (req,res,next) => {
+        try {
+            const member = await RoomService.countRoomsByMembership(req);
+
+            if (member) { return res.status(200).json(response.successResponse(200,member))}
+            else res.status(404).json(response.errorResponse(404));
+            
+        } catch (error) {
+            return res.status(500).json(response.errorResponse(500,error.toString()));
+        }
+    }),
+
 }
 
 export default RoomController
