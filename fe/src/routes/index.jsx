@@ -8,6 +8,8 @@ import Profile from "../pages/Profiles/Profile";
 import RoomsPage from "../pages/Rooms/RoomsPage";
 import RenterProblem from "../pages/ProblemsReport/RenterProblem";
 import News from "../pages/News/News";
+import BillSuccess from "../pages/Bill/BillSuccess";
+import ListBill from "../pages/Bill/ListBill";
 export const appRoutes = createBrowserRouter([
   {
     path: "",
@@ -38,6 +40,14 @@ export const appRoutes = createBrowserRouter([
         path: "/new",
         element: <News />,
       },
+      {
+        path: "/bill/:billId",
+        element: <BillSuccess/>
+      },
+      {
+        path: "/bill",
+        element: <ListBill/>
+      }
     ],
   },
 

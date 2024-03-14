@@ -34,6 +34,15 @@ const BillController = {
         } catch (error) {
             return res.status(500).json(response.errorResponse(500,error.toString()))
         }
+    }),
+    confirmBills: asyncHandler(async(req,res)=> {
+        try {
+            const bills = await BillService.confirmBills(req);
+            if (bills) return res.status(200).json(response.successResponse(200,bills));
+            else return res.status(404).json(response.errorResponse(404));
+        } catch (error) {
+            return res.status(500).json(response.errorResponse(500,error.toString()))
+        }
     })
 }
 

@@ -31,7 +31,12 @@ const accountValidate = {
     validateProfile: Joi.object({
         name: Joi.string().allow('', null),
         phone: Joi.string().allow('', null).pattern(new RegExp('^[0-9]{10}$')),
-        avatar: Joi.string().allow('', null).uri()
+        avatar: Joi.string().allow('', null).uri(),
+        payosClientId: Joi.string().allow('', null),
+        payosAPIKey: Joi.string().allow('', null),
+        payosCheckSum: Joi.string().allow('', null),
+
+
     }),
     validateChangePassword: Joi.object({
         oldPassword: Joi.string()

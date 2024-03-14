@@ -10,6 +10,7 @@ import { formatMoney } from '../../../Utils';
 import Checkbox from '@mui/material/Checkbox';
 import GeneralInfo from '../DetailRoom/GeneralInfo';
 import RenterInfo from '../DetailRoom/RenterInfo';
+import ListBill from '../DetailRoom/ListBill';
 const style = {
     position: 'absolute',
     top: '50%',
@@ -51,12 +52,13 @@ const PopupInfoRoom = ({ roomId, open, handleClose }) => {
                 <Tabs value={value} onChange={handleChange} aria-label="basic tabs example">
                     <Tab label="Thông tin phòng" value={1} />
                     <Tab label="Khách thuê" value={2} />
-                    <Tab label="Lịch sử thanh toán" value={3} />
+                    <Tab label="Thông tin hoá đơn" value={3} />
                     <Tab label="Vấn đề" value={4} />
 
                 </Tabs>
                 <GeneralInfo value={value} index={1} room={room} />
                 <RenterInfo value={value} index={2} room={room} />
+                <ListBill value={value} index={3} room={room}/>
 
 
 

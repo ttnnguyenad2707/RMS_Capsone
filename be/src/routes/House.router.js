@@ -26,6 +26,7 @@ const storageCloudinary = new CloudinaryStorage({
 const parserCloudinary = multer({ storage: storageCloudinary });
 const HouseRoute = express.Router();
 
+HouseRoute.get('/:houseId/membership',RoomController.countRoomsByMembership)
 HouseRoute.get("/:houseId/floor",RoomController.getFloor)
 HouseRoute.get("/downloadTemplate",RoomController.downloadTemplate)
 HouseRoute.post("/room/addOne/:houseId",RoomController.addOne)

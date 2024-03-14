@@ -63,6 +63,19 @@ export const mainListItems = (
         <ListItemText primary="Báo Cáo Vấn Đề" />
       </ListItemButton>
     </Link>
+<<<<<<< HEAD
+=======
+
+    <Link to={"/bill"} style={{ textDecoration: 'none', color: 'inherit' }}>
+      <ListItemButton>
+        <ListItemIcon>
+          <NewspaperIcon />
+        </ListItemIcon>
+        <ListItemText primary="Hoá đơn" />
+      </ListItemButton>
+    </Link>
+    
+>>>>>>> cd86334ef7cf23068a8062dc7593be7be1b7c7cd
   </React.Fragment>
 );
 

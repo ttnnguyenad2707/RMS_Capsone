@@ -19,8 +19,8 @@ import RoomList from "./RoomList";
 const CommonRooms = ({ houseData }) => {
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
   const [page, setPage] = React.useState(0);
-  // const roomsData = useSelector((state) => state.room.rooms);
-  // const dispatch = useDispatch();
+  const roomsData = useSelector((state) => state.room.rooms);
+  
   const data = [
     {
       category: "Tên Chủ Nhà",
@@ -44,7 +44,7 @@ const CommonRooms = ({ houseData }) => {
     },
     {
       category: "Số Lượng Phòng",
-      content: houseData ? houseData.numberOfRoom : "Không có Dữ Liệu",
+      content: roomsData ? roomsData?.length : "Không có Dữ Liệu",
     },
     // Thêm dữ liệu danh mục và nội dung tương ứng ở đây
   ];
@@ -95,7 +95,7 @@ const CommonRooms = ({ houseData }) => {
             <p className="fs-5 fw-bold d-flex justify-content-center">
               Tỷ Lệ Đầy Phòng
             </p>
-            <ChartRooms />
+            <ChartRooms houseData={houseData} roomsData={roomsData}/>
           </Box>
         </Box>
       </Box>

@@ -25,7 +25,6 @@ const ModalUpdateRenter = ({ handleClose, open, room, setMembers, memberId }) =>
     const [initialValues, setInitialValues] = useState()
     const [isLoading, setIsLoading] = useState(true);
 
-    console.log(initialValues)
     useEffect(() => {
         async function fetchMember() {
             setImagePreview(null);
@@ -80,7 +79,6 @@ const ModalUpdateRenter = ({ handleClose, open, room, setMembers, memberId }) =>
             formData.set("dob", values.dob)
             formData.set("note", values.note)
             await updateInfoMember(room._id, formData).then(data => {
-                console.log(data.data.data)
                 setMembers(prevMembers => {
                     const updatedMembers = prevMembers.map(member => {
                         if (member._id === memberId) {

@@ -47,7 +47,7 @@ const BillService = {
             priceList.map(item => {
                 if(item.base.unit === "đồng/tháng"){
                     priceListForBill.push({
-                        base: item.base.id,
+                        base: item.base._id,
                         unitPrice: item.unitPrice,
                         startUnit: item.startUnit,
                         endUnit: item.endUnit,
@@ -56,7 +56,7 @@ const BillService = {
                 }
                 else if(item.base.unit === "đồng/kWh") {
                     priceListForBill.push({
-                        base: item.base.id,
+                        base: item.base._id,
                         unitPrice: item.unitPrice,
                         startUnit: item.startUnit,
                         endUnit: item.endUnit,
@@ -65,7 +65,7 @@ const BillService = {
                 }
                 else if(item.base.unit === "đồng/khối") {
                     priceListForBill.push({
-                        base: item.base.id,
+                        base: item.base._id,
                         unitPrice: item.unitPrice,
                         startUnit: item.startUnit,
                         endUnit: item.endUnit,
@@ -74,7 +74,7 @@ const BillService = {
                 }
                 else if(item.base.unit === "đồng/người") {
                     priceListForBill.push({
-                        base: item.base.id,
+                        base: item.base._id,
                         unitPrice: item.unitPrice,
                         startUnit: item.startUnit,
                         endUnit: item.endUnit,
@@ -85,6 +85,17 @@ const BillService = {
             const totalUnits = priceListForBill.reduce((total, item) => {
                 return total + item.totalUnit;
             }, 0);
+            const bill = new BillsModel({
+                roomId,
+                roomPrice: room.roomPrice,
+                priceList: priceListForBill,
+                debt: debt,
+                total: room.roomPrice + totalUnits + debt,
+                note,
+                houseId: room.houseId._id,
+            })
+            await bill.save();
+
             const account = await AccountModel.findById(currentUserId);
             let paymentLink;
             if (account.payosClientId && account.payosAPIKey && account.payosCheckSum){
@@ -93,10 +104,11 @@ const BillService = {
                 const orderCode = Date.now();
                 const requestData = {
                     orderCode: Number(orderCode),
-                    amount: room.roomPrice + totalUnits + debt,
+                    // amount: room.roomPrice + totalUnits + debt,
+                    amount: 10000,
                     description: "Thanh toán tiền phòng" + room.name,
-                    cancelUrl: "http://localhost:5173/",
-                    returnUrl: "http://localhost:5173/home",
+                    cancelUrl: "http://localhost:5173/" + bill.id ,
+                    returnUrl: "http://localhost:5173/bill/" + bill.id ,
                 }
                 try {
                     paymentLink = await payos.createPaymentLink(requestData)
@@ -108,15 +120,7 @@ const BillService = {
             else{
                 throw new Error("Thêm thông tin ngân hàng để tạo hoá đơn")
             }
-            const bill = new BillsModel({
-                roomId,
-                roomPrice: room.roomPrice,
-                priceList: priceListForBill,
-                debt: debt,
-                total: room.roomPrice + totalUnits + debt,
-                note,
-                paymentLink
-            })
+            bill.paymentLink = paymentLink;
             await bill.save();
             return {
                 bill: bill._doc,
@@ -138,19 +142,39 @@ const BillService = {
     },
     getBills: async (req) => {
         try {
-            const {roomId,option} = req.query;
+            const {roomId,option,houseId} = req.query;
             let data;
             const query = {};
             if (roomId){
                 query.roomId = roomId
             }
+            if (houseId){
+                query.houseId = houseId
+            }
             if (String(option) === "all" ){
-                data = await BillsModel.find({}).populate({path: "roomId",select: "name"}).populate("priceList.base");
+                data = await BillsModel.find({}).populate({path: "roomId",select: "name"}).populate("priceList.base").sort({ createdAt: -1 });
             } 
             else {
-                data = await BillsModel.find(query).populate({path: "roomId",select: "name"}).populate("priceList.base");
+                data = await BillsModel.find(query).populate({path: "roomId",select: "name"}).populate("priceList.base").sort({ createdAt: -1 });
             }
             return data
+        } catch (error) {
+            throw error
+        }
+    },
+    confirmBills: async (req) => {
+        try {
+            const {billId} = req.params;
+            const bill = await BillsModel.findById(billId).populate({path: "roomId",select: "name"}).populate("priceList.base");
+            if (bill.isPaid){
+                return {message:"Bill đã thanh toán rồi !!"}
+            }
+            else {
+
+                bill.isPaid = true;
+            }
+            await bill.save()
+            return bill
         } catch (error) {
             throw error
         }
