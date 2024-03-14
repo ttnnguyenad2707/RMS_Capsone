@@ -24,7 +24,7 @@ import TableSortLabel from "@mui/material/TableSortLabel";
 import { styled } from "@mui/material/styles";
 
 import { useSelector } from "react-redux";
-import { fetchOneHouse, updateHouse } from "../../../reduxToolkit/HouseSlice";
+import { fetchOneHouse, updateHouse ,fetchHouses} from "../../../reduxToolkit/HouseSlice";
 import { fetchDefaultPrice } from "../../../reduxToolkit/DefaultPrice";
 import Paper from "@mui/material/Paper";
 import {
@@ -150,17 +150,18 @@ export default function SuperModal({
     const response = await dispatch(fetchOneHouse({ houseId }));
     setDefaultPrice(response.payload.priceList);
   };
-  const getDefaultHouse = async () => {
+  const getDefaultPrice = async () => {
     const response = await dispatch(fetchDefaultPrice());
-    console.log(response);
+    console.log(response.payload);
     setDefaultPriceSystem(response.payload);
   };
   React.useEffect(() => {
     if (typeModal === "Cấu Hình Bảng Giá") {
       gethouse();
-      getDefaultHouse();
+      getDefaultPrice();
     }
   }, [typeModal, openAdd]);
+  // feat data price
   React.useEffect(() => {
     if (defaultPrice) {
       const dataTable = defaultPrice.map((house, index) => {
@@ -173,16 +174,8 @@ export default function SuperModal({
             <Button
               variant="contained"
               sx={{ fontWeight: "bold", margin: "10px" }}
-              color="warning"
-              onClick={() => {}}
-            >
-              Cập Nhật
-            </Button>
-            <Button
-              variant="contained"
-              sx={{ fontWeight: "bold", margin: "10px" }}
               color="error"
-              onClick={() => {}}
+              onClick={() => handleDeletePrice(house._id)}
             >
               Xóa
             </Button>
@@ -192,7 +185,16 @@ export default function SuperModal({
       setRows(dataTable);
     }
   }, [defaultPrice]);
-
+  React.useEffect(() => {
+    if (inputUnitPrice.current) {
+      console.log(unit, "unit");
+      const getUnit = defaultPriceSystem.find((price) => unit === price._id);
+      console.log(getUnit, "getUnit");
+      if (getUnit) {
+        inputUnitPrice.current.value = getUnit.unit;
+      }
+    }
+  }, [unit, inputUnitPrice.current]);
   const handleChangeMenu = (event, newValue) => {
     setValue(newValue);
   };
@@ -273,11 +275,11 @@ export default function SuperModal({
       const getUnit = defaultPriceSystem.find((price) => unit === price._id);
       const newPrice = {
         base: {
-          id: getUnit._id,
-          name: Expense,
+          _id: getUnit._id,
+          name: getUnit.name,
           unit: getUnit.unit,
         },
-        price: parseInt(UnitPrice),
+        price: parseInt(Expense),
       };
       defaultPrice.push(newPrice);
       const setData = {
@@ -286,7 +288,41 @@ export default function SuperModal({
       const id = houseId;
       const response = await dispatch(updateHouse({ setData, id }));
       console.log(response, "response");
+      if (response.payload) {
+        Notification("Success", "Thêm kinh phí", "Thành công");
+        dispatch(fetchHouses())
+        handleCloseAdd();
+      } else {
+        Notification("Error", "Thêm kinh phí", "Thất Bại");
+      }
     }
+  };
+  // delete price
+  const handleDeletePrice = async (idPrice) => {
+    const getUnit = defaultPrice.filter((price) => idPrice !== price._id);
+    const setData = {
+      priceList: getUnit,
+    };
+    const id = houseId;
+    Notification("Confirm", "Xác Nhận", "Xóa Loại Kinh Phí Này").then(
+      async (result) => {
+        if (result) {
+          const response = await dispatch(updateHouse({ setData, id }));
+          console.log(response, "response");
+          if (typeof response.payload !== "undefined") {
+            gethouse();
+            Notification("Success", "Xóa kinh phí", "Thành công");
+            dispatch(fetchHouses())
+            handleCloseAdd();
+          } else {
+            Notification("Error", "Xóa kinh phí", "Thất Bại");
+          }
+        } else {
+          console.log("Người dùng đã chọn Cancel");
+          // Xử lý khi người dùng chọn Cancel
+        }
+      }
+    );
   };
   const handleOpenAdd = () => setOpenAdd(true);
   const handleCloseAdd = () => setOpenAdd(false);
@@ -418,7 +454,6 @@ export default function SuperModal({
   const validateInputNumber = (input) => {
     return !isNaN(input);
   };
-  console.log(defaultPrice,"dè");
   if (typeModal === "Thêm Phòng") {
     return (
       <Modal
@@ -610,7 +645,12 @@ export default function SuperModal({
               <Button
                 variant="contained"
                 sx={{ ml: 2 }}
-                onClick={() => window.open("http://localhost:5000/api/v1/house/downloadTemplate", "_blank")}
+                onClick={() =>
+                  window.open(
+                    "http://localhost:5000/api/v1/downloadTemplate",
+                    "_blank"
+                  )
+                }
               >
                 Download teamplate
               </Button>
@@ -734,42 +774,44 @@ export default function SuperModal({
               </Box>
               <hr />
               <Box sx={{ display: "flex" }}>
-                <TextField
-                  required
-                  id="outlined-basic"
-                  label="Loại Phí"
-                  variant="outlined"
-                  sx={{ width: "40%" }}
-                  inputRef={inputExpense}
-                  className="me-4"
-                />
-                <TextField
-                  required
-                  id="outlined-basic"
-                  label="Đơn Giá"
-                  variant="outlined"
-                  sx={{ width: "35%" }}
-                  inputRef={inputUnitPrice}
-                  className="me-4"
-                />
                 <Select
                   labelId="demo-simple-select-label"
                   id="demo-simple-select"
                   value={unit}
                   label="Trạng đơn vị"
                   onChange={handleChangeUnit}
-                  sx={{ width: "25%" }}
+                  sx={{ width: "40%" }}
+                  className="me-4"
                 >
                   {defaultPriceSystem ? (
                     defaultPriceSystem.map((d, index) => (
                       <MenuItem value={d._id} key={index}>
-                        {d.unit}
+                        {d.name}
                       </MenuItem>
                     ))
                   ) : (
                     <div>Không có dữ liệu</div>
                   )}
                 </Select>
+                <TextField
+                  required
+                  id="outlined-basic"
+                  variant="outlined"
+                  sx={{ width: "25%" }}
+                  inputRef={inputUnitPrice}
+                  className="me-4"
+                  InputProps={{
+                    readOnly: true,
+                  }}
+                />
+                <TextField
+                  required
+                  id="outlined-basic"
+                  label="Giá"
+                  variant="outlined"
+                  sx={{ width: "35%" }}
+                  inputRef={inputExpense}
+                />
               </Box>
               <Box className="d-flex">
                 <Button
