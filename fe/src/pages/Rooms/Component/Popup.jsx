@@ -24,7 +24,11 @@ import TableSortLabel from "@mui/material/TableSortLabel";
 import { styled } from "@mui/material/styles";
 
 import { useSelector } from "react-redux";
-import { fetchOneHouse, updateHouse ,fetchHouses} from "../../../reduxToolkit/HouseSlice";
+import {
+  fetchOneHouse,
+  updateHouse,
+  fetchHouses,
+} from "../../../reduxToolkit/HouseSlice";
 import { fetchDefaultPrice } from "../../../reduxToolkit/DefaultPrice";
 import Paper from "@mui/material/Paper";
 import {
@@ -290,7 +294,7 @@ export default function SuperModal({
       console.log(response, "response");
       if (response.payload) {
         Notification("Success", "Thêm kinh phí", "Thành công");
-        dispatch(fetchHouses())
+        dispatch(fetchHouses());
         handleCloseAdd();
       } else {
         Notification("Error", "Thêm kinh phí", "Thất Bại");
@@ -312,7 +316,7 @@ export default function SuperModal({
           if (typeof response.payload !== "undefined") {
             gethouse();
             Notification("Success", "Xóa kinh phí", "Thành công");
-            dispatch(fetchHouses())
+            dispatch(fetchHouses());
             handleCloseAdd();
           } else {
             Notification("Error", "Xóa kinh phí", "Thất Bại");
@@ -355,6 +359,7 @@ export default function SuperModal({
       const response = await dispatch(addOneRoom({ setData, houseId }));
       if (response.payload === "Created") {
         // await dispatch(fetchRooms({ houseId }));
+        await dispatch(fetchHouses());
         Notification("Success", "Thêm Phòng", "Thành Công");
         handleClose();
       } else {
@@ -378,6 +383,7 @@ export default function SuperModal({
     const response = await dispatch(addRooms({ data: formData }));
     if (response.payload === "Created") {
       // await dispatch(fetchRooms({ houseId }));
+      await dispatch(fetchHouses());
       Notification("Success", "Thêm Danh Sách Phòng", "Thành Công");
       handleClose();
     } else {

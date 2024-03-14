@@ -32,9 +32,7 @@ import {
   AiFillEdit,
   AiOutlineLoading3Quarters,
 } from "react-icons/ai";
-
-
-
+import BarChartDisplay from "./Components/BarChart";
 // const drawerWidth = 240;
 
 // const AppBar = styled(MuiAppBar, {
@@ -106,7 +104,7 @@ export default function Dashboard() {
   //     navigate("/login");
   //     return;
   //   }
-    
+
   //   getCurrentUser(accessToken)
   //     .then((res) => {
   //       console.log("getCurrentUser", res);
@@ -135,61 +133,57 @@ export default function Dashboard() {
         </div>
       ) : (
         <>
-  
-                  <Grid item xs={12} md={7} lg={8}>
-                    <Paper
-                      sx={{
-                        p: 2,
-                        display: "flex",
-                        flexDirection: "column",
-                        height: 350,
-                      }}
-                    >
-                      {/* <Chart /> */}
-                    </Paper>
-                  </Grid>
-             
-                  <Grid item xs={12} md={5} lg={4}>
-                    <Paper
-                      sx={{
-                        p: 2,
-                        display: "flex",
-                        flexDirection: "column",
-                        height: 350,
-                      }}
-                    >
-                      {/* <Deposits /> */}
-                    </Paper>
-                  </Grid>
-                  <Grid item xs={12} md={7} lg={8}>
-                    <Paper
-                      sx={{
-                        p: 2,
-                        display: "flex",
-                        flexDirection: "column",
-                        height: 350,
-                      }}
-                    >
-                      {/* <Chart /> */}
-                    </Paper>
-                  </Grid>
-             
-                  <Grid item xs={12} md={5} lg={4}>
-                    <Paper
-                      sx={{
-                        p: 2,
-                        display: "flex",
-                        flexDirection: "column",
-                        height: 350,
-                      }}
-                    >
-                      {/* <Deposits /> */}
-                    </Paper>
-                  </Grid>
-                 
-     
-        </>
+          <Grid item xs={12} md={7} lg={7}>
+            <Paper
+              sx={{
+                p: 2,
+                display: "flex",
+                flexDirection: "column",
+                height: 350,
+              }}
+            >
+              <BarChartDisplay/>
+            </Paper>
+          </Grid>
 
+          <Grid item xs={12} md={5} lg={5}>
+            <Paper
+              sx={{
+                p: 2,
+                display: "flex",
+                flexDirection: "column",
+                height: 350,
+              }}
+            >
+              <Deposits />
+            </Paper>
+          </Grid>
+          <Grid item xs={12} md={7} lg={7}>
+            <Paper
+              sx={{
+                p: 2,
+                display: "flex",
+                flexDirection: "column",
+                height: 350,
+              }}
+            >
+              <Chart />
+            </Paper>
+          </Grid>
+
+          <Grid item xs={12} md={5} lg={5}>
+            <Paper
+              sx={{
+                p: 2,
+                display: "flex",
+                flexDirection: "column",
+                height: 350,
+              }}
+            >
+              <Deposits />
+            </Paper>
+          </Grid>
+        </>
       )}
     </>
   );
