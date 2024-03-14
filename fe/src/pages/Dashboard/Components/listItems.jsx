@@ -22,13 +22,15 @@ export const mainListItems = (
     <ListSubheader component="div" inset>
       MENU
     </ListSubheader>
-    <ListItemButton>
-      <ListItemIcon>
-        <DashboardIcon />
-      </ListItemIcon>
-      <ListItemText primary="Thống kê" />
-    </ListItemButton>
-    <Link to={"/house"} style={{ textDecoration: 'none', color: 'inherit' }}>
+    <Link to={"/"} style={{ textDecoration: "none", color: "inherit" }}>
+      <ListItemButton>
+        <ListItemIcon>
+          <DashboardIcon />
+        </ListItemIcon>
+        <ListItemText primary="Thống kê" />
+      </ListItemButton>
+    </Link>
+    <Link to={"/house"} style={{ textDecoration: "none", color: "inherit" }}>
       <ListItemButton>
         <ListItemIcon>
           <HomeWorkIcon />
@@ -36,7 +38,7 @@ export const mainListItems = (
         <ListItemText primary="Danh Sách Nhà" />
       </ListItemButton>
     </Link>
-    <Link to={"/rooms"} style={{ textDecoration: 'none', color: 'inherit' }}>
+    <Link to={"/rooms"} style={{ textDecoration: "none", color: "inherit" }}>
       <ListItemButton>
         <ListItemIcon>
           <MeetingRoomIcon />
@@ -44,16 +46,16 @@ export const mainListItems = (
         <ListItemText primary="Danh Sách Phòng" />
       </ListItemButton>
     </Link>
-    <Link to={"/new"} style={{ textDecoration: 'none', color: 'inherit' }} >
-    <ListItemButton>
-      <ListItemIcon>
-        <NewspaperIcon />
-      </ListItemIcon>
-      <ListItemText primary="Bảng Tin" />
-    </ListItemButton>
+    <Link to={"/new"} style={{ textDecoration: "none", color: "inherit" }}>
+      <ListItemButton>
+        <ListItemIcon>
+          <NewspaperIcon />
+        </ListItemIcon>
+        <ListItemText primary="Bảng Tin" />
+      </ListItemButton>
     </Link>
 
-    <Link to={"/problems"} style={{ textDecoration: 'none', color: 'inherit' }}>
+    <Link to={"/problems"} style={{ textDecoration: "none", color: "inherit" }}>
       <ListItemButton>
         <ListItemIcon>
           <NewspaperIcon />
@@ -61,7 +63,6 @@ export const mainListItems = (
         <ListItemText primary="Báo Cáo Vấn Đề" />
       </ListItemButton>
     </Link>
-
     <Link to={"/bill"} style={{ textDecoration: 'none', color: 'inherit' }}>
       <ListItemButton>
         <ListItemIcon>
@@ -69,8 +70,7 @@ export const mainListItems = (
         </ListItemIcon>
         <ListItemText primary="Hoá đơn" />
       </ListItemButton>
-    </Link>
-    
+    </Link>    
   </React.Fragment>
 );
 

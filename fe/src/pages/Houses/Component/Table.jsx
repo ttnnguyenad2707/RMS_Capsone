@@ -260,6 +260,8 @@ export default function BasicTable() {
               sx={{ fontWeight: "bold", margin: "10px" }}
               color="error"
               onClick={() => {
+                console.log(house._id,"house._id");
+                console.log(house,"house");
                 setHouseSelect({
                   id: house._id,
                   name: house.name,

@@ -6,6 +6,7 @@ import defaultUtilReducer from "./UtilSliceDefault";
 import roomReducer from "./RoomSlice";
 import newReducer from "./NewsSlice";
 import commentReducer from "./CommentSlice";
+import defaultPriceReducer from "./DefaultPrice";
 const rootReducer = {
   // counter : tên đặt tự do nó sẽ tương ứng với state sẽ truy cập ở component
   //counterReducer : import Reducer từ CounterSlice
@@ -17,6 +18,7 @@ const rootReducer = {
   room: roomReducer,
   new: newReducer,
   comment: commentReducer,
+  defaultPrice:defaultPriceReducer
 };
 const store = configureStore({
   reducer: rootReducer,
