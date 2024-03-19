@@ -13,8 +13,7 @@ import IconButton from "@mui/material/IconButton";
 import Tab from "@mui/material/Tab";
 import Tabs from "@mui/material/Tabs";
 import UtilitiesTab from "./UtilitiesTab";
-import AddIcon from "@mui/icons-material/Add";
-import { UpdateHouseService } from "../../../services/houses";
+import InputAdornment from "@mui/material/InputAdornment";
 import { updateHouse, fetchHouses } from "../../../reduxToolkit/HouseSlice";
 import { useDispatch } from "react-redux";
 import axios from "axios";
@@ -293,7 +292,7 @@ export default function BasicModalUpdate({
     return pattern.test(input);
   };
   const validateInputNumber = (input) => {
-    return !isNaN(input);
+    return !isNaN(input) && Number(input) > 0;
   };
   console.log(data);
   return (
@@ -431,6 +430,11 @@ export default function BasicModalUpdate({
                   inputRef={inputCostElectricity}
                   error={errorCostElectric}
                   defaultValue={data.costElectricity}
+                  InputProps={{
+                    startAdornment: (
+                      <InputAdornment position="start">VND/kwH</InputAdornment>
+                    ),
+                  }}
                 />
                 <TextField
                   required
@@ -441,6 +445,11 @@ export default function BasicModalUpdate({
                   inputRef={inputCostWater}
                   error={errorCostWater}
                   defaultValue={data.costWater}
+                  InputProps={{
+                    startAdornment: (
+                      <InputAdornment position="start">VND/m³</InputAdornment>
+                    ),
+                  }}
                 />
               </Box>
               <Box sx={{ width: "100%", mt: "20px" }}>
