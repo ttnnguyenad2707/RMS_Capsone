@@ -52,6 +52,7 @@ const ListBill = (props) => {
         // open();
         window.open(link)
     }
+    console.log(room,"roomhi");
     return (
         <div
             role="tabpanel"
