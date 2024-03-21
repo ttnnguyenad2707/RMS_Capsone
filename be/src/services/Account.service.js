@@ -31,8 +31,8 @@ class AccountService {
                 return res.send("Account not found !!");
             }
 
-            const { name, phone, avatar } = req.body;
-            await Account.findByIdAndUpdate(accountId, { name, phone, avatar })
+            const { name, phone, avatar, payosClientId,payosAPIKey,payosCheckSum } = req.body;
+            await Account.findByIdAndUpdate(accountId, { name, phone, avatar,payosClientId,payosAPIKey,payosCheckSum })
 
             Account.findById(accountId).then(data => {
                 const { password, _id, refreshToken, passwordResetCode, imageStores, ...other } = data._doc

@@ -54,12 +54,11 @@ console.log("userData",userData);
     console.log(values);
     try {
     const res = await addProblemsInHouse(values)
-    console.log("res",res);
       toast.success("vấn đề đã được gửi đi !");
+      setOpen(false)
         
     } catch (error) {
         toast.warning(error.response.data.error);
-        console.log(error);
         
     }
 

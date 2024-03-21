@@ -43,6 +43,7 @@ import {
   secondaryListItems,
   mainListItemsRenter
 } from "../pages/Dashboard/Components/listItems";
+import DropdownNotification from "./DropdownNotification";
 
 const drawerWidth = 240;
 
@@ -260,11 +261,7 @@ export default function ToolbarHeader() {
                   </Menu>
                 </Box>
 
-                <IconButton color="inherit">
-                  <Badge badgeContent={4} color="secondary">
-                    <NotificationsIcon />
-                  </Badge>
-                </IconButton>
+                <DropdownNotification/>
               </Toolbar>
             </AppBar>{" "}
             {/* header bên trên */}
