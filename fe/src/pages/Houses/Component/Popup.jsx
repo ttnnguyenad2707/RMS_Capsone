@@ -21,7 +21,7 @@ import { ToastContainer, toast } from "react-toastify";
 import axios from "axios";
 import { fetchHouses } from "../../../reduxToolkit/HouseSlice";
 import Notification from "../../../CommonComponents/Notification";
-import InputAdornment from '@mui/material/InputAdornment';
+import InputAdornment from "@mui/material/InputAdornment";
 
 const style = {
   position: "absolute",
@@ -187,7 +187,7 @@ export default function BasicModal() {
   };
   const handleInputCostElectric = () => {
     const inputValue = inputCostElectricity.current.value;
-    if (validateInputNumber(inputValue) && inputValue != " ") {
+    if (validateInputNumber(inputValue) == true && inputValue != " ") {
       setCostElectricity(inputValue);
       setErrorCostElectric(false);
     } else {
@@ -197,7 +197,7 @@ export default function BasicModal() {
   };
   const handleInputCostWater = () => {
     const inputValue = inputCostWater.current.value;
-    if (validateInputNumber(inputValue) && inputValue != " ") {
+    if (validateInputNumber(inputValue) == true && inputValue != " ") {
       setCostWater(inputValue);
       setErrorWater(false);
     } else {
@@ -226,8 +226,8 @@ export default function BasicModal() {
     if (
       name !== "" &&
       address !== "" &&
-      CostElectricity !== null &&
-      CostWater !== null &&
+      typeof CostElectricity !== "undefined" &&
+      typeof CostWater !== "undefined" &&
       city !== "" &&
       county !== "" &&
       ward !== "" &&
@@ -250,12 +250,20 @@ export default function BasicModal() {
       const response = await dispatch(addHouse(setData));
       console.log(response, "response");
       if (response) {
-        await dispatch(fetchHouses());
-        Notification("Success", "Thêm Nhà", "Thành Công");
-        handleClose();
+        setErrorWater(false);
+        setErrorName(false);
+        setErrorAddress(false);
+        setErrorCostElectric(false);
+        setName("");
+        setAddress("");
+        setCostElectricity();
+        setCostWater();
         setCity("");
         setWard("");
         setCounty("");
+        await dispatch(fetchHouses());
+        Notification("Success", "Thêm Nhà", "Thành Công");
+        handleClose();
       } else {
         Notification("Error", "Thêm Nhà", "Thất Bại");
       }

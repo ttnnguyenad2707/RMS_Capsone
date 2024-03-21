@@ -531,7 +531,7 @@ export default function SuperModal({
             <Tab value="2" label="Thêm Danh Sách Phòng" />
           </Tabs>
           {value === "1" && (
-            <Box sx={stylesBody}>
+            <Box sx={stylesBody} className="mt-2">
               <Box sx={{ display: "flex" }}>
                 <TextField
                   required

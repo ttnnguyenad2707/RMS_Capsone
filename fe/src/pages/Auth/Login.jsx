@@ -46,8 +46,12 @@ const Login = () => {
 
       dispatch(login(res.data.data));
       toast.success(res.data.message);
-
-      nav("/");
+      if(res.data.data.accountType === "host"){
+        nav("/");
+      }
+      else if(res.data.data.accountType === "renter"){
+        nav("/rooms");
+      }
     } catch (error) {
       toast.warning(error.response.data.error);
       console.log(error);

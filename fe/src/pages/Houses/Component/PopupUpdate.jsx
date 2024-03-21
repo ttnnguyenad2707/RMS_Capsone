@@ -16,6 +16,7 @@ import UtilitiesTab from "./UtilitiesTab";
 import InputAdornment from "@mui/material/InputAdornment";
 import { updateHouse, fetchHouses } from "../../../reduxToolkit/HouseSlice";
 import { useDispatch } from "react-redux";
+import Notification from "../../../CommonComponents/Notification";
 import axios from "axios";
 const style = {
   position: "absolute",
@@ -177,7 +178,7 @@ export default function BasicModalUpdate({
   };
   const handleInputCostElectric = () => {
     const inputValue = inputCostElectricity.current.value;
-    if (validateInputNumber(inputValue) && inputValue != " ") {
+    if (validateInputNumber(inputValue) == true && inputValue != " ") {
       setCostElectricity(inputValue);
       setErrorCostElectric(false);
     } else {
@@ -186,7 +187,7 @@ export default function BasicModalUpdate({
   };
   const handleInputCostWater = () => {
     const inputValue = inputCostWater.current.value;
-    if (validateInputNumber(inputValue) && inputValue != " ") {
+    if (validateInputNumber(inputValue) == true && inputValue != " ") {
       setCostWater(inputValue);
       setErrorWater(false);
     } else {
@@ -214,8 +215,10 @@ export default function BasicModalUpdate({
     if (
       name !== "" &&
       address !== "" &&
-      CostElectricity !== null &&
-      CostWater !== null &&
+      typeof CostElectricity !== "undefined" &&
+      typeof CostWater !== "undefined" &&
+      Number(CostElectricity) > 0 &&
+      Number(CostWater) > 0 &&
       city !== "" &&
       county !== "" &&
       ward !== "" &&
@@ -235,10 +238,27 @@ export default function BasicModalUpdate({
         utilities: utilities,
         otherUtilities: utilitiesOther,
       };
+
       const id = data.id;
-      await dispatch(updateHouse({ setData, id }));
-      await dispatch(fetchHouses());
-      handleClose();
+      const respone = await dispatch(updateHouse({ setData, id }));
+      if (respone.type === "houses/updateHouse/fulfilled") {
+        setErrorWater(false);
+        setErrorName(false);
+        setErrorAddress(false);
+        setErrorCostElectric(false);
+        setName("");
+        setAddress("");
+        setCostElectricity();
+        setCostWater();
+        setCity("");
+        setWard("");
+        setCounty("");
+        await dispatch(fetchHouses());
+        Notification("Success", "Cập Nhật Nhà", "Thành Công");
+        handleClose();
+      } else {
+        Notification("Error", "Cập Nhật Nhà", "Thất Bái");
+      }
     }
   };
   React.useEffect(() => {

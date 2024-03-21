@@ -41,6 +41,7 @@ import { getCurrentUser, logout } from "../services/auth";
 import {
   mainListItems,
   secondaryListItems,
+  mainListItemsRenter
 } from "../pages/Dashboard/Components/listItems";
 
 const drawerWidth = 240;
@@ -199,7 +200,7 @@ export default function ToolbarHeader() {
                     flexGrow: 1,
                   }}
                 >
-                  {userData && <div>{name}</div> }
+                  {userData && <div>{name}</div>}
                 </Typography>
                 <Box sx={{ flexGrow: 0 }}>
                   <Tooltip title="Open settings">
@@ -282,11 +283,17 @@ export default function ToolbarHeader() {
                 </IconButton>
               </Toolbar>
               <Divider />
-              <List component="nav">
-                {mainListItems}
-                <Divider sx={{ my: 1 }} />
-                {secondaryListItems}
-              </List>
+              {userData.accountType == "host" ? (
+                <List component="nav">
+                  {mainListItems}
+                  <Divider sx={{ my: 1 }} />
+                  {secondaryListItems}
+                </List>
+              ) : (
+                <List component="nav">
+                  {mainListItemsRenter}
+                </List>
+              )}
             </Drawer>{" "}
             {/* tay trái */}
             {/* nội dung chính */}
