@@ -8,6 +8,7 @@ import session from 'express-session';
 import passport from 'passport';
 import indexRouter from './routes/index.route.js';
 import {v2 as cloudinary} from 'cloudinary';
+import socketConnect from '../config/socketIO.js';
 const { SERVER_PORT, MONGODB_URL, CLIENT_URL } = process.env;
 
 const app = express();
@@ -55,9 +56,10 @@ const startServer = async () => {
     try {
         await connect(MONGODB_URL);
         console.log(">>> Connected to MongoDB");
-        app.listen(SERVER_PORT || 5000, () => {
+        const server = app.listen(SERVER_PORT || 5000, () => {
             console.log(`>>> Listening on port ${SERVER_PORT || 5000}`);
         });
+        socketConnect(server)
     } catch (err) {
         console.error("Error connecting to MongoDB:", err);
     }

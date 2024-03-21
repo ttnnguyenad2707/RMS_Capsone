@@ -446,8 +446,7 @@ export default function BasicModal() {
                 aria-label="secondary tabs example"
               >
                 <Tab value="1" label="Tiện Ích" />
-                <Tab value="2" label="Item two" />
-                <Tab value="3" label="Item Three" />
+                
               </Tabs>
               {value === "1" && (
                 <UtilitiesTab

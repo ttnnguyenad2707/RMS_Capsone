@@ -11,3 +11,15 @@ export const getNotification = async () => {
         },
     });
 };
+
+export const readNotification = async (notificationId) => {
+    const token = Cookies.get("accessToken");
+    return await axios.put(`${URL_SERVER}/notification/${notificationId}`,{
+        isRead: true
+    } ,{
+        withCredentials: true,
+        headers: {
+            authorization: `Bearer ${token}`,
+        },
+    });
+}
