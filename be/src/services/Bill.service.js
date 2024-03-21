@@ -1,8 +1,12 @@
 import AccountModel from "../models/Account.model.js";
 import BillsModel from "../models/Bills.model.js";
+import Notification from "../models/Notification.model.js";
 import RoomsModel from "../models/Rooms.model.js";
 import getCurrentUser from "../utils/getCurrentUser.js";
 import PayOS from "@payos/node";
+import * as dotenv from 'dotenv'
+dotenv.config();
+const {CLIENT_URL} = process.env
 
 const BillService = {
     addBillInRoom : async (req) => {
@@ -122,6 +126,20 @@ const BillService = {
             }
             bill.paymentLink = paymentLink;
             await bill.save();
+            const roomAccount = await AccountModel.findOne({roomId: roomId})
+            await Notification.create({
+                sender: getCurrentUser(req),
+                recipients: [
+                    {
+                        user: roomAccount.id,
+                        isRead: false
+                    }
+                ],
+                message: "Một hoá đơn phòng" + room.name + "đã được tạo",
+                type: "bill",
+                link: CLIENT_URL + "/bill/"+ bill.id,
+            })
+
             return {
                 bill: bill._doc,
                 paymentLink

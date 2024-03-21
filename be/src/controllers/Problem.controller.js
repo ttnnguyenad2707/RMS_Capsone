@@ -21,6 +21,15 @@ const ProblemController = {
             return res.status(500).json(response.errorResponse(500,error.toString()))
         }
     }),
+    getInRoom: asyncHandler(async (req,res) => {
+        try {
+            const problem = await ProblemService.getInRoom(req);
+            if (problem) return res.status(200).json(response.successResponse(200,problem));
+            else return res.status(404).json(response.errorResponse(404));
+        } catch (error) {
+            return res.status(500).json(response.errorResponse(500,error.toString()))
+        }
+    }),
     getByFilter: asyncHandler(async (req,res) => {
         try {
             const problem = await ProblemService.getByFilter(req);
