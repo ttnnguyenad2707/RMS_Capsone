@@ -12,7 +12,7 @@ const ProblemService = {
     addOne: async(req) => {
         try {
             const {roomId} = req.body;
-            const room = await RoomsModel.findById(roomId);
+            const room = await RoomsModel.findById(roomId).populate({path: "houseId",select: "hostId",populate: {path: "hostId",select: "_id"}});
             const creatorId = getCurrentUser(req);
             const data = await ProblemsModel.create({...req.body,creatorId,houseId:room.houseId});
             room.problemId = [...room.problemId,data.id];
@@ -22,7 +22,7 @@ const ProblemService = {
                 sender: getCurrentUser(req),
                 recipients: [
                     {
-                        user: roomAccount,                        
+                        user: room.houseId.hostId._id,                        
                     }
                 ],
                 message: "1 problem đã được thêm vào phòng " + room.name,
