@@ -70,7 +70,7 @@ export const mainListItems = (
         </ListItemIcon>
         <ListItemText primary="Hoá đơn" />
       </ListItemButton>
-    </Link>    
+    </Link>
   </React.Fragment>
 );
 
@@ -91,17 +91,19 @@ export const secondaryListItems = (
       </ListItemIcon>
       <ListItemText primary="Thống kê tài chính" />
     </ListItemButton>
-    <ListItemButton>
-      <ListItemIcon>
-        <ManageAccountsIcon />
-      </ListItemIcon>
-      <ListItemText primary="Tài khoản" />
-    </ListItemButton>
+    <Link to="/profile" style={{ textDecoration: 'none', color: 'inherit' }}>
+      <ListItemButton>
+        <ListItemIcon>
+          <ManageAccountsIcon />
+        </ListItemIcon>
+        <ListItemText primary="Tài khoản" />
+      </ListItemButton>
+    </Link>
     <ListItemButton>
       <ListItemIcon>
         <HelpIcon />
       </ListItemIcon>
       <ListItemText primary="Trợ giúp" />
     </ListItemButton>
-  </React.Fragment>
+  </React.Fragment >
 );

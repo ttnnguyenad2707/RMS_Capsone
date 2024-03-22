@@ -40,7 +40,8 @@ const RoomService = {
                         username: house.name.replace(/\s/g, '') + row.getCell(1).value,
                         password: hashedPassword,
                         accountType: "renter",
-                        roomId: rowData.id
+                        roomId: rowData.id,
+                        status: false
                     })
                     house.numberOfRoom += 1; 
                     await house.save();
@@ -74,7 +75,8 @@ const RoomService = {
                 username: house.name.replace(/\s/g, '') + req.body.name,
                 password: hashedPassword,
                 accountType: "renter",
-                roomId: data.id
+                roomId: data.id,
+                status: false                
             }); 
 
             return data
@@ -178,6 +180,7 @@ const RoomService = {
         try {
             const {roomId} = req.params;
             await Rooms.findByIdAndUpdate(roomId, {deleted: true, deletedAt: Date.now()})
+            await AccountModel.findOneAndDelete({roomId});          
             const newData = await Rooms.findById(roomId);
             return newData
         } catch (error) {
@@ -187,7 +190,7 @@ const RoomService = {
     getFloor: async (req) => {
         try {
             const {houseId} = req.params;
-            const floor = await Rooms.distinct("floor", {houseId})
+            const floor = await Rooms.distinct("floor", {houseId,deleted: false})
             return floor
         } catch (error) {
             throw error

@@ -10,10 +10,11 @@ export default function socketConnect(server) {
         },
     });
     io.on("connection", (socket) => {
+        console.log('Client connected');
+
         socket.on("addNotification",(data) => {
             io.emit("newNotification");
         })
-        // socket.emit("newNotification",{message: "admin"})
         socket.on('disconnect', () => {
             console.log('Client disconnected');
         });
