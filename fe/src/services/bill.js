@@ -13,6 +13,7 @@ export const addBill = async (roomId, data) => {
 };
 
 export const getBills = async (params) => {
+    console.log(params, "params");
     const token = Cookies.get("accessToken");
     const queryParams = new URLSearchParams(params).toString();
     return await axios.get(`${URL_SERVER}/bill?${queryParams}`, {
@@ -24,7 +25,7 @@ export const getBills = async (params) => {
 };
 export const confirmBill = async (billId) => {
     const token = Cookies.get("accessToken");
-    return await axios.post(`${URL_SERVER}/bill/${billId}`,{}, {
+    return await axios.post(`${URL_SERVER}/bill/${billId}`, {}, {
         withCredentials: true,
         headers: {
             authorization: `Bearer ${token}`,
@@ -33,11 +34,11 @@ export const confirmBill = async (billId) => {
 };
 
 export const getBill = async (billId) => {
-  const token = Cookies.get("accessToken");
-  return await axios.get(`${URL_SERVER}/bill/${billId}`, {
-      withCredentials: true,
-      headers: {
-          authorization: `Bearer ${token}`,
-      },
-  });
+    const token = Cookies.get("accessToken");
+    return await axios.get(`${URL_SERVER}/bill/${billId}`, {
+        withCredentials: true,
+        headers: {
+            authorization: `Bearer ${token}`,
+        },
+    });
 };

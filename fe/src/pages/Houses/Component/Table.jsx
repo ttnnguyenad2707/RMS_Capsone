@@ -155,12 +155,11 @@ export default function BasicTable() {
   const handleClose = () => {
     setOpen(false);
   };
-  const DeleteHouse = async () => {
+  const DeleteHouse = async (houseID) => {
     Notification("Confirm", "Xác Nhận", "Xóa Nhà").then(async (result) => {
       if (result) {
         try {
-          const id = houseSelect.id;
-          console.log(houseSelect, "aaa");
+          const id = houseID;
           dispatch(deleteHouse({ id }));
           dispatch(fetchHouses());
           Notification("Success", "Đã Xóa", "Nhà Thành Công");
@@ -259,16 +258,7 @@ export default function BasicTable() {
               variant="contained"
               sx={{ fontWeight: "bold", margin: "10px" }}
               color="error"
-              onClick={() => {
-                console.log(house._id,"house._id");
-                console.log(house,"house");
-                setHouseSelect({
-                  id: house._id,
-                  name: house.name,
-                });
-                console.log(houseSelect, "houseSelect");
-                DeleteHouse();
-              }}
+              onClick={() => DeleteHouse(house._id)}
             >
               Xóa
             </Button>
