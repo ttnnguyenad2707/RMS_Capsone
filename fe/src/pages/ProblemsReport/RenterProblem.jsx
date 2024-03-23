@@ -1,16 +1,25 @@
 import React, { useEffect, useLayoutEffect, useState } from "react";
 import SelectHouse from "../../CommonComponents/SelectHouse";
 import TableData from "../../CommonComponents/TableData";
-import { deleteProblem, getProblemsInHouse } from "../../services/problems";
+import {
+  deleteProblem,
+  getProblemsInHouse,
+  getProblemsInRoomOfRenter,
+} from "../../services/problems";
 import { toast } from "react-toastify";
 import ModalAddProblem from "./Component/ModalAddProblem";
 import { useSelector } from "react-redux";
 
 const RenterProblem = () => {
+  const userData = useSelector((state) => state.user.data); //state là rootReducer trong store ,counter cái tên đăng kí trong rootReducer
+
   const [problems, setProblems] = useState([]);
   const [selectedHouseId, setSelectedHouseId] = useState();
+
+  // const [selectedRoomId, setSelectedRoomId] = useState(userData.roomId);
+
+  const [dataTableForRenter, setDataTableForRenter] = useState();
   const [dataTable, setDataTable] = useState([]);
-  const userData = useSelector((state) => state.user.data); //state là rootReducer trong store ,counter cái tên đăng kí trong rootReducer
 
   useEffect(() => {
     if (selectedHouseId) {
@@ -31,7 +40,24 @@ const RenterProblem = () => {
         });
       });
     }
+    //  console.log("userData",userData)
   }, [selectedHouseId]);
+
+  console.log("selectedRoomId", userData.roomId);
+
+  console.log("userData", userData);
+
+  const getProblemsInRoomRenter = async () => {
+    try {
+      const res = await getProblemsInRoomOfRenter(userData.roomId);
+      console.log("res", res);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  getProblemsInRoomRenter();
+
   const handleDelete = (id) => {
     deleteProblem(id).then((data) => {
       toast.success("Delete successfully");
@@ -42,25 +68,44 @@ const RenterProblem = () => {
   };
   const handleUpdate = (problemId) => {
     updateStatusProblemsInHouse(problemId).then((data) => {
-    //   toast.success("Delete successfully");
-     
+      //   toast.success("Delete successfully");
     });
   };
   return (
-    <div>
+    <>
+      {userData ? (
+        <div>
+          {userData.accountType == "renter" ? (
+            <>
+              {" "}
+              <ModalAddProblem />
+              <TableData
+                data={dataTableForRenter}
+                userData={userData}
+                deleteData={handleDelete}
+              />
+            </>
+          ) : (
+            ""
+          )}
 
-
-      {userData.accountType == "renter" ? <ModalAddProblem /> : ""}
-
-      {userData.accountType == "host" ? (
-        <>
-          <SelectHouse onSelect={setSelectedHouseId} />
-          <TableData data={dataTable} deleteData={handleDelete}  />
-        </>
+          {userData.accountType == "host" ? (
+            <>
+              <SelectHouse onSelect={setSelectedHouseId} />
+              <TableData
+                data={dataTable}
+                userData={userData}
+                deleteData={handleDelete}
+              />
+            </>
+          ) : (
+            "loading"
+          )}
+        </div>
       ) : (
         ""
       )}
-    </div>
+    </>
   );
 };
 

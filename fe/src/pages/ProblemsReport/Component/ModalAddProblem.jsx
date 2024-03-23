@@ -48,7 +48,6 @@ const ModalAddProblem = () => {
     title: "",
     content: "",
   };
-console.log("userData",userData);
   const handleSubmit =async (values) => {
     // Xử lý logic khi form được submit
     console.log(values);

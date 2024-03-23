@@ -14,8 +14,12 @@ import {
 } from "@mui/material";
 import ModalUpdateProblem from "../pages/ProblemsReport/Component/ModalUpdateProblem";
 import { getProblemsInHouse } from "../services/problems";
+// import { useSelector } from "react-redux";
 
-const TableData = ({ data, setDataSelect, deleteData }) => {
+const TableData = ({ data, setDataSelect, deleteData,userData }) => {
+  // const userData = useSelector((state) => state.user.data); //state là rootReducer trong store ,counter cái tên đăng kí trong rootReducer
+  // const [isLoading, setIsLoading] = useState(true);
+
   if (data.length === 0) {
     return <Typography>No data available</Typography>;
   }
@@ -35,7 +39,8 @@ const TableData = ({ data, setDataSelect, deleteData }) => {
 
   // }, [status]);
 
-  // console.log("data", displayData);
+
+
   return (
     <TableContainer component={Paper}>
       <Table>
@@ -43,7 +48,7 @@ const TableData = ({ data, setDataSelect, deleteData }) => {
           <TableRow>
             <TableCell>STT</TableCell>
             {Object.keys(displayData[0]).map(
-              (key) => key !== "id" && <TableCell key={key}>{key}</TableCell>
+              (key) => key !== "id" && key !== "Creator" && <TableCell key={key}>{key}</TableCell>
             )}
             <TableCell>Action</TableCell>
           </TableRow>
@@ -54,7 +59,7 @@ const TableData = ({ data, setDataSelect, deleteData }) => {
               <TableCell key={index}>{index + 1}</TableCell>
               {Object.keys(row).map(
                 (key, index) =>
-                  key !== "id" && <TableCell key={index}>{row[key]}</TableCell>
+                  key !== "id" &&  key !== "Creator" && <TableCell key={index}>{row[key]}</TableCell>
               )}
               <TableCell key={index}>
                 <Stack spacing={2} direction="row">
@@ -66,9 +71,20 @@ const TableData = ({ data, setDataSelect, deleteData }) => {
                     onUpdateStatus={handleStatusUpdate}
                   />
 
-                  <Button variant="outlined" onClick={() => deleteData(row.id)}>
-                    Delete
-                  </Button>
+                  {userData?.accountType == "host" ? (
+                    ""
+                  ) : (
+                    <>
+                      {" "}
+                      <Button
+                        variant="outlined"
+                        onClick={() => deleteData(row.id)}
+                      >
+                        {" "}
+                        Delete
+                      </Button>
+                    </>
+                  )}
                 </Stack>
               </TableCell>
             </TableRow>
