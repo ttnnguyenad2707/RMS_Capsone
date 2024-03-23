@@ -26,7 +26,7 @@ const SelectHouse = ({ onSelect }) => {
     };
 
     return (
-        <Box sx={{ minWidth: 200 }}>
+        <Box sx={{ minWidth: 200 , maxWidth:300}}>
             <FormControl fullWidth>
                 <InputLabel id="demo-simple-select-label">Houses</InputLabel>
                 <Select

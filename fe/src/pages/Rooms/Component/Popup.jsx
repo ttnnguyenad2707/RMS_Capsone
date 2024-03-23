@@ -354,8 +354,8 @@ export default function SuperModal({
       parseInt(inputCostArea.current.value) > 0 &&
       typeof status !== "undefined" &&
       typeof roomType !== "undefined" &&
-      typeof utilitiesRooms !== "undefined" &&
-      typeof utilitiesOtherRooms !== "undefined"
+      utilitiesRooms &&
+      utilitiesOtherRooms
     ) {
       const setData = {
         name: inputName.current.value,

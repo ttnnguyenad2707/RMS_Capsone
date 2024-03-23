@@ -54,10 +54,6 @@ export default function BasicModal() {
   const [errorAddress, setErrorAddress] = React.useState(false);
   const [errorCostElectric, setErrorCostElectric] = React.useState(false);
   const [errorCostWater, setErrorWater] = React.useState(false);
-  const [name, setName] = React.useState("");
-  const [address, setAddress] = React.useState("");
-  const [CostElectricity, setCostElectricity] = React.useState();
-  const [CostWater, setCostWater] = React.useState();
   const [utilities, setUtilities] = React.useState();
   const [utilitiesOther, setUtilitiesOther] = React.useState();
   const [value, setValue] = React.useState("1");
@@ -166,29 +162,25 @@ export default function BasicModal() {
 
   const handleInputName = () => {
     const inputValue = inputName.current.value;
-    setName(inputValue);
-    // if (validateInput(inputValue) && inputValue != " ") {
-    //   setName(inputValue);
-    //   setErrorName(false);
-    // } else {
-    //   setErrorName(true);
-    //   toast.error("Tên nhà không đúng định dạng");
-    // }
+    if (validateInput(inputValue) && inputValue != " ") {
+      setErrorName(false);
+    } else {
+      setErrorName(true);
+      toast.error("Tên nhà không đúng định dạng");
+    }
   };
   const handleInputAddress = () => {
     const inputValue = inputAddress.current.value;
-    // if (validateInput(inputValue)) {
-    setAddress(inputValue);
-    // setErrorAddress(false);
-    // } else {
-    // setErrorAddress(true);
-    //   toast.error("Địa chỉ không đúng định dạng");
-    // }
+    if (validateInput(inputValue)) {
+      setErrorAddress(false);
+    } else {
+      setErrorAddress(true);
+      toast.error("Địa chỉ không đúng định dạng");
+    }
   };
   const handleInputCostElectric = () => {
     const inputValue = inputCostElectricity.current.value;
     if (validateInputNumber(inputValue) == true && inputValue != " ") {
-      setCostElectricity(inputValue);
       setErrorCostElectric(false);
     } else {
       setErrorCostElectric(true);
@@ -198,7 +190,6 @@ export default function BasicModal() {
   const handleInputCostWater = () => {
     const inputValue = inputCostWater.current.value;
     if (validateInputNumber(inputValue) == true && inputValue != " ") {
-      setCostWater(inputValue);
       setErrorWater(false);
     } else {
       setErrorWater(true);
@@ -224,26 +215,24 @@ export default function BasicModal() {
     handleInputUtilities();
     handleInputUtilitiesOrther();
     if (
-      name !== "" &&
-      // address !== "" &&
-      typeof CostElectricity !== "undefined" &&
-      typeof CostWater !== "undefined" &&
-      // city !== "" &&
-      // county !== "" &&
-      // ward !== "" &&
-      utilities
+      utilities &&
+      utilitiesOther &&
+      inputName.current.value !== "" &&
+      inputAddress.current.value !== "" &&
+      Number(inputCostElectricity.current.value) > 0 &&
+      Number(inputCostWater.current.value) > 0
     ) {
       const setData = {
-        name: name,
+        name: inputName.current.value,
         status: true,
         location: {
           district: city,
           ward: ward,
           province: county,
-          detailLocation: address,
+          detailLocation: inputAddress.current.value,
         },
-        electricPrice: CostElectricity,
-        waterPrice: CostWater,
+        electricPrice: parseInt(inputCostElectricity.current.value),
+        waterPrice: parseInt(inputCostWater.current.value),
         utilities: utilities,
         otherUtilities: utilitiesOther,
       };
@@ -254,10 +243,6 @@ export default function BasicModal() {
         setErrorName(false);
         setErrorAddress(false);
         setErrorCostElectric(false);
-        setName("");
-        setAddress("");
-        setCostElectricity();
-        setCostWater();
         setCity("");
         setWard("");
         setCounty("");

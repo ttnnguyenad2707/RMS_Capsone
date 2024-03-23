@@ -143,8 +143,13 @@ export default function ToolbarHeader() {
       });
   }, [dispatch, accessToken]);
 
+  // useEffect(() => {
+  //   if (userData) {
+  //     setIsLoading(false);
+  //   }
+  // }, [userData]);
   useEffect(() => {
-    if (userData) {
+    if (Object.keys(userData).length > 0) {
       setIsLoading(false);
     }
   }, [userData]);

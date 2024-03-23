@@ -8,6 +8,7 @@ import {
   addNews,
   updateNews,
 } from "../../../reduxToolkit/NewsSlice";
+import CloseIcon from "@mui/icons-material/Close";
 import { useDispatch, useSelector } from "react-redux";
 import { v4 as uuidv4 } from "uuid";
 import axios from "axios";
@@ -19,24 +20,45 @@ import {
 import CancelIcon from "@mui/icons-material/Cancel";
 import ImageList from "@mui/material/ImageList";
 import ImageListItem from "@mui/material/ImageListItem";
+import LinearProgress from "@mui/material/LinearProgress";
+import IconButton from "@mui/material/IconButton";
 import "../scss/modal.scss";
 const ModalNews = ({ handleClose, open, typeModal, houseID, dataNews }) => {
   const comments = useSelector((state) => state.comment.comments);
   const [image_src, setImageSrc] = React.useState([]);
   const [selectedImages, setSelectedImages] = React.useState([]);
+  const [isLoading, setIsLoading] = React.useState(false);
   const present_key = "demo_api_image";
   const cloud_name = "debiqwc2z";
   const folder_name = "rms";
   const dispatch = useDispatch();
   const fileRef = React.useRef();
   const inputContent = React.useRef();
+  const userData = useSelector((state) => state.user.data);
   const handleImageUpload = async (event) => {
     const files = event.target.files;
     const selectedImagesArray = Array.from(files);
     setSelectedImages(selectedImagesArray);
   };
-
+  // const handleTimeoutAction = () => {
+  //   if (isLoading === true) {
+  //     Notification(
+  //       "Error",
+  //       "Thêm ảnh thất bại do",
+  //       "thời gian phản hồi quá lâu"
+  //     );
+  //     setIsLoading(false);
+  //   }
+  // };
+  // React.useEffect(() => {
+  //   if (isLoading === true) {
+  //     setTimeout(() => {
+  //       handleTimeoutAction();
+  //     }, 10000);
+  //   }
+  // }, [isLoading]);
   const handleUpload = async (e) => {
+    setIsLoading(true);
     e.preventDefault();
     const formData = new FormData();
     console.log(selectedImages);
@@ -55,7 +77,6 @@ const ModalNews = ({ handleClose, open, typeModal, houseID, dataNews }) => {
         `https://api.cloudinary.com/v1_1/${cloud_name}/image/upload`,
         formData
       );
-      console.log(res_data.data.url);
       const data = {
         url: res_data.data.url,
         caption: "anh1",
@@ -65,6 +86,7 @@ const ModalNews = ({ handleClose, open, typeModal, houseID, dataNews }) => {
       updatedData.push(data.url);
       // Cập nhật giá trị mới cho state image_src
       setImageSrc(updatedData);
+      setIsLoading(false);
     } catch (error) {
       console.log(error);
     }
@@ -74,7 +96,7 @@ const ModalNews = ({ handleClose, open, typeModal, houseID, dataNews }) => {
     top: "50%",
     left: "50%",
     transform: "translate(-50%, -50%)",
-    width: 700,
+    width: "50%",
     height: "80%",
     bgcolor: "background.paper",
     border: "2px solid #grey",
@@ -99,14 +121,12 @@ const ModalNews = ({ handleClose, open, typeModal, houseID, dataNews }) => {
   }, [dataNews]);
   // Get data to update news
   React.useEffect(() => {
-    if (typeModal === "Update" && dataNews) {
-      if (inputContent.current && dataNews.content) {
-        const initialContent = dataNews.content;
-        inputContent.current.value = initialContent;
-      }
+    if (typeModal === "Update") {
       setImageSrc(dataNews.images);
+    } else if (typeModal === "Add") {
+      setImageSrc([]);
     }
-  }, [dataNews, typeModal, inputContent.current]);
+  }, [dataNews]);
   // add news
   const handleInputName = async () => {
     const inputValue = inputContent.current.value;
@@ -118,7 +138,6 @@ const ModalNews = ({ handleClose, open, typeModal, houseID, dataNews }) => {
         images: image_src,
       };
       const response = await dispatch(addNews({ data }));
-      console.log(response, "há");
       if (response.payload === "Created") {
         const id = houseID;
         dispatch(fetchNews({ id }));
@@ -172,6 +191,10 @@ const ModalNews = ({ handleClose, open, typeModal, houseID, dataNews }) => {
     const newlistImages = image_src.filter((image) => image !== imageDelete);
     setImageSrc(newlistImages);
   };
+  // if (inputContent.current && dataNews.content) {
+  //   const initialContent = dataNews.content;
+  //   inputContent.current.value = initialContent;
+  // }
   if (typeModal === "Add") {
     return (
       <Modal
@@ -180,22 +203,22 @@ const ModalNews = ({ handleClose, open, typeModal, houseID, dataNews }) => {
         aria-labelledby="parent-modal-title"
         aria-describedby="parent-modal-description"
       >
-        <Box sx={{ width: 400 }} sx={style}>
+        <Box sx={style}>
           <Box sx={stylesHeader}>
-            <p className="h3">Tạo Bài Viết</p>
+            <p className="h3 fw-bold">Tạo Bài Viết</p>
           </Box>
           <hr />
           <Box sx={{ py: 2 }}>
             <p>
               <p>
-                <b>...</b>
+                <b className="fs-3">{userData.name}</b>
               </p>
             </p>
             <textarea
               name=""
               id=""
               rows={3} // Số dòng hiển thị ban đầu (có thể điều chỉnh)
-              placeholder="Bạn đang nghĩ gì thế?"
+              placeholder="Có tin gì mới thế?"
               className="areastyle"
               ref={inputContent}
               style={{ width: "100%" }}
@@ -232,6 +255,12 @@ const ModalNews = ({ handleClose, open, typeModal, houseID, dataNews }) => {
                 </ImageList>
               ) : null}
             </Box>
+            {isLoading ? (
+              <div className="text-center">
+                <LinearProgress />
+                <p>Loading...</p>
+              </div>
+            ) : null}
             <div className="d-flex gap-3">
               <input
                 type="file"
@@ -266,16 +295,16 @@ const ModalNews = ({ handleClose, open, typeModal, houseID, dataNews }) => {
         aria-labelledby="parent-modal-title"
         aria-describedby="parent-modal-description"
       >
-        <Box sx={{ width: 400 }} sx={style}>
+        <Box sx={style}>
           <Box sx={stylesHeader}>
-            <p className="h3">Bài Viết</p>
+            <p className="h3 fw-bold">Bài Viết</p>
           </Box>
           <hr />
           <Box className="d-flex flex-column">
             <p>
-              <b>{dataNews.authorId.name}</b>
+              <b  className="fs-3" >{dataNews.authorId.name}</b>
             </p>
-            <p>{dataNews.content}</p>
+            <p className="fs-4">{dataNews.content}</p>
           </Box>
           <Box>
             {dataNews.images.length >= 0 ? (
@@ -349,22 +378,35 @@ const ModalNews = ({ handleClose, open, typeModal, houseID, dataNews }) => {
         aria-labelledby="parent-modal-title"
         aria-describedby="parent-modal-description"
       >
-        <Box sx={{ width: 400 }} sx={style}>
+        <Box sx={style}>
           <Box sx={stylesHeader}>
             <p className="h3">Cập Nhật Bài Viết</p>
+            {/* <IconButton
+              sx={{ position: "absolute", right: "10px" }}
+              onClick={() => {
+                inputContent.current.value = "";
+                setImageSrc([]);
+                handleClose();
+              }}
+            >
+              <CloseIcon />
+            </IconButton> */}
           </Box>
           <hr />
           <Box>
             <p>
-              <b>{dataNews.authorId.name}</b>
+              <b  className="fs-3">{dataNews.authorId.name}</b>
             </p>
             <Box className="position-relative">
               <textarea
                 name=""
                 id="inputArea"
-                className="areastyle"
+                className="areastyle fs-4"
                 ref={inputContent}
-              ></textarea>
+
+              >
+                {dataNews.content}
+              </textarea>
             </Box>
             <div className="d-flex flex-column gap-2">
               <h5>Thêm ảnh vào bài viết của bạn</h5>
@@ -389,6 +431,12 @@ const ModalNews = ({ handleClose, open, typeModal, houseID, dataNews }) => {
                   </ImageList>
                 ) : null}
               </Box>
+              {isLoading ? (
+                <div className="text-center">
+                  <LinearProgress />
+                  <p>Loading...</p>
+                </div>
+              ) : null}
               <div className="d-flex gap-3">
                 <input
                   type="file"
