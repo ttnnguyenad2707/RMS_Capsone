@@ -35,6 +35,7 @@ import {
 import BarChartDisplay from "./Components/BarChart";
 import CommonInformation from "./Components/CommonInfomation";
 import PaymentTracking from "./Components/PaymentTracking";
+import ProblemInfomation from "./Components/ProblemInfomation";
 // const drawerWidth = 240;
 
 // const AppBar = styled(MuiAppBar, {
@@ -187,7 +188,9 @@ export default function Dashboard() {
                 height: 450,
                 boxShadow: "2px 4px 6px rgba(128, 128, 128, 0.5)",
               }}
-            ></Paper>
+            >
+              <ProblemInfomation />
+            </Paper>
           </Grid>
         </>
       )}
