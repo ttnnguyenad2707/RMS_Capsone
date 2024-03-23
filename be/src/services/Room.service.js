@@ -70,6 +70,16 @@ const RoomService = {
             const { houseId } = req.params;
             const house = await HousesModel.findById(houseId);
 
+            const existingRoom = await Rooms.findOne({
+                houseId,
+                name: req.body.name.trim(),
+            });
+            if (existingRoom) {
+                throw new Error(
+                    "Phòng đã tồn tại. Vui lòng chọn tên khác."
+                );
+            }
+
             const data = await Rooms.create({
                 houseId,
                 floor: req.body.name.trim().charAt(0),
