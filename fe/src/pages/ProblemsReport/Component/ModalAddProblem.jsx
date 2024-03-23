@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import Box from "@mui/material/Box";
 // import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
@@ -33,7 +33,7 @@ const style = {
   borderRadius: 8,
   p: 4,
 };
-const ModalAddProblem = () => {
+const ModalAddProblem = ({ setDataTableForRenter }) => {
   const [open, setOpen] = React.useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
@@ -44,41 +44,44 @@ const ModalAddProblem = () => {
   });
   const userData = useSelector((state) => state.user.data); //state là rootReducer trong store ,counter cái tên đăng kí trong rootReducer
   const initialValues = {
-    roomId : userData.roomId,
+    roomId: userData.roomId,
     type: "",
     title: "",
     content: "",
   };
-console.log("userData",userData);
-  const handleSubmit =async (values) => {
+  // const [renterProblemData, setRenterProblemData] = useState([]);
+  const handleSubmit = async (values) => {
     // Xử lý logic khi form được submit
     console.log(values);
     try {
-    const res = await addProblemsInHouse(values).then((data) => {
-      socket.emit("addNotification",{message: "add"});
-    })
-      toast.success("vấn đề đã được gửi đi !");
-      setOpen(false)
-        
-    } catch (error) {
-        toast.warning(error.response.data.error);
-        
-    }
+      const res = await addProblemsInHouse(values).then((data) => {
+        console.log("réadd", data);
+        // setRenterProblemData(data?.data?.data)
+        setDataTableForRenter((prev) => [...prev, data?.data?.data]);
+        socket.emit("addNotification", { message: "add" });
 
+        // dispatch(login(data))
+      });
+      toast.success("vấn đề đã được gửi đi !");
+      setOpen(false);
+    } catch (error) {
+      toast.warning(error.response.data.error);
+    }
   };
   return (
     <div>
-      <Button onClick={handleOpen}>Add Problem</Button>
+      <Button onClick={handleOpen}>Thêm vấn đề</Button>
       <Modal open={open} onClose={handleClose}>
         <Box sx={style}>
-          <Formik initialValues={initialValues}
-              validationSchema={validationSchema}
-          
-          onSubmit={handleSubmit}>
+          <Formik
+            initialValues={initialValues}
+            validationSchema={validationSchema}
+            onSubmit={handleSubmit}
+          >
             <Form>
-                <div className="">
-                    <h1>Vấn đề cần thông báo</h1>
-                </div>
+              <div className="">
+                <h1>Vấn đề cần thông báo</h1>
+              </div>
 
               <div>
                 {/* <Field
@@ -97,7 +100,7 @@ console.log("userData",userData);
                 {/* <ErrorMessage name="type" component="div" className="error" /> */}
               </div>
               {/* enum: ["common","electric","water","other"], */}
-              
+
               <div className="p-3 form-group">
                 <Field
                   label="Lựa chọn vấn đề"
@@ -113,7 +116,12 @@ console.log("userData",userData);
                   <option value="electric">Vấn đề về điện </option>
                   <option value="other">Vấn đề khác</option>
                 </Field>
-                <ErrorMessage style={{color: 'red'}} name="type" component="div" className="error" />
+                <ErrorMessage
+                  style={{ color: "red" }}
+                  name="type"
+                  component="div"
+                  className="error"
+                />
               </div>
 
               <div className="p-3">
@@ -126,7 +134,12 @@ console.log("userData",userData);
                   id="title"
                   name="title"
                 />
-                <ErrorMessage style={{color: 'red'}} name="title" component="div" className="error" />
+                <ErrorMessage
+                  style={{ color: "red" }}
+                  name="title"
+                  component="div"
+                  className="error"
+                />
               </div>
 
               <div className="p-3">
@@ -134,7 +147,6 @@ console.log("userData",userData);
                   className="form-control"
                   variant="outlined"
                   as={TextareaAutosize}
-                  
                   placeholder="Nội Dung vấn đề"
                   id="content"
                   name="content"
@@ -143,12 +155,12 @@ console.log("userData",userData);
                   name="content"
                   component="div"
                   className="error"
-                  style={{color: 'red'}}
+                  style={{ color: "red" }}
                 />
               </div>
               <div className="">
                 <button className="btn btn-primary" type="submit">
-                  Submit
+                  Gửi đi
                 </button>
               </div>
             </Form>
