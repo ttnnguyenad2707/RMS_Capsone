@@ -167,23 +167,23 @@ export default function BasicModal() {
   const handleInputName = () => {
     const inputValue = inputName.current.value;
     setName(inputValue);
-    if (validateInput(inputValue) && inputValue != " ") {
-      setName(inputValue);
-      setErrorName(false);
-    } else {
-      setErrorName(true);
-      toast.error("Tên nhà không đúng định dạng");
-    }
+    // if (validateInput(inputValue) && inputValue != " ") {
+    //   setName(inputValue);
+    //   setErrorName(false);
+    // } else {
+    //   setErrorName(true);
+    //   toast.error("Tên nhà không đúng định dạng");
+    // }
   };
   const handleInputAddress = () => {
     const inputValue = inputAddress.current.value;
-    if (validateInput(inputValue) && inputValue != " ") {
-      setAddress(inputValue);
-      setErrorAddress(false);
-    } else {
-      setErrorAddress(true);
-      toast.error("Địa chỉ không đúng định dạng");
-    }
+    // if (validateInput(inputValue)) {
+    setAddress(inputValue);
+    // setErrorAddress(false);
+    // } else {
+    // setErrorAddress(true);
+    //   toast.error("Địa chỉ không đúng định dạng");
+    // }
   };
   const handleInputCostElectric = () => {
     const inputValue = inputCostElectricity.current.value;
@@ -218,19 +218,19 @@ export default function BasicModal() {
   };
   const HandleSubmit = async () => {
     handleInputName();
-    // handleInputAddress();
+    handleInputAddress();
     handleInputCostElectric();
     handleInputCostWater();
     handleInputUtilities();
     handleInputUtilitiesOrther();
     if (
       name !== "" &&
-      address !== "" &&
+      // address !== "" &&
       typeof CostElectricity !== "undefined" &&
       typeof CostWater !== "undefined" &&
-      city !== "" &&
-      county !== "" &&
-      ward !== "" &&
+      // city !== "" &&
+      // county !== "" &&
+      // ward !== "" &&
       utilities
     ) {
       const setData = {

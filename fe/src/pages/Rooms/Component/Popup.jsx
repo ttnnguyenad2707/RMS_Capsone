@@ -100,9 +100,9 @@ export default function SuperModal({
   const [errorCostElectric, setErrorCostElectric] = React.useState(false);
   const [errorCostWater, setErrorWater] = React.useState(false);
   const [name, setName] = React.useState("");
-  const [member, setMember] = React.useState("");
+  const [member, setMember] = React.useState();
   const [openAdd, setOpenAdd] = React.useState(false);
-  const [priceRoom, setPriceRoom] = React.useState("");
+  const [priceRoom, setPriceRoom] = React.useState();
   const [CostDeposit, setCostDeposit] = React.useState();
   const [CostArea, setCostArea] = React.useState();
   const [status, setStatus] = React.useState("");
@@ -245,7 +245,6 @@ export default function SuperModal({
   const handleMember = () => {
     const inputValue = inputMember.current.value;
     if (validateInputNumber(inputValue) && inputValue != " ") {
-      setMember(inputValue);
       setErrorAddress(false);
     } else {
       setErrorAddress(true);
@@ -254,7 +253,6 @@ export default function SuperModal({
   const handlePriceRoom = () => {
     const inputValue = inputPriceRoom.current.value;
     if (validateInputNumber(inputValue) && inputValue != " ") {
-      setPriceRoom(inputValue);
       setErrorAddress(false);
     } else {
       setErrorAddress(true);
@@ -263,7 +261,6 @@ export default function SuperModal({
   const handleInputCostDeposit = () => {
     const inputValue = inputCostDeposit.current.value;
     if (validateInputNumber(inputValue) && inputValue != " ") {
-      setCostDeposit(inputValue);
       setErrorCostElectric(false);
     } else {
       setErrorCostElectric(true);
@@ -272,7 +269,6 @@ export default function SuperModal({
   const handleInputCostArea = () => {
     const inputValue = inputCostArea.current.value;
     if (validateInputNumber(inputValue) && inputValue != " ") {
-      setCostArea(inputValue);
       setErrorWater(false);
     } else {
       setErrorWater(true);
@@ -344,7 +340,6 @@ export default function SuperModal({
   const handleCloseAdd = () => setOpenAdd(false);
   // Add one rooms
   const HandleSubmit = async () => {
-    handleInputName();
     handleMember();
     handlePriceRoom();
     handleInputCostDeposit();
@@ -352,24 +347,24 @@ export default function SuperModal({
     handleInputUtilities();
     handleInputUtilitiesOrther();
     if (
-      name !== "" &&
-      member !== "" &&
-      priceRoom !== null &&
-      CostDeposit !== null &&
-      CostArea !== "" &&
-      status !== "" &&
-      roomType !== "" &&
+      inputName.current.value !== "" &&
+      parseInt(inputMember.current.value) > 0 &&
+      parseInt(inputPriceRoom.current.value) > 0 &&
+      parseInt(inputCostDeposit.current.value) > 0 &&
+      parseInt(inputCostArea.current.value) > 0 &&
+      typeof status !== "undefined" &&
+      typeof roomType !== "undefined" &&
       typeof utilitiesRooms !== "undefined" &&
       typeof utilitiesOtherRooms !== "undefined"
     ) {
       const setData = {
-        name: name,
+        name: inputName.current.value,
         status: status,
-        quantityMember: parseInt(priceRoom),
+        quantityMember: parseInt(inputMember.current.value),
         roomType: roomType,
-        roomPrice: parseInt(priceRoom),
-        deposit: parseInt(CostDeposit),
-        area: parseInt(CostArea),
+        roomPrice: parseInt(inputPriceRoom.current.value),
+        deposit: parseInt(inputCostDeposit.current.value),
+        area: parseInt(inputCostArea.current.value),
         utilities: utilitiesRooms,
         otherUtilities: utilitiesOtherRooms,
       };
@@ -378,11 +373,23 @@ export default function SuperModal({
         // await dispatch(fetchRooms({ houseId }));
         await dispatch(fetchHouses());
         Notification("Success", "Thêm Phòng", "Thành Công");
-        setStatus("");
-        setRoomType("");
+        // setStatus("");
+        // setRoomType("");
+        // setCostArea("");
+        // setCostDeposit("");
+        // setPriceRoom("");
+        // setMember("");
+        // setName("");
+        // setErrorName(false);
+        // setErrorCostElectric(false);
+        // setErrorWater(false);
         handleClose();
       } else {
-        Notification("Error", "Thêm Danh Sách Phòng", "Thất Bại");
+        Notification(
+          "Error",
+          "Thêm Danh Sách Phòng Thất Bại",
+          response.payload
+        );
       }
       await dispatch(fetchRooms({ houseId }));
       handleClose();
@@ -406,7 +413,7 @@ export default function SuperModal({
       Notification("Success", "Thêm Danh Sách Phòng", "Thành Công");
       handleClose();
     } else {
-      Notification("Error", "Thêm Danh Sách Phòng", "Thất Bại");
+      Notification("Error", "Thêm Danh Sách Phòng Thất Bại", response.payload);
     }
   };
   // const validateInput = (input) => {
@@ -531,7 +538,7 @@ export default function SuperModal({
             <Tab value="2" label="Thêm Danh Sách Phòng" />
           </Tabs>
           {value === "1" && (
-            <Box sx={stylesBody} className="mt-2">
+            <Box sx={stylesBody} className="mt-4">
               <Box sx={{ display: "flex" }}>
                 <TextField
                   required
@@ -621,7 +628,7 @@ export default function SuperModal({
                 <TextField
                   required
                   id="outlined-basic"
-                  label="deposit"
+                  label="Tiền Cọc"
                   variant="outlined"
                   sx={{ width: "50%", mr: "1%" }}
                   inputRef={inputCostDeposit}

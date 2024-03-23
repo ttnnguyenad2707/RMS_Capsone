@@ -19,16 +19,25 @@ export const fetchRooms = createAsyncThunk(
 //   return addedHouse.data.data;
 // });
 export const addRooms = createAsyncThunk("rooms/addRooms", async ({ data }) => {
-  const response = await AddRoomsFileService({ data });
-  console.log(response, "response");
-  return response.data.message;
+  try {
+    const response = await AddRoomsFileService({ data });
+    console.log(response, "response");
+    return response.data.message;
+  } catch (error) {
+    console.log(error, "error");
+    return error.response.data.error
+  }
 });
 
 export const addOneRoom = createAsyncThunk(
   "rooms/addOneRoom",
   async ({ setData, houseId }) => {
-    const response = await AddRoom(setData, houseId);
-    return response.data.message;
+    try {
+      const response = await AddRoom(setData, houseId);
+      return response.data.message;
+    } catch (error) {
+      return error.response.data.error;
+    }
   }
 );
 export const getOneRoomRedux = createAsyncThunk(
