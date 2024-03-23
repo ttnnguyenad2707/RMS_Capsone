@@ -17,6 +17,8 @@ import { convertStringToNumber, formatMoney } from "../../../Utils";
 import FormControl from '@mui/material/FormControl';
 import { addBill, getDebt } from "../../../services/bill";
 import Notification from "../../../CommonComponents/Notification";
+import CircularProgress from '@mui/material/CircularProgress';
+
 
 
 const style = {
@@ -32,7 +34,8 @@ const style = {
 const ModalBillCreate = ({ open, handleClose, roomId }) => {
     const [room, setRoom] = useState();
     const [dateValue, setDateValue] = useState('');
-    const [debt,setDebt] = useState()
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [debt, setDebt] = useState()
     useEffect(() => {
         let isMounted = true;
         async function fetchData() {
@@ -45,7 +48,7 @@ const ModalBillCreate = ({ open, handleClose, roomId }) => {
         }
         fetchData();
         return () => {
-            isMounted = false; 
+            isMounted = false;
         };
     }, [roomId])
     useEffect(() => {
@@ -55,34 +58,45 @@ const ModalBillCreate = ({ open, handleClose, roomId }) => {
     }, []);
 
     const handleAddBill = async (values, { resetForm }) => {
-        const priceListToAdd = []
-        room?.houseId?.priceList?.map((priceItem, index) => {
-            const startUnitKey = `startUnit-${index}`
-            const endUnitKey = `endUnit-${index}`
+        try {
+            setIsSubmitting(true);
 
-            const itemPriceToAdd = {
-                base: priceItem.base,
-                unitPrice: priceItem.price,
-                startUnit: values[startUnitKey] || 0,
-                endUnit: values[endUnitKey] || 0,
+            const priceListToAdd = []
+            room?.houseId?.priceList?.map((priceItem, index) => {
+                const startUnitKey = `startUnit-${index}`
+                const endUnitKey = `endUnit-${index}`
 
+                const itemPriceToAdd = {
+                    base: priceItem.base,
+                    unitPrice: priceItem.price,
+                    startUnit: values[startUnitKey] || 0,
+                    endUnit: values[endUnitKey] || 0,
+
+                }
+                priceListToAdd.push(itemPriceToAdd);
+            })
+            const dataPayload = {
+                priceList: priceListToAdd,
+                note: values.note
             }
-            priceListToAdd.push(itemPriceToAdd);
-        })
-        const dataPayload = {
-            priceList: priceListToAdd,
-            note: values.note
+            await addBill(roomId, dataPayload).then(res => {
+                if (res.data.statusCode === 201) {
+                    Notification("Success", "Thêm hoá đơn", "Thành công")
+                    handleClose()
+                }
+                else {
+                    Notification("Error", "Lỗi " + res.data.statusCode, res.data.message)
+                }
+            }).catch(error => {
+                Notification("Error", "Lỗi " + error.response.data.error)
+            })
+        } catch (error) {
+            console.error("Error:", error);
+
+        } finally {
+            setIsSubmitting(false)
+
         }
-        await addBill(roomId, dataPayload).then(res => {
-            if (res.data.statusCode === 201) {
-                Notification("Success", "Thêm hoá đơn", "Thành công")
-            }
-            else {
-                Notification("Error", "Lỗi " + res.data.statusCode, res.data.message)
-            }
-        }).catch(error => {
-            Notification("Error", "Lỗi " + error.response.data.error)
-        })
     }
 
     const initialValues = useMemo(() => {
@@ -110,14 +124,14 @@ const ModalBillCreate = ({ open, handleClose, roomId }) => {
         // console.log(convertStringToNumber(values[`total-1`]))
 
         const total = room?.houseId?.priceList?.reduce((init, item, index) => {
-            if (item.base.unit === "đồng/người"){
+            if (item.base.unit === "đồng/người") {
                 const totalUnit = item.price * room.members.length
                 return init + totalUnit
-            } else if (item.base.unit === "đồng/tháng"){
+            } else if (item.base.unit === "đồng/tháng") {
                 const totalUnit = item.price
                 return init + totalUnit
             }
-            else{
+            else {
 
                 const totalUnit = convertStringToNumber(values[`total-${index}`]) || 0;
                 return init + totalUnit;
@@ -131,7 +145,7 @@ const ModalBillCreate = ({ open, handleClose, roomId }) => {
             <></>
         )
     }
-    
+
 
     return (
         <Modal
@@ -301,7 +315,9 @@ const ModalBillCreate = ({ open, handleClose, roomId }) => {
                                         }}
                                     >
                                         <Button variant="outlined" onClick={handleClose}>Huỷ</Button>
-                                        <Button type="submit" variant="contained">Lưu</Button>
+                                        <Button type="submit" variant="contained" disabled={isSubmitting}>
+                                            {isSubmitting ? <CircularProgress size={24} /> : 'Lưu'}
+                                        </Button>
                                     </Box>
                                 </Form>
                             )}
