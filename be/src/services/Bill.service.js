@@ -12,6 +12,7 @@ const BillService = {
     getDebtOfRoom: async (req) => {
         const { roomId } = req.params;
         const oldBill = await BillsModel.find({ roomId, isPaid: false });
+
         const listDebt = [];
         oldBill.map((bill) => {
             listDebt.push(bill.total);
@@ -22,7 +23,10 @@ const BillService = {
                 return debt + item;
             });
         }
-        return debt
+        return {
+            debt: 0
+        }
+        
     },
     addBillInRoom: async (req) => {
         try {
@@ -71,6 +75,9 @@ const BillService = {
 
             let priceListForBill = [];
             priceList.map((item) => {
+                if (item.startUnit > item.endUnit) {
+                    throw new Error("Chỉ số đầu không thể lớn hơn chỉ số cuối");
+                }
                 if (item.base.unit === "đồng/tháng") {
                     priceListForBill.push({
                         base: item.base._id,
@@ -215,6 +222,7 @@ const BillService = {
     confirmBills: async (req) => {
         try {
             const { billId } = req.params;
+            const {paymentMethod} = req.body;
             const bill = await BillsModel.findById(billId)
                 .populate({ path: "roomId", select: "name" })
                 .populate("priceList.base");
@@ -222,12 +230,13 @@ const BillService = {
                 return { message: "Bill đã thanh toán rồi !!" };
             } else {
                 bill.isPaid = true;
+                bill.paymentMethod = paymentMethod;
             }
             await bill.save();
             return bill;
         } catch (error) {
             throw error;
         }
-    },
+    }
 };
 export default BillService;

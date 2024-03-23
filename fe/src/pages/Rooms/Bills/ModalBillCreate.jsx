@@ -43,7 +43,7 @@ const ModalBillCreate = ({ open, handleClose, roomId }) => {
                 setRoom(data.data.data);
             })
             getDebt(roomId).then(data => {
-                setDebt(data.data.data)
+                setDebt(data.data.data.debt)
             })
         }
         fetchData();
@@ -81,8 +81,9 @@ const ModalBillCreate = ({ open, handleClose, roomId }) => {
             }
             await addBill(roomId, dataPayload).then(res => {
                 if (res.data.statusCode === 201) {
-                    Notification("Success", "Thêm hoá đơn", "Thành công")
-                    handleClose()
+                    Notification("Success", "Thêm hoá đơn", "Thành công")                   
+
+                    handleClose("added",res.data.data.bill,res.data.data.bill.roomId)
                 }
                 else {
                     Notification("Error", "Lỗi " + res.data.statusCode, res.data.message)
@@ -115,12 +116,12 @@ const ModalBillCreate = ({ open, handleClose, roomId }) => {
         }
         if (endUnit <= startUnit) {
             setFieldValue(`total-${index}`, 0);
-
         }
+        
     };
 
     const handleTotal = (values, setFieldValue) => {
-        console.log(values[`total-3`]);
+        // console.log(values[`total-3`]);
         // console.log(convertStringToNumber(values[`total-1`]))
 
         const total = room?.houseId?.priceList?.reduce((init, item, index) => {
@@ -137,7 +138,7 @@ const ModalBillCreate = ({ open, handleClose, roomId }) => {
                 return init + totalUnit;
             }
         }, 0)
-        setFieldValue('total', formatMoney(total + room?.roomPrice))
+        setFieldValue('total', formatMoney(total + room?.roomPrice + debt))
     }
 
     if (!room) {
@@ -305,6 +306,7 @@ const ModalBillCreate = ({ open, handleClose, roomId }) => {
                                                 as={TextField}
                                             />
                                         </FormControl>
+                                        
                                     </Box>
                                     <Box
                                         sx={{

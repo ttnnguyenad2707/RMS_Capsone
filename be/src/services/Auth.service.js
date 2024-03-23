@@ -154,7 +154,9 @@ class AuthService {
                 });
         } else {
             account.passwordResetCode = null;
-            account.password = password;
+            const salt = await bcrypt.genSalt(10);
+            const hashedPassword = await bcrypt.hash(password, salt);
+            account.password = hashedPassword;
             await account.save();
             return res
                 .status(201)

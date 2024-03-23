@@ -32,9 +32,9 @@ export const getBills = async (params) => {
         },
     });
 };
-export const confirmBill = async (billId) => {
+export const confirmBill = async (billId,data) => {
     const token = Cookies.get("accessToken");
-    return await axios.post(`${URL_SERVER}/bill/${billId}`, {}, {
+    return await axios.post(`${URL_SERVER}/bill/${billId}`, data, {
         withCredentials: true,
         headers: {
             authorization: `Bearer ${token}`,

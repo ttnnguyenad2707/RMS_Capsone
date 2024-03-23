@@ -107,6 +107,20 @@ export const GetRooms = async (data, filterParams) => {
   );
 };
 
+export const getRoomWithBills = async (houseId, filterParams) => {
+  const token = Cookies.get("accessToken");
+  const queryParams = new URLSearchParams(filterParams).toString();
+  return await axios.get(
+    `${URL_SERVER}/house/${houseId}/getRoomWithBills?${queryParams}`,
+    {
+      withCredentials: true,
+      headers: {
+        authorization: `Bearer ${token}`,
+      },
+    }
+  );
+};
+
 export const GetUtilitiesOther = async () => {
   const token = Cookies.get("accessToken");
   return await axios.get(`${URL_SERVER}/utilities/otherUtilities`, {
