@@ -145,6 +145,18 @@ const RoomController = {
             return res.status(500).json(response.errorResponse(500,error.toString()));
         }
     }),
+    getRoomWithBills: asyncHandler(async (req,res,next) => {
+        try {
+            const rooms = await RoomService.getRoomWithBills(req);
+
+            if (rooms) { return res.status(200).json(response.successResponse(200,rooms))}
+            else res.status(404).json(response.errorResponse(404));
+            
+        } catch (error) {
+            return res.status(500).json(response.errorResponse(500,error.toString()));
+        }
+    }),
+
 
 }
 

@@ -104,9 +104,6 @@ function createData(
   houseName,
   numberRooms,
   address,
-  lender,
-  phoneNumber,
-  email,
   costElectricity,
   costWater,
   action
@@ -117,9 +114,6 @@ function createData(
     houseName,
     numberRooms,
     address,
-    lender,
-    phoneNumber,
-    email,
     costElectricity,
     costWater,
     action,
@@ -192,18 +186,6 @@ export default function BasicTable() {
       label: "Địa Chỉ",
     },
     {
-      id: "lender",
-      label: "Chủ Sở Hữu",
-    },
-    {
-      id: "phoneNumber",
-      label: "Số Điện Thoại",
-    },
-    {
-      id: "email",
-      label: "Email",
-    },
-    {
       id: "action",
       label: "Thao Tac",
     },
@@ -225,9 +207,6 @@ export default function BasicTable() {
           house.name,
           house.numberOfRoom,
           address,
-          house.hostId.name,
-          house.hostId.phone,
-          house.hostId.email,
           house.electricPrice,
           house.waterPrice,
           <div className="d-flex">
@@ -392,28 +371,6 @@ export default function BasicTable() {
     // Cập nhật state rows
     setRows(sortedRows);
   };
-  const style = {
-    position: "absolute",
-    top: "50%",
-    left: "50%",
-    transform: "translate(-50%, -50%)",
-    width: 500,
-    height: "20%",
-    bgcolor: "background.paper",
-    border: "2px solid #grey",
-    boxShadow: 25,
-    p: 5,
-    borderRadius: "10px",
-    padding: "18px",
-  };
-  const stylesHeader = {
-    color: "#1976d2",
-    display: "flex",
-    position: "relative",
-    fontWeight: "Bold",
-  };
-
-  console.log(rows, "rowsPerPage");
   return (
     <>
       {houses ? (
@@ -455,9 +412,6 @@ export default function BasicTable() {
                         <TableCell align="left">{row.houseName}</TableCell>
                         <TableCell align="left">{row.numberRooms}</TableCell>
                         <TableCell align="left">{row.address}</TableCell>
-                        <TableCell align="left">{row.lender}</TableCell>
-                        <TableCell align="left">{row.phoneNumber}</TableCell>
-                        <TableCell align="left">{row.email}</TableCell>
                         <TableCell align="left" sx={{ width: "20%" }}>
                           {row.action}
                         </TableCell>

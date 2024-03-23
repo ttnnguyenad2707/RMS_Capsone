@@ -57,6 +57,11 @@ const Bills = Schema({
         type: Boolean,
         default: false,
     },
+    paymentMethod: {
+        type: String,
+        enum: ["Banking","Cash",""],
+        default: ""
+    }
 },{timestamps: true})
 
 export default model("Bills",Bills)

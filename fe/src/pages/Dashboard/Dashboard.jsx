@@ -33,6 +33,9 @@ import {
   AiOutlineLoading3Quarters,
 } from "react-icons/ai";
 import BarChartDisplay from "./Components/BarChart";
+import CommonInformation from "./Components/CommonInfomation";
+import PaymentTracking from "./Components/PaymentTracking";
+import ProblemInfomation from "./Components/ProblemInfomation";
 // const drawerWidth = 240;
 
 // const AppBar = styled(MuiAppBar, {
@@ -139,10 +142,12 @@ export default function Dashboard() {
                 p: 2,
                 display: "flex",
                 flexDirection: "column",
-                height: 350,
+                height: 450,
+                boxShadow: "2px 4px 6px rgba(128, 128, 128, 0.5)",
+                marginTop: "10px",
               }}
             >
-              <BarChartDisplay/>
+              <CommonInformation />
             </Paper>
           </Grid>
 
@@ -152,10 +157,12 @@ export default function Dashboard() {
                 p: 2,
                 display: "flex",
                 flexDirection: "column",
-                height: 350,
+                height: 450,
+                boxShadow: "2px 4px 6px rgba(128, 128, 128, 0.5)",
+                marginTop: "10px",
               }}
             >
-              <Deposits />
+              <PaymentTracking />
             </Paper>
           </Grid>
           <Grid item xs={12} md={7} lg={7}>
@@ -164,10 +171,11 @@ export default function Dashboard() {
                 p: 2,
                 display: "flex",
                 flexDirection: "column",
-                height: 350,
+                height: 450,
+                boxShadow: "2px 4px 6px rgba(128, 128, 128, 0.5)",
               }}
             >
-              <Chart />
+              <BarChartDisplay />
             </Paper>
           </Grid>
 
@@ -177,10 +185,11 @@ export default function Dashboard() {
                 p: 2,
                 display: "flex",
                 flexDirection: "column",
-                height: 350,
+                height: 450,
+                boxShadow: "2px 4px 6px rgba(128, 128, 128, 0.5)",
               }}
             >
-              <Deposits />
+              <ProblemInfomation />
             </Paper>
           </Grid>
         </>

@@ -5,6 +5,7 @@ import AccountModel from "../models/Account.model.js";
 import bcrypt from "bcrypt";
 import Image from "../models/Upload.model.js";
 import { v2 as cloudinary } from "cloudinary";
+import BillsModel from "../models/Bills.model.js";
 
 const RoomService = {
     addRoom: async (req) => {
@@ -15,60 +16,88 @@ const RoomService = {
             const buffer = req.file.buffer;
             await workbook.xlsx.load(buffer);
             const worksheet = workbook.worksheets[0];
-
+    
             const salt = await bcrypt.genSalt(10);
             const hashedPassword = await bcrypt.hash("Rms@12345", salt);
-
-            for (
-                let rowNumber = 1;
-                rowNumber <= worksheet.rowCount;
-                rowNumber++
-            ) {
+    
+            const rooms = await Rooms.find({houseId,deleted:false}); 
+            const existingRoomNames = []
+            rooms.map(room => {
+                existingRoomNames.push(room.name);
+            })
+            console.log(existingRoomNames);
+    
+            for (let rowNumber = 1; rowNumber <= worksheet.rowCount; rowNumber++) {
                 const row = worksheet.getRow(rowNumber);
                 if (rowNumber !== 1 && row.getCell(1).value) {
-                    const floor = row
-                        .getCell(1)
-                        .value.toString()
-                        .trim()
-                        .charAt(0);
-                    const rowData = await Rooms.create({
-                        floor: floor,
-                        name: row.getCell(1).value,
-                        status: row.getCell(2).value,
-                        quantityMember: row.getCell(3).value,
-                        roomType: row.getCell(4).value,
-                        roomPrice: row.getCell(5).value,
-                        deposit: row.getCell(6).value,
-                        area: row.getCell(7).value,
-                        houseId: houseId,
-                        utilities: house?.utilities || [],
-                        otherUtilities: house?.otherUtilities || [],
-                    });
-                    const accountData = await AccountModel.create({
-                        username:
-                            house.name.replace(/\s/g, "") +
-                            row.getCell(1).value,
-                        password: hashedPassword,
-                        accountType: "renter",
-                        roomId: rowData.id,
-                        status: false,
-                    });
-                    house.numberOfRoom += 1;
-                    await house.save();
+                    const roomName = row.getCell(1).value.toString().trim();
+                    
+                    if (existingRoomNames.includes(roomName)) {
+                        throw new Error(`Phòng "${roomName}" đã tồn tại.`)
+                        continue; 
+                    }
+    
+                    existingRoomNames.push(roomName); 
+                }
+            }
+    
+            for (let rowNumber = 1; rowNumber <= worksheet.rowCount; rowNumber++) {
+                const row = worksheet.getRow(rowNumber);
+                if (rowNumber !== 1 && row.getCell(1).value) {
+                    const roomName = row.getCell(1).value.toString().trim();
+                    const floor = roomName.charAt(0);
+                    
+                    // Kiểm tra xem tên phòng đã được kiểm tra và không trùng lặp
+                    if (!existingRoomNames.includes(roomName)) {
+                        const rowData = await Rooms.create({
+                            floor: floor,
+                            name: roomName,
+                            status: row.getCell(2).value,
+                            quantityMember: row.getCell(3).value,
+                            roomType: row.getCell(4).value,
+                            roomPrice: row.getCell(5).value,
+                            deposit: row.getCell(6).value,
+                            area: row.getCell(7).value,
+                            houseId: houseId,
+                            utilities: house?.utilities || [],
+                            otherUtilities: house?.otherUtilities || [],
+                        });
+                        const accountData = await AccountModel.create({
+                            username: house.name.replace(/\s/g, "") + roomName,
+                            password: hashedPassword,
+                            accountType: "renter",
+                            roomId: rowData.id,
+                            status: false,
+                        });
+                        house.numberOfRoom += 1;
+                        await house.save();
+                    }
                 }
             }
             return {
                 message: "oke",
             };
         } catch (error) {
-            console.log(error);
+            throw error
         }
     },
+    
 
     addOne: async (req) => {
         try {
             const { houseId } = req.params;
             const house = await HousesModel.findById(houseId);
+
+            const existingRoom = await Rooms.findOne({
+                houseId,
+                name: req.body.name.trim(),
+                deleted: false
+            });
+            if (existingRoom) {
+                throw new Error(
+                    "Phòng đã tồn tại. Vui lòng chọn tên khác."
+                );
+            }
 
             const data = await Rooms.create({
                 houseId,
@@ -224,12 +253,22 @@ const RoomService = {
                     "Số điện thoại hoặc số CCCD đã tồn tại trong phòng."
                 );
             }
-            const result = await cloudinary.uploader.upload(req.file.path);
+            let image;
+            if (req.file) {
+                const result = await cloudinary.uploader.upload(req.file.path);
+    
+                image = new Image({
+                    imageName: req.file.mimetype,
+                    imageData: result.secure_url,
+                });
 
-            const image = new Image({
-                imageName: req.file.mimetype,
-                imageData: result.secure_url,
-            });
+            }
+            else{
+                image = new Image({
+                    imageName: "default",
+                    imageData: "https://quanlynhatro.com/frontend3/assets/img/placeholder.png",
+                });
+            }
             await image.save();
             room.members.push({ ...req.body, avatar: image.id });
             await room.save();
@@ -339,6 +378,40 @@ const RoomService = {
             throw error;
         }
     },
+    getRoomWithBills: async (req) => {
+        try {
+            const { houseId } = req.params;
+            const { month } = req.query;
+            const rooms = await Rooms.find({ houseId, deleted: false });
+            const newData = [];
+    
+            for (let room of rooms) {
+                let bill = null;
+                if (month) {
+                    const [mm, yyyy] = month.split('-');
+                    const startOfMonth = new Date(yyyy, mm - 1, 1);
+                    const endOfMonth = new Date(yyyy, mm, 0);
+    
+                    bill = await BillsModel.findOne({
+                        roomId: room.id,
+                        houseId,
+                        createdAt: { $gte: startOfMonth, $lt: endOfMonth }
+                    });
+                } else {
+                    bill = await BillsModel.findOne({ roomId: room.id, houseId }).sort({ createdAt: -1 });
+                }
+                newData.push({
+                    room: room._doc,
+                    bill: bill || null
+                });
+            }
+            return newData;
+        } catch (error) {
+            throw error;
+        }
+    }
+    
+    
 };
 
 export default RoomService;

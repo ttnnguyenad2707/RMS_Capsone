@@ -1,12 +1,20 @@
 import * as React from "react";
 import { BarChart } from "@mui/x-charts/BarChart";
 import Title from "./Title";
+import Typography from "@mui/material/Typography";
 export default function BarChartDisplay() {
   return (
     <React.Fragment>
-      <Title>Thống Kê Nhà</Title>
+      <Typography
+        id="modal-modal-title"
+        variant="h5"
+        component="h3"
+        sx={{ fontWeight: "Bold", color: "#1976d2" }}
+      >
+        Thống Kê
+      </Typography>
 
-      <div style={{ width: "100%", flexGrow: 1, overflow: "hidden" }}>
+      <div style={{ width: "100%", flexGrow: 1, overflow: "hidden", marginTop:"15px"}}>
         <BarChart
           series={[
             { data: [35, 44, 24, 34] },
