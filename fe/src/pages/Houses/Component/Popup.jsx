@@ -167,13 +167,13 @@ export default function BasicModal() {
   const handleInputName = () => {
     const inputValue = inputName.current.value;
     setName(inputValue);
-    if (validateInput(inputValue) && inputValue != " ") {
-      setName(inputValue);
-      setErrorName(false);
-    } else {
-      setErrorName(true);
-      toast.error("Tên nhà không đúng định dạng");
-    }
+    // if (validateInput(inputValue) && inputValue != " ") {
+    //   setName(inputValue);
+    //   setErrorName(false);
+    // } else {
+    //   setErrorName(true);
+    //   toast.error("Tên nhà không đúng định dạng");
+    // }
   };
   const handleInputAddress = () => {
     const inputValue = inputAddress.current.value;

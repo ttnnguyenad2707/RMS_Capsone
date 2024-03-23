@@ -392,28 +392,8 @@ export default function BasicTable() {
     // Cập nhật state rows
     setRows(sortedRows);
   };
-  const style = {
-    position: "absolute",
-    top: "50%",
-    left: "50%",
-    transform: "translate(-50%, -50%)",
-    width: 500,
-    height: "20%",
-    bgcolor: "background.paper",
-    border: "2px solid #grey",
-    boxShadow: 25,
-    p: 5,
-    borderRadius: "10px",
-    padding: "18px",
-  };
-  const stylesHeader = {
-    color: "#1976d2",
-    display: "flex",
-    position: "relative",
-    fontWeight: "Bold",
-  };
 
-  console.log(rows, "rowsPerPage");
+  console.log(houses, "rowsPerPage");
   return (
     <>
       {houses ? (
