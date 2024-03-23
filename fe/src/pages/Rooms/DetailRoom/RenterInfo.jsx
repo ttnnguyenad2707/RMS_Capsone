@@ -31,7 +31,7 @@ const RenterInfo = (props) => {
             setOpen(true)
         }
         else{
-            Notification("Error","Phòng đã thêm đủ số lượng người")
+            Notification("Error","Phòng đã đạt số người tối đa")
         }
     };
     const handleClose = () => setOpen(false);

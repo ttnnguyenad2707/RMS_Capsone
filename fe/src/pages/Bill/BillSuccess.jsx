@@ -19,7 +19,7 @@ const BillSuccess = () => {
     console.log(bill)
     useEffect(() => {
         async function fetch() {
-            confirmBill(billId).then(res => {
+            confirmBill(billId,{paymentMethod:"Banking"}).then(res => {
                 
                 getBill(billId).then(data => {
                     setBill(data.data.data)

@@ -5,6 +5,7 @@ import AccountModel from "../models/Account.model.js";
 import bcrypt from "bcrypt";
 import Image from "../models/Upload.model.js";
 import { v2 as cloudinary } from "cloudinary";
+import BillsModel from "../models/Bills.model.js";
 
 const RoomService = {
     addRoom: async (req) => {
@@ -90,6 +91,7 @@ const RoomService = {
             const existingRoom = await Rooms.findOne({
                 houseId,
                 name: req.body.name.trim(),
+                deleted: false
             });
             if (existingRoom) {
                 throw new Error(
@@ -251,12 +253,22 @@ const RoomService = {
                     "Số điện thoại hoặc số CCCD đã tồn tại trong phòng."
                 );
             }
-            const result = await cloudinary.uploader.upload(req.file.path);
+            let image;
+            if (req.file) {
+                const result = await cloudinary.uploader.upload(req.file.path);
+    
+                image = new Image({
+                    imageName: req.file.mimetype,
+                    imageData: result.secure_url,
+                });
 
-            const image = new Image({
-                imageName: req.file.mimetype,
-                imageData: result.secure_url,
-            });
+            }
+            else{
+                image = new Image({
+                    imageName: "default",
+                    imageData: "https://quanlynhatro.com/frontend3/assets/img/placeholder.png",
+                });
+            }
             await image.save();
             room.members.push({ ...req.body, avatar: image.id });
             await room.save();
@@ -366,6 +378,40 @@ const RoomService = {
             throw error;
         }
     },
+    getRoomWithBills: async (req) => {
+        try {
+            const { houseId } = req.params;
+            const { month } = req.query;
+            const rooms = await Rooms.find({ houseId, deleted: false });
+            const newData = [];
+    
+            for (let room of rooms) {
+                let bill = null;
+                if (month) {
+                    const [mm, yyyy] = month.split('-');
+                    const startOfMonth = new Date(yyyy, mm - 1, 1);
+                    const endOfMonth = new Date(yyyy, mm, 0);
+    
+                    bill = await BillsModel.findOne({
+                        roomId: room.id,
+                        houseId,
+                        createdAt: { $gte: startOfMonth, $lt: endOfMonth }
+                    });
+                } else {
+                    bill = await BillsModel.findOne({ roomId: room.id, houseId }).sort({ createdAt: -1 });
+                }
+                newData.push({
+                    room: room._doc,
+                    bill: bill || null
+                });
+            }
+            return newData;
+        } catch (error) {
+            throw error;
+        }
+    }
+    
+    
 };
 
 export default RoomService;

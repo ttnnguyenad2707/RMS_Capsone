@@ -6,6 +6,7 @@ import { TextField, Select, MenuItem, Button, FormControl, InputLabel, FormHelpe
 import { useEffect, useLayoutEffect, useMemo, useState } from 'react';
 import Notification from '../../../CommonComponents/Notification';
 import { getMember, updateInfoMember } from '../../../services/houses';
+import * as Yup from "yup";
 
 
 const style = {
@@ -100,6 +101,20 @@ const ModalUpdateRenter = ({ handleClose, open, room, setMembers, memberId }) =>
         }
 
     }
+    const validationSchema = Yup.object({
+        name: Yup.string().required("Vui lòng nhập họ và tên"),
+        phone: Yup.string()
+          .test('is-numeric', 'Số điện thoại chỉ được chứa chữ số', value => {
+            return /^\d+$/.test(value);
+          })
+          .test('is-ten-digits', 'Số điện thoại phải có 10 chữ số', value => {
+            if (!value) return true;
+            return value.length === 10;
+          }),
+        cccd: Yup.string().matches(/^[0-9]{12}$/, "CCCD phải có 12 chữ số"),
+        gender: Yup.string(),
+        dob: Yup.date(),
+      });
     if (isLoading) return null;
     return (
             <Modal
@@ -111,6 +126,7 @@ const ModalUpdateRenter = ({ handleClose, open, room, setMembers, memberId }) =>
                             <Formik
                                 initialValues={initialValues}
                                 onSubmit={(values, { resetForm, setSubmitting }) => handleSubmit(values, { resetForm, setSubmitting })}
+                                validationSchema={validationSchema}
                             >
                                 <Form>
                                     <Box sx={{
