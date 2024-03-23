@@ -218,7 +218,7 @@ export default function BasicModal() {
   };
   const HandleSubmit = async () => {
     handleInputName();
-    handleInputAddress();
+    // handleInputAddress();
     handleInputCostElectric();
     handleInputCostWater();
     handleInputUtilities();

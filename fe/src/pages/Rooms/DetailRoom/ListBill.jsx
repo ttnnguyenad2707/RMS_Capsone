@@ -11,7 +11,7 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
-import { formatMoney } from "../../../Utils";
+import { formatMoney, getDate } from "../../../Utils";
 import { usePayOS, PayOSConfig } from "payos-checkout";
 const ListBill = (props) => {
     const { children, value, index, room, ...other } = props;
@@ -28,7 +28,7 @@ const ListBill = (props) => {
         fetchRoom()
     }, [props])
 
-    const handleLinkToPay = (link) => {
+    const handleLinkToPay = (link,index) => {
         // console.log(link)
         // const RETURN_URL = `${window.location.href}/`;
         // const payOSConfig = {
@@ -50,9 +50,14 @@ const ListBill = (props) => {
         // const { open, exit } = usePayOS(payOSConfig);
 
         // open();
-        window.open(link)
+        if(index === 0) {
+            window.open(link)
+
+        }
+        else{
+            Notification("Error","Hoá đơn này đã được cộng dồn nợ vào hoá đơn tháng mới","Vui lòng thanh toán hoá đơn mới nhất")
+        }
     }
-    console.log(room,"roomhi");
     return (
         <div
             role="tabpanel"
@@ -65,7 +70,9 @@ const ListBill = (props) => {
             {value === index && (
                 <>
                     <Box sx={{
-                        p: 2
+                        p: 2,
+                        height: "800px",
+                        overflowY :"auto"
                     }}>
                         <Typography sx={{ fontWeight: 600, fontSize: "20px" }}>Phòng {room?.name}</Typography>
                         {Bills?.map((bill, index) => (
@@ -74,9 +81,11 @@ const ListBill = (props) => {
                             <Box
                                 sx={{
                                     mt: 3,
-                                    border: bill.isPaid === true ? "#26c281 solid 1px" : "#e7505a solid 1px"
+                                    border: bill.isPaid === true ? "#26c281 solid 1px" : "#e7505a solid 1px",
+                                    overflow :"auto"
                                 }}
                                 key={index}
+                                
                             >
                                 <Box
                                     sx={{
@@ -93,7 +102,7 @@ const ListBill = (props) => {
                                             fontSize: "18px",
                                         }}
                                     >
-                                        Tháng 3/2024
+                                        Tạo : {getDate(bill?.createdAt)}
                                     </Typography>
                                     <Typography
                                         sx={{
@@ -144,13 +153,18 @@ const ListBill = (props) => {
                                                     <TableCell align="right">{formatMoney(bill.roomPrice)}</TableCell>
                                                 </TableRow>
                                                 <TableRow>
+                                                    <TableCell colSpan={6}><Typography sx={{ fontWeight: 600 }}>Tiền Nợ</Typography></TableCell>
+                                                    <TableCell align="right">{formatMoney(bill.debt)}</TableCell>
+                                                </TableRow>
+                                                <TableRow>
                                                     <TableCell colSpan={6}><Typography sx={{ fontWeight: 600 }}>Tổng</Typography></TableCell>
                                                     <TableCell align="right">{formatMoney(bill.total)}</TableCell>
                                                 </TableRow>
                                             </TableBody>
                                         </Table>
                                     </TableContainer>
-                                    <Typography sx={{ fontWeight: 600, mt: 3 }}>Link Thanh Toán: <Button variant="outlined" onClick={() => handleLinkToPay(bill?.paymentLink?.checkoutUrl)}> Nhấn vào đây</Button> </Typography>
+                                    <Typography sx={{mt: 4,fontWeight: 600}}> Ghi Chú: {bill.note}</Typography>
+                                    {bill.isPaid ? "" : (<Typography sx={{ fontWeight: 600, mt: 3 }}>Link Thanh Toán: <Button variant="outlined" onClick={() => handleLinkToPay(bill?.paymentLink?.checkoutUrl,index)}> Nhấn vào đây</Button> </Typography>)}
                                 </Box>
                             </Box>
                         ))}

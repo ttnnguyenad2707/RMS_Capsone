@@ -9,7 +9,6 @@ export const fetchDefaultPrice = createAsyncThunk(
   "defaultPrice/fetchDefaultPrice",
   async () => {
     const response = await GetAllDefaultPriceService();
-    console.log(response, "response");
     return response.data.data;
   }
 );

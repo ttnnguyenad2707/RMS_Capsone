@@ -34,7 +34,6 @@ export const GetHouseService = async (page, limit) => {
 };
 export const UpdateHouseService = async (data, id) => {
   const token = Cookies.get("accessToken");
-  console.log(data, id,"service");
   return await axios.post(`${URL_SERVER}/house/${id}`, data, {
     withCredentials: true,
     headers: {
@@ -42,6 +41,27 @@ export const UpdateHouseService = async (data, id) => {
     },
   });
 };
+
+export const AddPriceItem = async (houseId, data ) => {
+  const token = Cookies.get("accessToken");
+  return await axios.put(`${URL_SERVER}/house/${houseId}/addPriceItem`, data, {
+    withCredentials: true,
+    headers: {
+      authorization: `Bearer ${token}`,
+    },
+  });
+};
+
+export const RemovePriceItem = async (houseId,priceItemId, data ) => {
+  const token = Cookies.get("accessToken");
+  return await axios.put(`${URL_SERVER}/house/${houseId}/removePriceItem/${priceItemId}`, data, {
+    withCredentials: true,
+    headers: {
+      authorization: `Bearer ${token}`,
+    },
+  });
+};
+
 export const DeleteHouseService = async (id) => {
   const token = Cookies.get("accessToken");
   return await axios.delete(`${URL_SERVER}/house/${id}`, {

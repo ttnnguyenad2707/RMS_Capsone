@@ -15,6 +15,7 @@ import { useEffect, useMemo, useState } from "react";
 import { addMember } from "../../../services/houses";
 import Notification from "../../../CommonComponents/Notification";
 import * as Yup from "yup";
+import CircularProgress from '@mui/material/CircularProgress';
 
 const style = {
   position: "absolute",
@@ -28,6 +29,7 @@ const style = {
   width: "60vw",
 };
 const ModalAddRenter = ({ handleClose, open, room, setMembers }) => {
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [file, setFile] = useState();
   const [imagePreview, setImagePreview] = useState(null);
   useEffect(() => {
@@ -62,16 +64,21 @@ const ModalAddRenter = ({ handleClose, open, room, setMembers }) => {
   }, []);
   const validationSchema = Yup.object({
     name: Yup.string().required("Vui lòng nhập họ và tên"),
-    phone: Yup.string().matches(
-      /^[0-9]{10}$/,
-      "Số điện thoại phải có 10 chữ số"
-    ),
+    phone: Yup.string()
+      .test('is-numeric', 'Số điện thoại chỉ được chứa chữ số', value => {
+        return /^\d+$/.test(value);
+      })
+      .test('is-ten-digits', 'Số điện thoại phải có 10 chữ số', value => {
+        if (!value) return true;
+        return value.length === 10;
+      }),
     cccd: Yup.string().matches(/^[0-9]{12}$/, "CCCD phải có 12 chữ số"),
     gender: Yup.string(),
     dob: Yup.date(),
   });
   const handleSubmit = async (values, { resetForm, setSubmitting }) => {
     try {
+      setIsSubmitting(true);
       const formData = new FormData();
       formData.append("avatar", file);
       formData.set("name", values.name);
@@ -81,7 +88,6 @@ const ModalAddRenter = ({ handleClose, open, room, setMembers }) => {
       formData.set("dob", values.dob);
       formData.set("note", values.note);
       await addMember(room._id, formData).then((data) => {
-        console.log(data.data.data);
         setMembers((prev) => [
           ...prev,
           {
@@ -97,16 +103,17 @@ const ModalAddRenter = ({ handleClose, open, room, setMembers }) => {
             },
           },
         ]);
+        handleClose();
+        resetForm();
+        setImagePreview(null);
+        Notification("Success", "Thêm Thành Viên", "Thành Công");
+      }).catch(error => {
+        Notification("Error", error.response.data.error)
       });
-
-      handleClose();
-      resetForm();
-      setImagePreview(null);
-      Notification("Success", "Thêm Thành Viên", "Thành Công");
     } catch (error) {
-      alert("Failed to add member");
       console.error("Error:", error);
     } finally {
+      setIsSubmitting(false)
       setSubmitting(false);
     }
   };
@@ -257,8 +264,8 @@ const ModalAddRenter = ({ handleClose, open, room, setMembers }) => {
                 <Button variant="outlined" color="error" onClick={handleClose}>
                   Huỷ
                 </Button>
-                <Button type="submit" variant="contained" color="primary">
-                  Submit
+                <Button type="submit" variant="contained" color="primary" disabled={isSubmitting}>
+                  {isSubmitting ? <CircularProgress size={24} /> : 'Submit'}
                 </Button>
               </Box>
             </Form>
