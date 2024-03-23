@@ -11,6 +11,16 @@ export const getProblemsInHouse = async (houseId) => {
         },
     });
 };
+export const getProblemsInRoomOfRenter = async (roomId) => {
+    console.log("caller");
+    const token = Cookies.get("accessToken");
+    return await axios.get(`${URL_SERVER}/problem/room/${roomId}`, {
+        withCredentials: true,
+        headers: {
+            authorization: `Bearer ${token}`,
+        },
+    });
+};
 export const deleteProblem = async (problemId) => {
     const token = Cookies.get("accessToken");
     return await axios.delete(`${URL_SERVER}/problem/${problemId}`, {

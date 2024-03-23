@@ -12,14 +12,15 @@ import {
   TableRow,
   Paper,
 } from "@mui/material";
-import ModalUpdateProblem from "../pages/ProblemsReport/Component/ModalUpdateProblem";
+import ModalUpdateProblemByHost from "../pages/ProblemsReport/Component/ModalUpdateProblemByHost";
 import { getProblemsInHouse } from "../services/problems";
+// import { useSelector } from "react-redux";
 
-const TableData = ({ data, setDataSelect, deleteData }) => {
-  if (data.length === 0) {
+const TableData = ({ data, setDataSelect, deleteData, userData }) => {
+
+  if (data?.length === 0) {
     return <Typography>No data available</Typography>;
   }
-  // const [status, setStatus] = useState(""); // Giá trị ban đầu của Status
   const [displayData, setDisplayData] = useState(data);
   const handleStatusUpdate = (datares) => {
     console.log("problemsId", datares._id);
@@ -29,46 +30,59 @@ const TableData = ({ data, setDataSelect, deleteData }) => {
       )
     );
   };
-  // console.log("status cha", status);
-  // useEffect(() => {
-  //   setDisplayData(displayData);
 
-  // }, [status]);
+  const convertStatusToVietnamese = (status) => {
+    switch (status) {
+      case "done":
+        return "Đã giải quyết";
+      case "pending":
+        return "Đang chờ giải quyết";
+      case "doing":
+        return "Đang xử lý vấn đề";
+      default:
+        return "Chưa tiếp nhận";
+    }
+  };
 
-  // console.log("data", displayData);
   return (
     <TableContainer component={Paper}>
       <Table>
         <TableHead>
           <TableRow>
             <TableCell>STT</TableCell>
-            {Object.keys(displayData[0]).map(
-              (key) => key !== "id" && <TableCell key={key}>{key}</TableCell>
-            )}
-            <TableCell>Action</TableCell>
+            {/* {Object?.keys(displayData[0]).map(
+              (key) => key !== "id" && key !== "Creator" && <TableCell key={key}>{key}</TableCell>
+            )} */}
+            <TableCell>Tiêu Đề</TableCell>
+            <TableCell>Nội Dung</TableCell>
+            <TableCell>Trạng Thái</TableCell>
+            <TableCell>Phòng</TableCell>
+            <TableCell>Hành Động</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
           {displayData?.map((row, index) => (
             <TableRow key={index}>
               <TableCell key={index}>{index + 1}</TableCell>
-              {Object.keys(row).map(
-                (key, index) =>
-                  key !== "id" && <TableCell key={index}>{row[key]}</TableCell>
-              )}
+              {Object.keys(row).map((key, index) => {
+                if (key !== "id" && key !== "Creator") {
+                  let cellContent = row[key];
+                  if (key === "Status") {
+                    cellContent = convertStatusToVietnamese(row[key]);
+                  }
+                  return <TableCell key={index}>{cellContent}</TableCell>;
+                }
+              })}
+
               <TableCell key={index}>
                 <Stack spacing={2} direction="row">
                   {/* <Button variant="outlined" onClick={() => updateData(row.id)}>Update</Button> */}
-                  <ModalUpdateProblem
+                  <ModalUpdateProblemByHost
                     problemsId={row.id}
                     Room={row.Room}
                     Status={row.Status}
                     onUpdateStatus={handleStatusUpdate}
                   />
-
-                  <Button variant="outlined" onClick={() => deleteData(row.id)}>
-                    Delete
-                  </Button>
                 </Stack>
               </TableCell>
             </TableRow>

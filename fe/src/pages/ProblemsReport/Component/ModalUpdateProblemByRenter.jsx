@@ -1,13 +1,10 @@
 import { Box, Button, MenuItem, Modal, Select } from "@mui/material";
-import React, { useEffect } from "react";
+import React from "react";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
-import { useSelector } from "react-redux";
-import {
-  getProblemsInHouse,
-  updateStatusProblemsInHouse,
-} from "../../../services/problems";
 import { toast } from "react-toastify";
+import { updateStatusProblemsInHouse } from "../../../services/problems";
+
 const style = {
   position: "absolute",
   top: "50%",
@@ -20,42 +17,42 @@ const style = {
   borderRadius: 8,
   p: 4,
 };
-const ModalUpdateProblem = ({ problemsId, Room, Status,onUpdateStatus  }) => {
+
+const ModalUpdateProblem = ({problem, problemsId, Room, Status, onUpdateStatus }) => {
   const [open, setOpen] = React.useState(false);
-  // const [update, setUpdate] = React.useState();
 
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
   const handleUpdate = async (values) => {
-  
     try {
+      console.log("values",values);
+      console.log("problemsId",problemsId);
+      // alert("ád")
       const res = await updateStatusProblemsInHouse(problemsId, values);
-      console.log("res", res);
-      toast.success("trạng thái đã được cập nhât !");
+      console.log("res2", res);
+      toast.success("Trạng thái đã được cập nhật!");
       onUpdateStatus(res.data.data);
-// console.log("res.data.data.id",res.data.data._id);
-    
+      handleClose();
     } catch (error) {
       toast.warning(error.response.data.error);
       console.log(error);
     }
   };
 
- 
-
-  // console.log("StatusStatus", Status);
-  // console.log("update",update);
-
   const initialValues = {
-    status: "none",
+    title: problem.title,
+    content: problem.content,
+  
   };
   const validationSchema = Yup.object().shape({
-    status: Yup.string().notOneOf(["none"], "Vui lòng chọn trạng thái"),
+    title: Yup.string().required("Vui lòng nhập Tiêu Đề"),
+    content: Yup.string().required("Vui lòng nhập Nội Dung"),
   });
+
   return (
     <div>
-      <Button variant="outlined" onClick={() => handleOpen()}>
-        Update
+      <Button variant="outlined" onClick={handleOpen}>
+        Cập nhật vấn đề
       </Button>
       <Modal open={open} onClose={handleClose}>
         <Box sx={style}>
@@ -65,22 +62,30 @@ const ModalUpdateProblem = ({ problemsId, Room, Status,onUpdateStatus  }) => {
             validationSchema={validationSchema}
           >
             <Form>
-              <div className="">
-                <h5>Cập nhật vấn đề cho phòng {Room} </h5>
+              <div>
+                <h5>Cập nhật vấn đề</h5>
               </div>
               <div>
+                <label htmlFor="title">Tiêu Đề</label>
                 <Field
-                  as={Select}
-                  id="status"
-                  variant="outlined"
+                  type="text"
+                  id="title"
+                  name="title"
                   className="form-control"
-                  name="status"
-                >
-                  <MenuItem value={"done"}>Đã giải quyết</MenuItem>
-                  <MenuItem value={"pending"}>Đang chờ giải quyết</MenuItem>
-                  <MenuItem value={"doing"}>Đang xử lý vấn đề</MenuItem>
-                </Field>
-                <ErrorMessage name="status" component="div" className="error" />
+                />
+                <ErrorMessage name="title" component="div" className="error" />
+              </div>
+
+              <div>
+                <label htmlFor="content">Nội Dung</label>
+                <Field
+                  as="textarea"
+                  id="content"
+                  name="content"
+                  rows="3"
+                  className="form-control"
+                />
+                <ErrorMessage name="content" component="div" className="error" />
               </div>
 
               <button className="btn btn-primary mt-3" type="submit">
