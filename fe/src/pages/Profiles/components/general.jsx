@@ -1,5 +1,5 @@
 import { Formik, Form, Field, ErrorMessage } from "formik";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { updateUser } from "../../../services/auth";
 import * as Yup from "yup";
@@ -11,17 +11,18 @@ import Button from "@mui/material/Button";
 
 const General = (props) => {
     const { children, value, index, ...other } = props;
-    const userData = useSelector((state) => state.user.data);
+    const userData = useSelector((state) => state?.user?.data);
     const [isEditMode, setIsEditMode] = useState(false);
     const initialValues = {
-        name: userData.name || "",
-        phone: userData.phone || "",
-        payosClientId: userData.payosClientId || "",
-        payosAPIKey: userData.payosAPIKey || "",
-        payosCheckSum: userData.payosCheckSum || "",
+        name: userData?.name || "",
+        phone: userData?.phone || "",
+        payosClientId: userData?.payosClientId || "",
+        payosAPIKey: userData?.payosAPIKey || "",
+        payosCheckSum: userData?.payosCheckSum || "",
         // email: userData.email || "",
         // avatar: null,
     };
+    console.log("userData",userData);
     const validationSchema = Yup.object().shape({
         name: Yup.string().required(" name can not be blank").required("Required"),
         phone: Yup.string()
@@ -44,6 +45,9 @@ const General = (props) => {
             console.log(error);
         }
     };
+    useEffect(()=>{
+
+    },[userData])
     return (
         <div
             role="tabpanel"
@@ -146,7 +150,7 @@ const General = (props) => {
                                                 id="email"
                                                 name="email"
                                                 className="form-control"
-                                                value={userData.email}
+                                                value={userData?.email}
                                                 disabled={true}
                                             />
                                             <ErrorMessage name="email" component="div" />
