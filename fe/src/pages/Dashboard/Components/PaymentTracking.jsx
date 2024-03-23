@@ -10,11 +10,16 @@ import {
 } from "@mui/material";
 import Typography from "@mui/material/Typography";
 import * as React from "react";
-import { DatePicker, MuiPickersUtilsProvider } from "@material-ui/pickers";
-import DateFnsUtils from "@date-io/date-fns";
+import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+import dayjs from "dayjs";
+import "dayjs/locale/vi";
 const PaymentTracking = () => {
-  const [year, setYear] = React.useState();
   const [month, setMonth] = React.useState();
+  const [year, setYear] = React.useState();
+  dayjs.locale("vi"); // Thiết lập ngôn ngữ tiếng Việt cho dayjs
   const data = [
     {
       category: "Tổng số hóa đơn đã thanh toán",
@@ -27,16 +32,8 @@ const PaymentTracking = () => {
       totalBill: 0,
     },
   ];
-  const handleChangeYear = (date) => {
-    if (date !== null) {
-      setYear(date);
-    }
-  };
-  const handleChangeMonth = (date) => {
-    if (date !== null) {
-      setMonth(date);
-    }
-  };
+  console.log(year, "year");
+  console.log(month, "month");
   return (
     <Box>
       <Box>
@@ -50,20 +47,22 @@ const PaymentTracking = () => {
         </Typography>
       </Box>
       <Box className="d-flex mt-5">
-        <MuiPickersUtilsProvider utils={DateFnsUtils}>
-          <DatePicker
-            views={["year"]}
-            label="Chọn năm"
-            value={year}
-            onChange={handleChangeYear}
-          />
-          <DatePicker
-            views={["month"]}
-            label="Chọn tháng"
-            value={month}
-            onChange={handleChangeMonth}
-          />
-        </MuiPickersUtilsProvider>
+        <LocalizationProvider dateAdapter={AdapterDayjs}>
+          <DemoContainer components={["DatePicker", "DatePicker"]}>
+            <DatePicker
+              label="Chọn năm"
+              views={["year"]}
+              openTo="year"
+              onChange={(newValue) => setYear(newValue.$y)}
+            />
+            <DatePicker
+              label="Chọn tháng"
+              views={["month"]}
+              openTo="month"
+              onChange={(newValue) => setMonth(newValue.$M+1)}
+            />
+          </DemoContainer>
+        </LocalizationProvider>
       </Box>
       <TableContainer component={Paper} className="mt-4">
         <Table>
