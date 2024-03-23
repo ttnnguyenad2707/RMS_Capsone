@@ -80,17 +80,15 @@ const UtilitiesTab = ({
     setUtilOther(newUtil);
   };
   useEffect(() => {
-    const selectUtil = utils
-      .filter((u) => u.isCheck === true)
-      .map((u) => u.value);
-    handleInputSelect(selectUtil);
+    const data = utils.filter((u) => u.isCheck === true).map((u) => u.value);
+    handleInputSelect( data );
   }, [utils]);
   useEffect(() => {
-    const selectUtilOrther = utilsOrther
+    const data = utilsOrther
       .filter((u) => u.isCheck === true)
       .map((u) => u.value);
     console.log(utilsOrther);
-    handleInputSelectOrther(selectUtilOrther);
+    handleInputSelectOrther(data );
   }, [utilsOrther]);
   useEffect(() => {
     if (defaultUtils && typeUtil === "update" && dataUtil) {
@@ -153,7 +151,7 @@ const UtilitiesTab = ({
     p: 5,
     borderRadius: "10px",
     padding: "18px",
-    overflow: "auto"
+    overflow: "auto",
   };
   const stylesHeader = {
     color: "#1976d2",
