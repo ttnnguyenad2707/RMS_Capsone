@@ -16,6 +16,7 @@ import { fetchHouses } from "../../reduxToolkit/HouseSlice";
 import Notification from "../../CommonComponents/Notification";
 import { IconButton, Menu } from "@mui/material";
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
+import SelectHouse from "../../CommonComponents/SelectHouse";
 import {
   AiOutlinePlus,
   AiFillDelete,
@@ -27,30 +28,16 @@ export default function News() {
   const [open, setOpen] = React.useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
-  const [id, setID] = React.useState();
+  const [selectedHouseId, setSelectedHouseId] = useState();
   const [typeModal, setTypeModal] = React.useState();
   const [isLoading, setIsLoading] = useState(false);
   const [dataNews, setDataNews] = useState();
   const news = useSelector((state) => state.new.news);
-  const houses = useSelector((state) => state.house.houses);
   const dispatch = useDispatch();
   React.useEffect(() => {
-    dispatch(fetchHouses());
-  }, []);
-  React.useEffect(() => {
+    const id = selectedHouseId;
     dispatch(fetchNews({ id }));
-  }, [id]);
-  React.useEffect(() => {
-    if (houses && houses.length > 0) {
-      setID(houses[0]._id);
-    }
-  }, [houses]);
-  const handleChange = (event) => {
-    const inputSelect = event.target.value;
-    if (inputSelect !== null) {
-      setID(inputSelect);
-    }
-  };
+  }, [selectedHouseId]);
   const commentNews = (data) => {
     if (data) {
       setDataNews(data);
@@ -119,24 +106,7 @@ export default function News() {
             width: "100vw",
           }}
         >
-          <Select
-            labelId="demo-simple-select-label"
-            id="demo-simple-select"
-            value={id}
-            onChange={handleChange}
-            sx={{ width: "20%" }}
-            className="me-5"
-          >
-            {houses ? (
-              houses.map((h, index) => (
-                <MenuItem value={h._id} key={index}>
-                  {h.name}
-                </MenuItem>
-              ))
-            ) : (
-              <div>Lỗi Dữ Liệu</div>
-            )}
-          </Select>
+          <SelectHouse onSelect={setSelectedHouseId} />
           <Grid
             item
             xs={12}
@@ -171,19 +141,13 @@ export default function News() {
                   }}
                   onClick={() => handleAdd("Add")}
                 >
-                  Bạn đang nghĩ gì thế ?
+                  Thêm Tin Tức Mới...
                 </Button>
-              </Box>
-              <hr></hr>
-              <Box className="d-flex" sx={{ borderTop: "soid 1px #cccccc" }}>
-                <Button>Phát Trực Tiếp</Button>
-                <Button>Phát Trực Tiếp</Button>
-                <Button>Phát Trực Tiếp</Button>
               </Box>
             </Paper>
           </Grid>
           {news.data ? (
-            news.data.map((n,index) => (
+            news.data.map((n, index) => (
               <Grid
                 item
                 xs={12}
@@ -250,9 +214,6 @@ export default function News() {
                   </Box>
                   <div>
                     <Box sx={{ display: "flex", gap: "10px" }}>
-                      <Button variant="outlined">
-                        <ThumbUpAltIcon fontSize="small"></ThumbUpAltIcon>Thích
-                      </Button>
                       <Button variant="outlined" onClick={() => commentNews(n)}>
                         <ChatBubbleOutlineIcon fontSize="small"></ChatBubbleOutlineIcon>{" "}
                         Bình Luận
@@ -269,7 +230,7 @@ export default function News() {
           <ModalNews
             open={open}
             handleClose={handleClose}
-            houseID={id}
+            houseID={selectedHouseId}
             typeModal={typeModal}
             dataNews={dataNews}
           />

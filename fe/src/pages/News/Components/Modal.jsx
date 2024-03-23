@@ -19,11 +19,14 @@ import {
 import CancelIcon from "@mui/icons-material/Cancel";
 import ImageList from "@mui/material/ImageList";
 import ImageListItem from "@mui/material/ImageListItem";
+import LinearProgress from "@mui/material/LinearProgress";
+
 import "../scss/modal.scss";
 const ModalNews = ({ handleClose, open, typeModal, houseID, dataNews }) => {
   const comments = useSelector((state) => state.comment.comments);
   const [image_src, setImageSrc] = React.useState([]);
   const [selectedImages, setSelectedImages] = React.useState([]);
+  const [isLoading, setIsLoading] = React.useState(false);
   const present_key = "demo_api_image";
   const cloud_name = "debiqwc2z";
   const folder_name = "rms";
@@ -37,6 +40,7 @@ const ModalNews = ({ handleClose, open, typeModal, houseID, dataNews }) => {
   };
 
   const handleUpload = async (e) => {
+    setIsLoading(true);
     e.preventDefault();
     const formData = new FormData();
     console.log(selectedImages);
@@ -65,6 +69,7 @@ const ModalNews = ({ handleClose, open, typeModal, houseID, dataNews }) => {
       updatedData.push(data.url);
       // Cập nhật giá trị mới cho state image_src
       setImageSrc(updatedData);
+      setIsLoading(false);
     } catch (error) {
       console.log(error);
     }
@@ -232,6 +237,12 @@ const ModalNews = ({ handleClose, open, typeModal, houseID, dataNews }) => {
                 </ImageList>
               ) : null}
             </Box>
+            {isLoading ? (
+              <div className="text-center">
+                <LinearProgress />
+                <p>Loading...</p>
+              </div>
+            ) : null}
             <div className="d-flex gap-3">
               <input
                 type="file"
