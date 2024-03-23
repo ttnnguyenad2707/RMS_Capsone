@@ -4,6 +4,7 @@ import Button from "@mui/material/Button";
 import MenuItem from "@mui/material/MenuItem";
 import SuperModal from "./Popup";
 import * as React from "react";
+import SettingPrice from "../Setting/SettingPrice";
 const RoomsNavbar = ({ dataHouse, selectHouse }) => {
   const [house, setHouse] = React.useState();
   const [houseSelect, setHouseSelect] = React.useState(dataHouse[0]);
@@ -94,14 +95,7 @@ const RoomsNavbar = ({ dataHouse, selectHouse }) => {
         >
           Thêm phòng
         </Button>
-        <Button
-          color="info"
-          variant="contained"
-          className="me-3"
-          onClick={() => handleSelectModal("Cấu Hình Bảng Giá")}
-        >
-          Cấu hình bảng giá
-        </Button>
+        <SettingPrice houseId={houseSelect}/>
       </Box>
       <SuperModal
         handleOpen={handleOpen}

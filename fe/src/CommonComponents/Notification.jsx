@@ -23,6 +23,8 @@ const Notification = (typeNotification, title, message) => {
         title: title,
         text: message,
         icon: "success",
+      }).then(() => {
+        resolve(true);
       });
     });
   } 

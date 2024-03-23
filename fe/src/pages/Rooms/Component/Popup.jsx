@@ -22,7 +22,7 @@ import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import TableSortLabel from "@mui/material/TableSortLabel";
 import { styled } from "@mui/material/styles";
-
+import InputAdornment from "@mui/material/InputAdornment";
 import { useSelector } from "react-redux";
 import {
   fetchOneHouse,
@@ -113,6 +113,10 @@ export default function SuperModal({
   const [defaultPriceSystem, setDefaultPriceSystem] = React.useState();
   const [selectedFile, setSelectedFile] = React.useState(null);
   const [rows, setRows] = React.useState([]);
+  const [utilities, setUtilities] = React.useState();
+  const [utilitiesOther, setUtilitiesOther] = React.useState();
+  const [utilitiesRooms, setUtilitiesRooms] = React.useState();
+  const [utilitiesOtherRooms, setUtilitiesOtherRooms] = React.useState();
   const inputName = React.useRef();
   const inputMember = React.useRef();
   const inputPriceRoom = React.useRef();
@@ -152,7 +156,13 @@ export default function SuperModal({
   }));
   const gethouse = async () => {
     const response = await dispatch(fetchOneHouse({ houseId }));
-    setDefaultPrice(response.payload.priceList);
+    console.log(response, "response");
+    if (typeModal === "Cấu Hình Bảng Giá") {
+      setDefaultPrice(response.payload.priceList);
+    } else if (typeModal === "Thêm Phòng") {
+      setUtilities(response.payload.utilities);
+      setUtilitiesOther(response.payload.otherUtilities);
+    }
   };
   const getDefaultPrice = async () => {
     const response = await dispatch(fetchDefaultPrice());
@@ -163,6 +173,8 @@ export default function SuperModal({
     if (typeModal === "Cấu Hình Bảng Giá") {
       gethouse();
       getDefaultPrice();
+    } else if (typeModal === "Thêm Phòng") {
+      gethouse();
     }
   }, [typeModal, openAdd]);
   // feat data price
@@ -337,6 +349,8 @@ export default function SuperModal({
     handlePriceRoom();
     handleInputCostDeposit();
     handleInputCostArea();
+    handleInputUtilities();
+    handleInputUtilitiesOrther();
     if (
       name !== "" &&
       member !== "" &&
@@ -344,7 +358,9 @@ export default function SuperModal({
       CostDeposit !== null &&
       CostArea !== "" &&
       status !== "" &&
-      roomType !== ""
+      roomType !== "" &&
+      typeof utilitiesRooms !== "undefined" &&
+      typeof utilitiesOtherRooms !== "undefined"
     ) {
       const setData = {
         name: name,
@@ -354,13 +370,16 @@ export default function SuperModal({
         roomPrice: parseInt(priceRoom),
         deposit: parseInt(CostDeposit),
         area: parseInt(CostArea),
+        utilities: utilitiesRooms,
+        otherUtilities: utilitiesOtherRooms,
       };
-      console.log(setData, "setData");
       const response = await dispatch(addOneRoom({ setData, houseId }));
       if (response.payload === "Created") {
         // await dispatch(fetchRooms({ houseId }));
         await dispatch(fetchHouses());
         Notification("Success", "Thêm Phòng", "Thành Công");
+        setStatus("");
+        setRoomType("");
         handleClose();
       } else {
         Notification("Error", "Thêm Danh Sách Phòng", "Thất Bại");
@@ -457,8 +476,20 @@ export default function SuperModal({
     // Cập nhật state rows
     setRows(sortedRows);
   };
+  const handleInputUtilities = (data) => {
+    if (data) {
+      // setUtilities(data);
+      setUtilitiesRooms(data);
+    }
+  };
+  const handleInputUtilitiesOrther = (data) => {
+    if (data) {
+      // setUtilitiesOther(data);
+      setUtilitiesOtherRooms(data);
+    }
+  };
   const validateInputNumber = (input) => {
-    return !isNaN(input);
+    return !isNaN(input) && Number(input) > 0;
   };
   if (typeModal === "Thêm Phòng") {
     return (
@@ -498,10 +529,9 @@ export default function SuperModal({
           >
             <Tab value="1" label="Thêm Phòng" />
             <Tab value="2" label="Thêm Danh Sách Phòng" />
-            <Tab value="3" label="Item Three" />
           </Tabs>
           {value === "1" && (
-            <Box sx={stylesBody}>
+            <Box sx={stylesBody} className="mt-2">
               <Box sx={{ display: "flex" }}>
                 <TextField
                   required
@@ -573,6 +603,11 @@ export default function SuperModal({
                   sx={{ width: "100%" }}
                   inputRef={inputPriceRoom}
                   error={errorAddress}
+                  InputProps={{
+                    startAdornment: (
+                      <InputAdornment position="start">VND</InputAdornment>
+                    ),
+                  }}
                 />
                 <p
                   style={{
@@ -591,6 +626,11 @@ export default function SuperModal({
                   sx={{ width: "50%", mr: "1%" }}
                   inputRef={inputCostDeposit}
                   error={errorCostElectric}
+                  InputProps={{
+                    startAdornment: (
+                      <InputAdornment position="start">VND</InputAdornment>
+                    ),
+                  }}
                 />
                 <TextField
                   required
@@ -600,7 +640,32 @@ export default function SuperModal({
                   sx={{ width: "49%" }}
                   inputRef={inputCostArea}
                   error={errorCostWater}
+                  InputProps={{
+                    startAdornment: (
+                      <InputAdornment position="start">m²</InputAdornment>
+                    ),
+                  }}
                 />
+              </Box>
+              <Box sx={{ width: "100%", mt: "20px" }}>
+                <Tabs
+                  value={value}
+                  onChange={handleChangeMenu}
+                  textColor="primary"
+                  indicatorColor="primary"
+                  aria-label="secondary tabs example"
+                >
+                  <Tab value="1" label="Tiện Ích" />
+                </Tabs>
+                {value === "1" && (
+                  <UtilitiesTab
+                    handleInputSelect={handleInputUtilities}
+                    dataUtil={utilities}
+                    dataOrtherUtil={utilitiesOther}
+                    typeUtil={"update"}
+                    handleInputSelectOrther={handleInputUtilitiesOrther}
+                  />
+                )}
               </Box>
               <Box
                 sx={{

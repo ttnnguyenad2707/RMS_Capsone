@@ -83,10 +83,7 @@ const Houses = new Schema(
                 ref: "OtherUtilities",
             },
         ],
-        rules: {
-            type: [String],
-            default: [],
-        },
+        
         hostId: {
             type: Schema.ObjectId,
             ref: "Account",

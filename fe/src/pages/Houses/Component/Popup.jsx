@@ -21,6 +21,8 @@ import { ToastContainer, toast } from "react-toastify";
 import axios from "axios";
 import { fetchHouses } from "../../../reduxToolkit/HouseSlice";
 import Notification from "../../../CommonComponents/Notification";
+import InputAdornment from "@mui/material/InputAdornment";
+
 const style = {
   position: "absolute",
   top: "50%",
@@ -185,7 +187,7 @@ export default function BasicModal() {
   };
   const handleInputCostElectric = () => {
     const inputValue = inputCostElectricity.current.value;
-    if (validateInputNumber(inputValue) && inputValue != " ") {
+    if (validateInputNumber(inputValue) == true && inputValue != " ") {
       setCostElectricity(inputValue);
       setErrorCostElectric(false);
     } else {
@@ -195,7 +197,7 @@ export default function BasicModal() {
   };
   const handleInputCostWater = () => {
     const inputValue = inputCostWater.current.value;
-    if (validateInputNumber(inputValue) && inputValue != " ") {
+    if (validateInputNumber(inputValue) == true && inputValue != " ") {
       setCostWater(inputValue);
       setErrorWater(false);
     } else {
@@ -216,7 +218,7 @@ export default function BasicModal() {
   };
   const HandleSubmit = async () => {
     handleInputName();
-    handleInputAddress();
+    // handleInputAddress();
     handleInputCostElectric();
     handleInputCostWater();
     handleInputUtilities();
@@ -224,8 +226,8 @@ export default function BasicModal() {
     if (
       name !== "" &&
       address !== "" &&
-      CostElectricity !== null &&
-      CostWater !== null &&
+      typeof CostElectricity !== "undefined" &&
+      typeof CostWater !== "undefined" &&
       city !== "" &&
       county !== "" &&
       ward !== "" &&
@@ -248,12 +250,20 @@ export default function BasicModal() {
       const response = await dispatch(addHouse(setData));
       console.log(response, "response");
       if (response) {
-        await dispatch(fetchHouses());
-        Notification("Success", "Thêm Nhà", "Thành Công");
-        handleClose();
+        setErrorWater(false);
+        setErrorName(false);
+        setErrorAddress(false);
+        setErrorCostElectric(false);
+        setName("");
+        setAddress("");
+        setCostElectricity();
+        setCostWater();
         setCity("");
         setWard("");
         setCounty("");
+        await dispatch(fetchHouses());
+        Notification("Success", "Thêm Nhà", "Thành Công");
+        handleClose();
       } else {
         Notification("Error", "Thêm Nhà", "Thất Bại");
       }
@@ -284,7 +294,7 @@ export default function BasicModal() {
     return pattern.test(input);
   };
   const validateInputNumber = (input) => {
-    return !isNaN(input);
+    return !isNaN(input) && Number(input) > 0;
   };
   return (
     <div>
@@ -426,6 +436,11 @@ export default function BasicModal() {
                 sx={{ width: "50%", mr: "1%" }}
                 inputRef={inputCostElectricity}
                 error={errorCostElectric}
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">VND/kwH</InputAdornment>
+                  ),
+                }}
               />
               <TextField
                 required
@@ -435,6 +450,11 @@ export default function BasicModal() {
                 sx={{ width: "49%" }}
                 inputRef={inputCostWater}
                 error={errorCostWater}
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">VND/m³</InputAdornment>
+                  ),
+                }}
               />
             </Box>
             <Box sx={{ width: "100%", mt: "20px" }}>
@@ -446,8 +466,6 @@ export default function BasicModal() {
                 aria-label="secondary tabs example"
               >
                 <Tab value="1" label="Tiện Ích" />
-                <Tab value="2" label="Item two" />
-                <Tab value="3" label="Item Three" />
               </Tabs>
               {value === "1" && (
                 <UtilitiesTab

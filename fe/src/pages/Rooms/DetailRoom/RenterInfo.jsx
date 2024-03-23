@@ -23,7 +23,17 @@ const RenterInfo = (props) => {
         fetchRoom()
     }, [props])
     const [open, setOpen] = useState(false);
-    const handleOpen = () => setOpen(true);
+    const handleOpen = () => {
+        
+
+        if (members?.length < room?.quantityMember){
+
+            setOpen(true)
+        }
+        else{
+            Notification("Error","Phòng đã thêm đủ số lượng người")
+        }
+    };
     const handleClose = () => setOpen(false);
 
     const [openUpdate, setOpenUpdate] = useState(false);

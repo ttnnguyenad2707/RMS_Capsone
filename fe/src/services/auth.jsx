@@ -1,6 +1,6 @@
 import axios from "axios";
 import { URL_SERVER } from "../dataConfig";
-
+import Cookies from "js-cookie";
 export const loginService = async (data) => {
   return await axios.post(`${URL_SERVER}/auth/login`, data, {
     withCredentials: true,
@@ -38,5 +38,6 @@ export const updateUser = async (token,data) => {
   })
 }
 export const logout = async () => {
+  Cookies.remove("accessToken");
   return await axios.post(`${URL_SERVER}/auth/logout`)
 }

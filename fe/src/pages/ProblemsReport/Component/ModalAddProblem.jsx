@@ -20,6 +20,7 @@ import {
 import * as Yup from "yup";
 import { addProblemsInHouse } from "../../../services/problems";
 import { useSelector } from "react-redux";
+import { socket } from "../../../socket/socket";
 const style = {
   position: "absolute",
   top: "50%",
@@ -52,13 +53,14 @@ const ModalAddProblem = () => {
     // Xử lý logic khi form được submit
     console.log(values);
     try {
-    const res = await addProblemsInHouse(values)
-    console.log("res",res);
+    const res = await addProblemsInHouse(values).then((data) => {
+      socket.emit("addNotification",{message: "add"});
+    })
       toast.success("vấn đề đã được gửi đi !");
+      setOpen(false)
         
     } catch (error) {
         toast.warning(error.response.data.error);
-        console.log(error);
         
     }
 

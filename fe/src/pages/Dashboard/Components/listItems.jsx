@@ -70,10 +70,49 @@ export const mainListItems = (
         </ListItemIcon>
         <ListItemText primary="Hoá đơn" />
       </ListItemButton>
+    </Link>
+  </React.Fragment>
+);
+export const mainListItemsRenter = (
+  <React.Fragment>
+    <ListSubheader component="div" inset>
+      MENU
+    </ListSubheader>
+    <Link to={"/rooms"} style={{ textDecoration: "none", color: "inherit" }}>
+      <ListItemButton>
+        <ListItemIcon>
+          <MeetingRoomIcon />
+        </ListItemIcon>
+        <ListItemText primary="Thông Tin Phòng" />
+      </ListItemButton>
+    </Link>
+    <Link to={"/new"} style={{ textDecoration: "none", color: "inherit" }}>
+      <ListItemButton>
+        <ListItemIcon>
+          <NewspaperIcon />
+        </ListItemIcon>
+        <ListItemText primary="Bảng Tin" />
+      </ListItemButton>
+    </Link>
+
+    <Link to={"/problems"} style={{ textDecoration: "none", color: "inherit" }}>
+      <ListItemButton>
+        <ListItemIcon>
+          <NewspaperIcon />
+        </ListItemIcon>
+        <ListItemText primary="Báo Cáo Vấn Đề" />
+      </ListItemButton>
+    </Link>
+    <Link to={"/bill"} style={{ textDecoration: 'none', color: 'inherit' }}>
+      <ListItemButton>
+        <ListItemIcon>
+          <NewspaperIcon />
+        </ListItemIcon>
+        <ListItemText primary="Hoá đơn" />
+      </ListItemButton>
     </Link>    
   </React.Fragment>
 );
-
 export const secondaryListItems = (
   <React.Fragment>
     <ListSubheader component="div" inset>
@@ -91,17 +130,19 @@ export const secondaryListItems = (
       </ListItemIcon>
       <ListItemText primary="Thống kê tài chính" />
     </ListItemButton>
-    <ListItemButton>
-      <ListItemIcon>
-        <ManageAccountsIcon />
-      </ListItemIcon>
-      <ListItemText primary="Tài khoản" />
-    </ListItemButton>
+    <Link to="/profile" style={{ textDecoration: 'none', color: 'inherit' }}>
+      <ListItemButton>
+        <ListItemIcon>
+          <ManageAccountsIcon />
+        </ListItemIcon>
+        <ListItemText primary="Tài khoản" />
+      </ListItemButton>
+    </Link>
     <ListItemButton>
       <ListItemIcon>
         <HelpIcon />
       </ListItemIcon>
       <ListItemText primary="Trợ giúp" />
     </ListItemButton>
-  </React.Fragment>
+  </React.Fragment >
 );

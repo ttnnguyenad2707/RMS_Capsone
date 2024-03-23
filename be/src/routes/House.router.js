@@ -37,6 +37,8 @@ HouseRoute.post("/room/:roomId/member",parserCloudinary.single('avatar'),RoomCon
 HouseRoute.put("/room/:roomId/delete/member",RoomController.removeMember)
 HouseRoute.put("/room/:roomId/member",parserCloudinary.single('avatar'),RoomController.updateMember)
 HouseRoute.put("/room/:roomId",RoomController.updateOne)
+HouseRoute.put("/:houseId/addPriceItem",HouseController.addPriceItem)
+HouseRoute.put("/:houseId/removePriceItem/:priceItemId",HouseController.removePriceItem)
 HouseRoute.get("/:houseId/room",RoomController.getRooms)
 HouseRoute.delete("/room/:roomId",RoomController.deletedOne)
 HouseRoute.get("/:houseId",HouseController.getOne)

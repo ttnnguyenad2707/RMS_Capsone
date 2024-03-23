@@ -15,7 +15,7 @@ import Paper from '@mui/material/Paper';
 import { Field, Form, Formik } from "formik";
 import { convertStringToNumber, formatMoney } from "../../../Utils";
 import FormControl from '@mui/material/FormControl';
-import { addBill } from "../../../services/bill";
+import { addBill, getDebt } from "../../../services/bill";
 import Notification from "../../../CommonComponents/Notification";
 
 
@@ -30,16 +30,23 @@ const style = {
 };
 
 const ModalBillCreate = ({ open, handleClose, roomId }) => {
-    const [room, setRoom] = useState({});
+    const [room, setRoom] = useState();
     const [dateValue, setDateValue] = useState('');
-
+    const [debt,setDebt] = useState()
     useEffect(() => {
+        let isMounted = true;
         async function fetchData() {
             getOneRoom(roomId).then(data => {
                 setRoom(data.data.data);
             })
+            getDebt(roomId).then(data => {
+                setDebt(data.data.data)
+            })
         }
         fetchData();
+        return () => {
+            isMounted = false; 
+        };
     }, [roomId])
     useEffect(() => {
         const now = new Date();
@@ -56,8 +63,8 @@ const ModalBillCreate = ({ open, handleClose, roomId }) => {
             const itemPriceToAdd = {
                 base: priceItem.base,
                 unitPrice: priceItem.price,
-                startUnit: values[startUnitKey],
-                endUnit: values[endUnitKey],
+                startUnit: values[startUnitKey] || 0,
+                endUnit: values[endUnitKey] || 0,
 
             }
             priceListToAdd.push(itemPriceToAdd);
@@ -98,16 +105,34 @@ const ModalBillCreate = ({ open, handleClose, roomId }) => {
         }
     };
 
-    const handleTotal = (values,setFieldValue)=> {
-        console.log(convertStringToNumber(values[`total-1`]))
+    const handleTotal = (values, setFieldValue) => {
+        console.log(values[`total-3`]);
+        // console.log(convertStringToNumber(values[`total-1`]))
 
-        const total = room?.houseId?.priceList?.reduce((init,item,index) => {
-            const totalUnit = convertStringToNumber(values[`total-${index}`]) || 0;
-            return init + totalUnit;
-        },0)
-        setFieldValue('total',formatMoney(total + room?.roomPrice))
+        const total = room?.houseId?.priceList?.reduce((init, item, index) => {
+            if (item.base.unit === "đồng/người"){
+                const totalUnit = item.price * room.members.length
+                return init + totalUnit
+            } else if (item.base.unit === "đồng/tháng"){
+                const totalUnit = item.price
+                return init + totalUnit
+            }
+            else{
+
+                const totalUnit = convertStringToNumber(values[`total-${index}`]) || 0;
+                return init + totalUnit;
+            }
+        }, 0)
+        setFieldValue('total', formatMoney(total + room?.roomPrice))
+    }
+
+    if (!room) {
+        return (
+            <></>
+        )
     }
     
+
     return (
         <Modal
             open={open}
@@ -192,6 +217,7 @@ const ModalBillCreate = ({ open, handleClose, roomId }) => {
                                                                 min="0"
                                                                 name={`startUnit-${index}`}
                                                                 onBlur={() => handleCalculateTotal(index, values, setFieldValue, priceItem?.price)}
+                                                                disabled={!(priceItem?.base?.unit === "đồng/khối" || priceItem?.base?.unit === "đồng/kWh")}
                                                             />
                                                         </TableCell>
                                                         <TableCell align="left">
@@ -202,15 +228,27 @@ const ModalBillCreate = ({ open, handleClose, roomId }) => {
                                                                 min="0"
                                                                 name={`endUnit-${index}`}
                                                                 onBlur={() => handleCalculateTotal(index, values, setFieldValue, priceItem?.price)}
+                                                                disabled={!(priceItem?.base?.unit === "đồng/khối" || priceItem?.base?.unit === "đồng/kWh")}
                                                             />
                                                         </TableCell>
                                                         <TableCell align="left">
-                                                            <Field 
-                                                                type="text" 
-                                                                id={`total-${index}`}
-                                                                name={`total-${index}`}
-                                                                disabled={true}
-                                                            />
+                                                            {(priceItem?.base?.unit === "đồng/khối" || priceItem?.base?.unit === "đồng/kWh") ? (
+
+                                                                <Field
+                                                                    type="text"
+                                                                    id={`total-${index}`}
+                                                                    name={`total-${index}`}
+                                                                    disabled={true}
+                                                                />
+                                                            ) : (
+                                                                <Field
+                                                                    type="text"
+                                                                    id={`total-${index}`}
+                                                                    name={`total-${index}`}
+                                                                    disabled={true}
+                                                                    value={priceItem?.base?.unit === "đồng/tháng" ? formatMoney(priceItem?.price) : (priceItem?.base?.unit === "đồng/người" ? formatMoney((priceItem?.price * room?.members.length)) : "")}
+                                                                />
+                                                            )}
                                                         </TableCell>
                                                     </TableRow>
                                                 ))}
@@ -219,9 +257,13 @@ const ModalBillCreate = ({ open, handleClose, roomId }) => {
                                                     <TableCell align="left">{formatMoney(room?.roomPrice)}</TableCell>
                                                 </TableRow>
                                                 <TableRow>
+                                                    <TableCell colSpan={6}><Typography sx={{ fontWeight: 600 }}>Tiền Nợ</Typography> </TableCell>
+                                                    <TableCell align="left">{formatMoney(debt)}</TableCell>
+                                                </TableRow>
+                                                <TableRow>
                                                     <TableCell colSpan={5}><Typography sx={{ fontWeight: 600 }}>Tổng tiền</Typography> </TableCell>
-                                                    <TableCell colSpan={1}><Button variant="outlined" onClick={() => handleTotal(values,setFieldValue)}>Tính tổng</Button> </TableCell>
-                                                    
+                                                    <TableCell colSpan={1}><Button variant="outlined" onClick={() => handleTotal(values, setFieldValue)}>Tính tổng</Button> </TableCell>
+
                                                     <TableCell align="left">
                                                         <Field
                                                             type="text"

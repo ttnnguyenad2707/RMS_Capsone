@@ -58,6 +58,7 @@ const RoomList = ({ house }) => {
     }
     const handleClose = () => {
         setOpen(false)
+        setRoomIdSelect(null);
     }
     const handleOpenBill = (id) => {
         setRoomIdSelect(id);
@@ -66,6 +67,7 @@ const RoomList = ({ house }) => {
     }
     const handleCloseBill = () => {
         setOpenBill(false)
+        setRoomIdSelect(null);
     }
     const handleAccordionChange = (id) => {
         setExpanded(prevState => ({
@@ -184,7 +186,9 @@ const RoomList = ({ house }) => {
                             mt: 3
                         }}>
                             <Button variant="contained" onClick={() => handleOpen(room._id)}>Thông tin phòng</Button>
-                            <Button variant="contained" color="warning" onClick={() => handleOpenBill(room._id)}>Tạo hoá đơn</Button>
+                            {room?.members?.length === 0 ? "" : (
+                                <Button variant="contained" color="warning" onClick={() => handleOpenBill(room._id)}>Tạo hoá đơn</Button>
+                            )}
 
                         </Box>
                     </AccordionDetails>

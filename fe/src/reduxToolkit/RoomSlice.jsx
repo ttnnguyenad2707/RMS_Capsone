@@ -1,5 +1,10 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { GetRooms, AddRoomsFileService, AddRoom } from "../services/houses";
+import {
+  GetRooms,
+  AddRoomsFileService,
+  AddRoom,
+  getOneRoom,
+} from "../services/houses";
 // Action async gọi API để lấy danh sách nhà
 export const fetchRooms = createAsyncThunk(
   "rooms/fetchRooms",
@@ -24,6 +29,13 @@ export const addOneRoom = createAsyncThunk(
   async ({ setData, houseId }) => {
     const response = await AddRoom(setData, houseId);
     return response.data.message;
+  }
+);
+export const getOneRoomRedux = createAsyncThunk(
+  "rooms/getOneRoom",
+  async ({ roomsId }) => {
+    const response = await getOneRoom(roomsId);
+    return response.data.data;
   }
 );
 const roomSlice = createSlice({
@@ -64,6 +76,17 @@ const roomSlice = createSlice({
         state.status = "loading";
       })
       .addCase(addOneRoom.rejected, (state, action) => {
+        state.status = "failed";
+        state.error = action.error.message;
+      })
+      .addCase(getOneRoomRedux.fulfilled, (state, action) => {
+        state.status = "succeeded";
+        state.rooms = action.payload;
+      })
+      .addCase(getOneRoomRedux.pending, (state) => {
+        state.status = "loading";
+      })
+      .addCase(getOneRoomRedux.rejected, (state, action) => {
         state.status = "failed";
         state.error = action.error.message;
       });

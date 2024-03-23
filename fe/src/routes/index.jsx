@@ -10,6 +10,7 @@ import RenterProblem from "../pages/ProblemsReport/RenterProblem";
 import News from "../pages/News/News";
 import BillSuccess from "../pages/Bill/BillSuccess";
 import ListBill from "../pages/Bill/ListBill";
+import Page404 from "../CommonComponents/Page404";
 export const appRoutes = createBrowserRouter([
   {
     path: "",
@@ -42,12 +43,12 @@ export const appRoutes = createBrowserRouter([
       },
       {
         path: "/bill/:billId",
-        element: <BillSuccess/>
+        element: <BillSuccess />,
       },
       {
         path: "/bill",
-        element: <ListBill/>
-      }
+        element: <ListBill />,
+      },
     ],
   },
 
@@ -58,5 +59,9 @@ export const appRoutes = createBrowserRouter([
   {
     path: "/register",
     element: <SignUp />,
+  },
+  {
+    path: "/404",
+    element: <Page404 />,
   },
 ]);
