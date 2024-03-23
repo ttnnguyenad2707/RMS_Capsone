@@ -33,6 +33,7 @@ export default function News() {
   const [isLoading, setIsLoading] = useState(false);
   const [dataNews, setDataNews] = useState();
   const news = useSelector((state) => state.new.news);
+  const userData = useSelector((state) => state.user.data);
   const dispatch = useDispatch();
   React.useEffect(() => {
     const id = selectedHouseId;
@@ -47,6 +48,7 @@ export default function News() {
   };
 
   const updateNews = (data) => {
+    console.log(data, "data");
     if (data) {
       setDataNews(data);
       setTypeModal("Update");
@@ -60,6 +62,7 @@ export default function News() {
         if (result) {
           const response = await dispatch(deleteNews({ idNews }));
           if (response.payload === "Success") {
+            const id = selectedHouseId;
             Notification("Success", "Đã Xóa", "Tin Tức Thành Công");
             dispatch(fetchNews({ id }));
           } else {
@@ -77,20 +80,21 @@ export default function News() {
     setDataNews([]);
     handleOpen();
   };
+
+  // // Khai báo state
+  // const [anchorEl, setAnchorEl] = useState(null);
+
+  // // Xử lý sự kiện mở menu
+  // const handleMenuOpen = (event) => {
+  //   setAnchorEl(event.currentTarget);
+  // };
+
+  // // Xử lý sự kiện đóng menu
+  // const handleMenuClose = () => {
+  //   setAnchorEl(null);
+  // };
+  console.log(userData, "userData");
   console.log(news, "news");
-
-  // Khai báo state
-  const [anchorEl, setAnchorEl] = useState(null);
-
-  // Xử lý sự kiện mở menu
-  const handleMenuOpen = (event) => {
-    setAnchorEl(event.currentTarget);
-  };
-
-  // Xử lý sự kiện đóng menu
-  const handleMenuClose = () => {
-    setAnchorEl(null);
-  };
   return (
     <>
       {isLoading ? (
@@ -147,19 +151,18 @@ export default function News() {
             </Paper>
           </Grid>
           {news.data ? (
-            news.data.map((n, index) => (
-              <Grid
-                item
-                xs={12}
-                md={7}
-                lg={8}
-                sx={{
-                  backgroundColor: "#F1F2F7",
-                  margin: "auto",
-                  mt: 3,
-                }}
-                key={index}
-              >
+            <Grid
+              item
+              xs={12}
+              md={7}
+              lg={8}
+              sx={{
+                backgroundColor: "#F1F2F7",
+                margin: "auto",
+              }}
+              // key={index}
+            >
+              {news.data.map((ne, index) => (
                 <Paper
                   sx={{
                     p: 2,
@@ -167,46 +170,45 @@ export default function News() {
                     flexDirection: "column",
                     height: "auto",
                     borderRadius: "18px ",
+                    marginTop: "20px",
                   }}
+                  key={index}
                 >
-                  {/* <Chart /> */}
                   <div style={{ display: "flex", alignItems: "center" }}>
                     <p style={{ marginRight: "10px" }}>
-                      <b>{n.authorId.name}</b>
+                      <b className="fs-3">{ne.authorId.name}</b>
                     </p>
-                    <p>{n.createdAt}</p>
-                    <div style={{ marginLeft: "auto", marginTop: "-5px" }}>
-                      <IconButton
-                        aria-controls="menu"
-                        aria-haspopup="true"
-                        onClick={handleMenuOpen}
+                    <p>{ne.createdAt}</p>
+                    {ne.authorId.email === userData.email ? (
+                      <div
+                        className="d-flex gap-2 "
+                        style={{ marginLeft: "auto", marginTop: "-5px" }}
                       >
-                        <MoreHorizIcon />
-                      </IconButton>
-                      <Menu
-                        id="menu"
-                        anchorEl={anchorEl}
-                        keepMounted
-                        open={Boolean(anchorEl)}
-                        onClose={handleMenuClose}
-                      >
-                        <MenuItem onClick={() => updateNews(n)}>
+                        <Button
+                          variant="contained"
+                          color="primary"
+                          onClick={() => updateNews(ne)}
+                        >
                           Cập Nhật
-                        </MenuItem>
-                        <MenuItem onClick={() => handleDeleteNews(n._id)}>
+                        </Button>
+                        <Button
+                          variant="contained"
+                          color="primary"
+                          onClick={() => handleDeleteNews(ne._id)}
+                        >
                           Xóa
-                        </MenuItem>
-                      </Menu>
-                    </div>
+                        </Button>
+                      </div>
+                    ) : null}
                   </div>
-                  <p>{n.content}</p>
+                  <p>{ne.content}</p>
                   <Box
                     sx={{ width: "100%" }}
                     className="d-flex justify-content-center mb-4 mt-4"
                   >
-                    {n.images.length > 0 ? (
+                    {ne.images.length > 0 ? (
                       <img
-                        src={n.images[0]}
+                        src={ne.images[0]}
                         alt="Image"
                         style={{ width: "45%" }}
                       />
@@ -214,15 +216,19 @@ export default function News() {
                   </Box>
                   <div>
                     <Box sx={{ display: "flex", gap: "10px" }}>
-                      <Button variant="outlined" onClick={() => commentNews(n)}>
+                      <Button
+                        variant="contained"
+                        color="primary"
+                        onClick={() => commentNews(ne)}
+                      >
                         <ChatBubbleOutlineIcon fontSize="small"></ChatBubbleOutlineIcon>{" "}
                         Bình Luận
                       </Button>
                     </Box>
                   </div>
                 </Paper>
-              </Grid>
-            ))
+              ))}
+            </Grid>
           ) : (
             <p className="h3">Không có tin tức </p>
           )}

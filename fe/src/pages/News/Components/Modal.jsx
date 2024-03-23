@@ -59,7 +59,6 @@ const ModalNews = ({ handleClose, open, typeModal, houseID, dataNews }) => {
         `https://api.cloudinary.com/v1_1/${cloud_name}/image/upload`,
         formData
       );
-      console.log(res_data.data.url);
       const data = {
         url: res_data.data.url,
         caption: "anh1",
@@ -105,13 +104,9 @@ const ModalNews = ({ handleClose, open, typeModal, houseID, dataNews }) => {
   // Get data to update news
   React.useEffect(() => {
     if (typeModal === "Update" && dataNews) {
-      if (inputContent.current && dataNews.content) {
-        const initialContent = dataNews.content;
-        inputContent.current.value = initialContent;
-      }
       setImageSrc(dataNews.images);
     }
-  }, [dataNews, typeModal, inputContent.current]);
+  }, [dataNews]);
   // add news
   const handleInputName = async () => {
     const inputValue = inputContent.current.value;
@@ -123,7 +118,6 @@ const ModalNews = ({ handleClose, open, typeModal, houseID, dataNews }) => {
         images: image_src,
       };
       const response = await dispatch(addNews({ data }));
-      console.log(response, "há");
       if (response.payload === "Created") {
         const id = houseID;
         dispatch(fetchNews({ id }));
@@ -177,6 +171,11 @@ const ModalNews = ({ handleClose, open, typeModal, houseID, dataNews }) => {
     const newlistImages = image_src.filter((image) => image !== imageDelete);
     setImageSrc(newlistImages);
   };
+  // if (inputContent.current && dataNews.content) {
+  //   const initialContent = dataNews.content;
+  //   inputContent.current.value = initialContent;
+  // }
+  console.log(image_src, "image_src");
   if (typeModal === "Add") {
     return (
       <Modal
@@ -375,7 +374,9 @@ const ModalNews = ({ handleClose, open, typeModal, houseID, dataNews }) => {
                 id="inputArea"
                 className="areastyle"
                 ref={inputContent}
-              ></textarea>
+              >
+                {dataNews.content}
+              </textarea>
             </Box>
             <div className="d-flex flex-column gap-2">
               <h5>Thêm ảnh vào bài viết của bạn</h5>
@@ -400,13 +401,19 @@ const ModalNews = ({ handleClose, open, typeModal, houseID, dataNews }) => {
                   </ImageList>
                 ) : null}
               </Box>
+              {isLoading ? (
+                <div className="text-center">
+                  <LinearProgress />
+                  <p>Loading...</p>
+                </div>
+              ) : null}
               <div className="d-flex gap-3">
                 <input
                   type="file"
                   accept="image/*"
                   className="form-control"
                   id="thumbnail"
-                  onChange={handleImageUpload}
+                  onChange={() => handleImageUpload}
                   ref={fileRef}
                 />
                 <button className="btn btn-primary" onClick={handleUpload}>
