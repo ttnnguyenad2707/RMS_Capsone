@@ -12,18 +12,15 @@ import {
   TableRow,
   Paper,
 } from "@mui/material";
-import ModalUpdateProblem from "../pages/ProblemsReport/Component/ModalUpdateProblem";
+import ModalUpdateProblemByHost from "../pages/ProblemsReport/Component/ModalUpdateProblemByHost";
 import { getProblemsInHouse } from "../services/problems";
 // import { useSelector } from "react-redux";
 
-const TableData = ({ data, setDataSelect, deleteData,userData }) => {
-  // const userData = useSelector((state) => state.user.data); //state là rootReducer trong store ,counter cái tên đăng kí trong rootReducer
-  // const [isLoading, setIsLoading] = useState(true);
+const TableData = ({ data, setDataSelect, deleteData, userData }) => {
 
-  if (data.length === 0) {
+  if (data?.length === 0) {
     return <Typography>No data available</Typography>;
   }
-  // const [status, setStatus] = useState(""); // Giá trị ban đầu của Status
   const [displayData, setDisplayData] = useState(data);
   const handleStatusUpdate = (datares) => {
     console.log("problemsId", datares._id);
@@ -33,13 +30,19 @@ const TableData = ({ data, setDataSelect, deleteData,userData }) => {
       )
     );
   };
-  // console.log("status cha", status);
-  // useEffect(() => {
-  //   setDisplayData(displayData);
 
-  // }, [status]);
-
-
+  const convertStatusToVietnamese = (status) => {
+    switch (status) {
+      case "done":
+        return "Đã giải quyết";
+      case "pending":
+        return "Đang chờ giải quyết";
+      case "doing":
+        return "Đang xử lý vấn đề";
+      default:
+        return "Chưa tiếp nhận";
+    }
+  };
 
   return (
     <TableContainer component={Paper}>
@@ -47,44 +50,39 @@ const TableData = ({ data, setDataSelect, deleteData,userData }) => {
         <TableHead>
           <TableRow>
             <TableCell>STT</TableCell>
-            {Object.keys(displayData[0]).map(
+            {/* {Object?.keys(displayData[0]).map(
               (key) => key !== "id" && key !== "Creator" && <TableCell key={key}>{key}</TableCell>
-            )}
-            <TableCell>Action</TableCell>
+            )} */}
+            <TableCell>Tiêu Đề</TableCell>
+            <TableCell>Nội Dung</TableCell>
+            <TableCell>Trạng Thái</TableCell>
+            <TableCell>Phòng</TableCell>
+            <TableCell>Hành Động</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
           {displayData?.map((row, index) => (
             <TableRow key={index}>
               <TableCell key={index}>{index + 1}</TableCell>
-              {Object.keys(row).map(
-                (key, index) =>
-                  key !== "id" &&  key !== "Creator" && <TableCell key={index}>{row[key]}</TableCell>
-              )}
+              {Object.keys(row).map((key, index) => {
+                if (key !== "id" && key !== "Creator") {
+                  let cellContent = row[key];
+                  if (key === "Status") {
+                    cellContent = convertStatusToVietnamese(row[key]);
+                  }
+                  return <TableCell key={index}>{cellContent}</TableCell>;
+                }
+              })}
+
               <TableCell key={index}>
                 <Stack spacing={2} direction="row">
                   {/* <Button variant="outlined" onClick={() => updateData(row.id)}>Update</Button> */}
-                  <ModalUpdateProblem
+                  <ModalUpdateProblemByHost
                     problemsId={row.id}
                     Room={row.Room}
                     Status={row.Status}
                     onUpdateStatus={handleStatusUpdate}
                   />
-
-                  {userData?.accountType == "host" ? (
-                    ""
-                  ) : (
-                    <>
-                      {" "}
-                      <Button
-                        variant="outlined"
-                        onClick={() => deleteData(row.id)}
-                      >
-                        {" "}
-                        Delete
-                      </Button>
-                    </>
-                  )}
                 </Stack>
               </TableCell>
             </TableRow>

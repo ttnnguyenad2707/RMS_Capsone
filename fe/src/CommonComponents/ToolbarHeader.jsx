@@ -148,6 +148,7 @@ export default function ToolbarHeader() {
       setIsLoading(false);
     }
   }, [userData]);
+  console.log("userData",userData);
   const handleLogout = () => {
     logout();
     Cookies.remove("accessToken");
@@ -313,7 +314,7 @@ export default function ToolbarHeader() {
                   {/* spacing={number}   <Grid> sẽ chứa các phần tử con và có khoảng cách (spacing)
                  là number đơn vị giữa các phần tử con  */}
 
-                  <Outlet></Outlet>
+                  <Outlet ></Outlet>
                   {/* Chart
                   <Grid item xs={12} md={8} lg={9}>
                     <Paper
