@@ -16,24 +16,32 @@ import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import dayjs from "dayjs";
 import "dayjs/locale/vi";
+import { statisticBills } from "../../../services/statistic";
+import { AiOutlineLoading3Quarters } from "react-icons/ai";
+import { formatMoney } from "../../../Utils";
+
 const PaymentTracking = () => {
-  const [month, setMonth] = React.useState();
-  const [year, setYear] = React.useState();
-  dayjs.locale("vi"); // Thiết lập ngôn ngữ tiếng Việt cho dayjs
-  const data = [
-    {
-      category: "Tổng số hóa đơn đã thanh toán",
-      numberBill: 0,
-      totalBill: 0,
-    },
-    {
-      category: "Tổng số hóa đơn chưa thanh toán hết",
-      numberBill: 0,
-      totalBill: 0,
-    },
-  ];
-  console.log(year, "year");
-  console.log(month, "month");
+  const [month, setMonth] = React.useState(`${dayjs().$M+1}-${dayjs().$y}`);
+  const [statistic, setStatistic] = React.useState()
+  const [isLoading,setIsLoading] = React.useState(true)
+  dayjs.locale("vi");
+
+  React.useEffect(() => {
+    async function fetchStatisticBills() {
+      setIsLoading(true)
+      const query = {
+        month: month
+      }
+      statisticBills(query).then(data => {
+        setStatistic(data.data.data);
+        setIsLoading(false)
+      }).catch(error => {
+        console.log(error.response);
+      })
+    }
+    fetchStatisticBills()
+  }, [month])
+  console.log(month);
   return (
     <Box>
       <Box>
@@ -49,17 +57,13 @@ const PaymentTracking = () => {
       <Box className="d-flex mt-5">
         <LocalizationProvider dateAdapter={AdapterDayjs}>
           <DemoContainer components={["DatePicker", "DatePicker"]}>
-            <DatePicker
-              label="Chọn năm"
-              views={["year"]}
-              openTo="year"
-              onChange={(newValue) => setYear(newValue.$y)}
-            />
+
             <DatePicker
               label="Chọn tháng"
-              views={["month"]}
+              views={["year", "month"]}
               openTo="month"
-              onChange={(newValue) => setMonth(newValue.$M+1)}
+              defaultValue={dayjs()}
+              onChange={(newValue) => setMonth(`${newValue.$M + 1}-${newValue.$y}`)}
             />
           </DemoContainer>
         </LocalizationProvider>
@@ -80,13 +84,16 @@ const PaymentTracking = () => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {data.map((item, index) => (
-              <TableRow key={index}>
-                <TableCell className="fs-5">{item.category}</TableCell>
-                <TableCell className="fs-5">{item.numberBill}</TableCell>
-                <TableCell className="fs-5">{item.totalBill}</TableCell>
+              <TableRow >
+                <TableCell className="fs-5">Tổng hoá đơn đã thanh toán </TableCell>
+                <TableCell className="fs-5">{isLoading === true ? (<AiOutlineLoading3Quarters/>)  : statistic?.billIsPaid}</TableCell>
+                <TableCell className="fs-5">{isLoading === true ? (<AiOutlineLoading3Quarters/>)  : formatMoney(statistic?.totalBillIsPaid)}</TableCell>
               </TableRow>
-            ))}
+              <TableRow >
+                <TableCell className="fs-5">Tổng hoá đơn chưa thanh toán </TableCell>
+                <TableCell className="fs-5">{isLoading === true ? (<AiOutlineLoading3Quarters/>)  : statistic?.billIsNotPaid}</TableCell>
+                <TableCell className="fs-5">{isLoading === true ? (<AiOutlineLoading3Quarters/>)  : formatMoney(statistic?.totalBillIsNotPaid)}</TableCell>
+              </TableRow>
           </TableBody>
         </Table>
       </TableContainer>

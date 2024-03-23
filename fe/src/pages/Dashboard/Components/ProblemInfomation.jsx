@@ -10,22 +10,23 @@ import {
 } from "@mui/material";
 import Typography from "@mui/material/Typography";
 import * as React from "react";
+import { statisticProblem } from "../../../services/statistic";
+import { AiOutlineLoading3Quarters } from "react-icons/ai";
 
 const ProblemInfomation = () => {
-  const data = [
-    {
-      category: "Số sự cố mới",
-      incidentNumber: 0,
-    },
-    {
-      category: "Số sự cố đang xử lý",
-      incidentNumber: 0,
-    },
-    {
-      category: "Số sự cố hoàn thành",
-      incidentNumber: 0,
-    },
-  ];
+  const [statistic, setStatistic] = React.useState()
+  const [isLoading,setIsLoading] = React.useState(true)
+
+  React.useEffect(() => {
+    async function fetchStatisticProblems(){
+      statisticProblem().then(data => {
+        setIsLoading(false);
+        setStatistic(data.data.data)
+      })
+
+    }
+    fetchStatisticProblems()
+  },[])
   return (
     <Box>
       <Box>
@@ -51,12 +52,18 @@ const ProblemInfomation = () => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {data.map((item, index) => (
-              <TableRow key={index}>
-                <TableCell className="fs-5">{item.category}</TableCell>
-                <TableCell className="fs-5">{item.incidentNumber}</TableCell>
+              <TableRow >
+                <TableCell className="fs-5">Sự cố mới</TableCell>
+                <TableCell className="fs-5">{isLoading === true ? (<AiOutlineLoading3Quarters/>) : statistic?.numberProblemNone}</TableCell>
               </TableRow>
-            ))}
+              <TableRow >
+                <TableCell className="fs-5">Sự cố đang xử lý</TableCell>
+                <TableCell className="fs-5">{isLoading === true ? (<AiOutlineLoading3Quarters/>) : statistic?.numberProblemDoing}</TableCell>
+              </TableRow>
+              <TableRow >
+                <TableCell className="fs-5">Sự cố đã hoàn thành</TableCell>
+                <TableCell className="fs-5">{isLoading === true ? (<AiOutlineLoading3Quarters/>) : statistic?.numberProblemDone}</TableCell>
+              </TableRow>
           </TableBody>
         </Table>
       </TableContainer>
