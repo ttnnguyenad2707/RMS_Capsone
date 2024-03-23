@@ -96,7 +96,7 @@ const ModalNews = ({ handleClose, open, typeModal, houseID, dataNews }) => {
     top: "50%",
     left: "50%",
     transform: "translate(-50%, -50%)",
-    width: 700,
+    width: "50%",
     height: "80%",
     bgcolor: "background.paper",
     border: "2px solid #grey",
@@ -203,22 +203,22 @@ const ModalNews = ({ handleClose, open, typeModal, houseID, dataNews }) => {
         aria-labelledby="parent-modal-title"
         aria-describedby="parent-modal-description"
       >
-        <Box sx={{ width: 400 }} sx={style}>
+        <Box sx={style}>
           <Box sx={stylesHeader}>
-            <p className="h3">Tạo Bài Viết</p>
+            <p className="h3 fw-bold">Tạo Bài Viết</p>
           </Box>
           <hr />
           <Box sx={{ py: 2 }}>
             <p>
               <p>
-                <b>{userData.name}</b>
+                <b className="fs-3">{userData.name}</b>
               </p>
             </p>
             <textarea
               name=""
               id=""
               rows={3} // Số dòng hiển thị ban đầu (có thể điều chỉnh)
-              placeholder="Bạn đang nghĩ gì thế?"
+              placeholder="Có tin gì mới thế?"
               className="areastyle"
               ref={inputContent}
               style={{ width: "100%" }}
@@ -295,16 +295,16 @@ const ModalNews = ({ handleClose, open, typeModal, houseID, dataNews }) => {
         aria-labelledby="parent-modal-title"
         aria-describedby="parent-modal-description"
       >
-        <Box sx={{ width: 400 }} sx={style}>
+        <Box sx={style}>
           <Box sx={stylesHeader}>
-            <p className="h3">Bài Viết</p>
+            <p className="h3 fw-bold">Bài Viết</p>
           </Box>
           <hr />
           <Box className="d-flex flex-column">
             <p>
-              <b>{dataNews.authorId.name}</b>
+              <b  className="fs-3" >{dataNews.authorId.name}</b>
             </p>
-            <p>{dataNews.content}</p>
+            <p className="fs-4">{dataNews.content}</p>
           </Box>
           <Box>
             {dataNews.images.length >= 0 ? (
@@ -378,7 +378,7 @@ const ModalNews = ({ handleClose, open, typeModal, houseID, dataNews }) => {
         aria-labelledby="parent-modal-title"
         aria-describedby="parent-modal-description"
       >
-        <Box sx={{ width: 400 }} sx={style}>
+        <Box sx={style}>
           <Box sx={stylesHeader}>
             <p className="h3">Cập Nhật Bài Viết</p>
             {/* <IconButton
@@ -395,14 +395,15 @@ const ModalNews = ({ handleClose, open, typeModal, houseID, dataNews }) => {
           <hr />
           <Box>
             <p>
-              <b>{dataNews.authorId.name}</b>
+              <b  className="fs-3">{dataNews.authorId.name}</b>
             </p>
             <Box className="position-relative">
               <textarea
                 name=""
                 id="inputArea"
-                className="areastyle"
+                className="areastyle fs-4"
                 ref={inputContent}
+
               >
                 {dataNews.content}
               </textarea>
