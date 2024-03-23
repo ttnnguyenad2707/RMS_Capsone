@@ -8,6 +8,7 @@ import {
   addNews,
   updateNews,
 } from "../../../reduxToolkit/NewsSlice";
+import CloseIcon from "@mui/icons-material/Close";
 import { useDispatch, useSelector } from "react-redux";
 import { v4 as uuidv4 } from "uuid";
 import axios from "axios";
@@ -20,7 +21,7 @@ import CancelIcon from "@mui/icons-material/Cancel";
 import ImageList from "@mui/material/ImageList";
 import ImageListItem from "@mui/material/ImageListItem";
 import LinearProgress from "@mui/material/LinearProgress";
-
+import IconButton from "@mui/material/IconButton";
 import "../scss/modal.scss";
 const ModalNews = ({ handleClose, open, typeModal, houseID, dataNews }) => {
   const comments = useSelector((state) => state.comment.comments);
@@ -33,12 +34,29 @@ const ModalNews = ({ handleClose, open, typeModal, houseID, dataNews }) => {
   const dispatch = useDispatch();
   const fileRef = React.useRef();
   const inputContent = React.useRef();
+  const userData = useSelector((state) => state.user.data);
   const handleImageUpload = async (event) => {
     const files = event.target.files;
     const selectedImagesArray = Array.from(files);
     setSelectedImages(selectedImagesArray);
   };
-
+  // const handleTimeoutAction = () => {
+  //   if (isLoading === true) {
+  //     Notification(
+  //       "Error",
+  //       "Thêm ảnh thất bại do",
+  //       "thời gian phản hồi quá lâu"
+  //     );
+  //     setIsLoading(false);
+  //   }
+  // };
+  // React.useEffect(() => {
+  //   if (isLoading === true) {
+  //     setTimeout(() => {
+  //       handleTimeoutAction();
+  //     }, 10000);
+  //   }
+  // }, [isLoading]);
   const handleUpload = async (e) => {
     setIsLoading(true);
     e.preventDefault();
@@ -103,8 +121,10 @@ const ModalNews = ({ handleClose, open, typeModal, houseID, dataNews }) => {
   }, [dataNews]);
   // Get data to update news
   React.useEffect(() => {
-    if (typeModal === "Update" && dataNews) {
+    if (typeModal === "Update") {
       setImageSrc(dataNews.images);
+    } else if (typeModal === "Add") {
+      setImageSrc([]);
     }
   }, [dataNews]);
   // add news
@@ -175,7 +195,6 @@ const ModalNews = ({ handleClose, open, typeModal, houseID, dataNews }) => {
   //   const initialContent = dataNews.content;
   //   inputContent.current.value = initialContent;
   // }
-  console.log(image_src, "image_src");
   if (typeModal === "Add") {
     return (
       <Modal
@@ -192,7 +211,7 @@ const ModalNews = ({ handleClose, open, typeModal, houseID, dataNews }) => {
           <Box sx={{ py: 2 }}>
             <p>
               <p>
-                <b>...</b>
+                <b>{userData.name}</b>
               </p>
             </p>
             <textarea
@@ -362,6 +381,16 @@ const ModalNews = ({ handleClose, open, typeModal, houseID, dataNews }) => {
         <Box sx={{ width: 400 }} sx={style}>
           <Box sx={stylesHeader}>
             <p className="h3">Cập Nhật Bài Viết</p>
+            {/* <IconButton
+              sx={{ position: "absolute", right: "10px" }}
+              onClick={() => {
+                inputContent.current.value = "";
+                setImageSrc([]);
+                handleClose();
+              }}
+            >
+              <CloseIcon />
+            </IconButton> */}
           </Box>
           <hr />
           <Box>
@@ -413,7 +442,7 @@ const ModalNews = ({ handleClose, open, typeModal, houseID, dataNews }) => {
                   accept="image/*"
                   className="form-control"
                   id="thumbnail"
-                  onChange={() => handleImageUpload}
+                  onChange={handleImageUpload}
                   ref={fileRef}
                 />
                 <button className="btn btn-primary" onClick={handleUpload}>

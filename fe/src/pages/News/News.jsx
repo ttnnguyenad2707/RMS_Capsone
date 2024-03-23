@@ -31,7 +31,7 @@ export default function News() {
   const [selectedHouseId, setSelectedHouseId] = useState();
   const [typeModal, setTypeModal] = React.useState();
   const [isLoading, setIsLoading] = useState(false);
-  const [dataNews, setDataNews] = useState();
+  const [dataNews, setDataNews] = useState({});
   const news = useSelector((state) => state.new.news);
   const userData = useSelector((state) => state.user.data);
   const dispatch = useDispatch();
@@ -48,7 +48,7 @@ export default function News() {
   };
 
   const updateNews = (data) => {
-    console.log(data, "data");
+    console.log(typeof data, "data");
     if (data) {
       setDataNews(data);
       setTypeModal("Update");
@@ -76,8 +76,9 @@ export default function News() {
     );
   };
   const handleAdd = (typeModal) => {
+    const empty = {}
+    setDataNews(empty);
     setTypeModal(typeModal);
-    setDataNews([]);
     handleOpen();
   };
 
