@@ -14,18 +14,20 @@ const styleBox = {
 };
 const CommonInformation = () => {
   const [statistic, setStatistic] = useState();
-  const [isLoading,setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(true);
   useEffect(() => {
     async function fetchStatistic() {
-      statisticGeneral().then(data => {
-        setIsLoading(false)
-        setStatistic(data.data.data)
-      }).catch(error => {
-        console.log(error.response);
-      })
+      statisticGeneral()
+        .then((data) => {
+          setIsLoading(false);
+          setStatistic(data.data.data);
+        })
+        .catch((error) => {
+          console.log(error.response);
+        });
     }
-    fetchStatistic()
-  }, [])
+    fetchStatistic();
+  }, []);
 
   return (
     <Box>
@@ -41,20 +43,44 @@ const CommonInformation = () => {
       </Box>
       <Box className="d-flex justify-content-between mt-3 ">
         <Box className="d-flex flex-column align-items-start" sx={styleBox}>
-          <Typography className="fs-5">Số Nhà</Typography>
-          <Typography className="fs-2">{isLoading === true ? (<AiOutlineLoading3Quarters/>) : statistic?.houseNumber}</Typography>
+          <Typography className="fs-6">Số Nhà</Typography>
+          <Typography className="fs-2">
+            {isLoading === true ? (
+              <AiOutlineLoading3Quarters />
+            ) : (
+              statistic?.houseNumber
+            )}
+          </Typography>
         </Box>
         <Box className="d-flex flex-column align-items-start" sx={styleBox}>
-          <Typography className="fs-5">Số Phòng</Typography>
-          <Typography className="fs-2">{isLoading === true ? (<AiOutlineLoading3Quarters/>) : statistic?.roomNumber}</Typography>
+          <Typography className="fs-6">Số Phòng</Typography>
+          <Typography className="fs-2">
+            {isLoading === true ? (
+              <AiOutlineLoading3Quarters />
+            ) : (
+              statistic?.roomNumber
+            )}
+          </Typography>
         </Box>
         <Box className="d-flex flex-column align-items-start" sx={styleBox}>
-          <Typography className="fs-5">Số Phòng Trống</Typography>
-          <Typography className="fs-2">{isLoading === true ? (<AiOutlineLoading3Quarters/>) : statistic?.roomNumberEmpty}</Typography>
+          <Typography className="fs-6">Số Phòng Trống</Typography>
+          <Typography className="fs-2">
+            {isLoading === true ? (
+              <AiOutlineLoading3Quarters />
+            ) : (
+              statistic?.roomNumberEmpty
+            )}
+          </Typography>
         </Box>
         <Box className="d-flex flex-column align-items-start" sx={styleBox}>
-          <Typography className="fs-5">Số Phòng Đã Thuê</Typography>
-          <Typography className="fs-2">{isLoading === true ? (<AiOutlineLoading3Quarters/>) : statistic?.roomNumberNotEmpty}</Typography>
+          <Typography className="fs-6">Số Phòng Đã Thuê</Typography>
+          <Typography className="fs-2">
+            {isLoading === true ? (
+              <AiOutlineLoading3Quarters />
+            ) : (
+              statistic?.roomNumberNotEmpty
+            )}
+          </Typography>
         </Box>
       </Box>
       {/* <ChartRooms/> */}

@@ -133,7 +133,7 @@ const UtilitiesTab = ({
       });
       setUtilOther(dataUtils);
     }
-  }, [ortherUtil]);
+  }, [ortherUtil,dataUtil]);
   useEffect(() => {
     dispatch(fetchOrtherUtil());
     dispatch(fetchDefaultUtil());

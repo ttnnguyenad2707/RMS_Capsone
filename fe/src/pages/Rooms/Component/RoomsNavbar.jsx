@@ -5,9 +5,10 @@ import MenuItem from "@mui/material/MenuItem";
 import SuperModal from "./Popup";
 import * as React from "react";
 import SettingPrice from "../Setting/SettingPrice";
+import SelectHouse from "../../../CommonComponents/SelectHouse";
 const RoomsNavbar = ({ dataHouse, selectHouse }) => {
   const [house, setHouse] = React.useState();
-  const [houseSelect, setHouseSelect] = React.useState(dataHouse[0]);
+  const [houseSelect, setHouseSelect] = React.useState();
   const [open, setOpen] = React.useState(false);
   const [typeModal, setTypeModal] = React.useState();
   const handleOpen = () => {
@@ -28,21 +29,17 @@ const RoomsNavbar = ({ dataHouse, selectHouse }) => {
     }
   }, [dataHouse]);
   React.useEffect(() => {
-    if (house) {
-      const defaultHouse = house[0];
-      if (defaultHouse) {
-        setHouseSelect(house[0].houseId);
-        selectHouse(house[0].houseId);
-      }
-    }
-  }, [house, dataHouse]);
-  const handleChange = (event) => {
-    const inputSelect = event.target.value;
-    if (inputSelect !== null) {
-      setHouseSelect(inputSelect);
-      selectHouse(inputSelect);
-    }
-  };
+    console.log(houseSelect, "setHouseSelect");
+    selectHouse(houseSelect);
+  }, [houseSelect,dataHouse]);
+
+  // const handleChange = (event) => {
+  //   const inputSelect = event.target.value;
+  //   if (inputSelect !== null) {
+  //     setHouseSelect(inputSelect);
+  //     selectHouse(inputSelect);
+  //   }
+  // };
   const handleSelectModal = (nameModal) => {
     if (nameModal === "Thêm Phòng") {
       setTypeModal(nameModal);
@@ -62,24 +59,7 @@ const RoomsNavbar = ({ dataHouse, selectHouse }) => {
       }}
     >
       <h5 className="me-4">Lựa Chọn Nhà Trọ:</h5>
-      <Select
-        labelId="demo-simple-select-label"
-        id="demo-simple-select"
-        value={houseSelect}
-        onChange={handleChange}
-        sx={{ width: "20%" }}
-        className="me-5"
-      >
-        {house ? (
-          house.map((h) => (
-            <MenuItem value={h.houseId} key={h.houseId}>
-              {h.name}
-            </MenuItem>
-          ))
-        ) : (
-          <div>Lỗi Dữ Liệu</div>
-        )}
-      </Select>
+      <SelectHouse onSelect={setHouseSelect} />
       <Box sx={{ display: "flex" }}>
         <Button color="info" variant="contained" className="me-3">
           Tất Cả Hóa Đơn Tiền Nhà
@@ -95,7 +75,7 @@ const RoomsNavbar = ({ dataHouse, selectHouse }) => {
         >
           Thêm phòng
         </Button>
-        <SettingPrice houseId={houseSelect}/>
+        <SettingPrice houseId={houseSelect} />
       </Box>
       <SuperModal
         handleOpen={handleOpen}

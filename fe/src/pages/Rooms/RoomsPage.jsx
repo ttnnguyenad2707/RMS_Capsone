@@ -12,6 +12,7 @@ const RoomsPage = () => {
   const userData = useSelector((state) => state.user.data);
   const dispatch = useDispatch();
   const selectHouse = (housesId) => {
+    console.log(housesId,"housesId");
     setHouseId(housesId);
     const selectHouse = houses.find((h) => h._id === housesId);
     setHouseSelect(selectHouse);
