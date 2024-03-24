@@ -40,7 +40,7 @@ const TableData = ({ data, setDataSelect, deleteData, userData }) => {
       case "doing":
         return "Đang xử lý vấn đề";
       default:
-        return "Chưa tiếp nhận";
+        return "Chưa giải quyết";
     }
   };
 

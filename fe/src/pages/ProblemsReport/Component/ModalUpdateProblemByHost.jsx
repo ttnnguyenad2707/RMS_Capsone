@@ -4,6 +4,7 @@ import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import { useSelector } from "react-redux";
 import {
+  getDetailProblem,
   getProblemsInHouse,
   updateStatusProblemsInHouse,
 } from "../../../services/problems";
@@ -22,7 +23,7 @@ const style = {
 };
 const ModalUpdateProblem = ({ problemsId, Room, Status, onUpdateStatus }) => {
   const [open, setOpen] = React.useState(false);
-  // const [update, setUpdate] = React.useState();
+  const [update, setUpdate] = React.useState();
 
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
@@ -33,7 +34,6 @@ const ModalUpdateProblem = ({ problemsId, Room, Status, onUpdateStatus }) => {
       toast.success("trạng thái đã được cập nhât !");
       onUpdateStatus(res.data.data);
       handleClose();
-
       // console.log("res.data.data.id",res.data.data._id);
     } catch (error) {
       toast.warning(error.response.data.error);
@@ -41,11 +41,20 @@ const ModalUpdateProblem = ({ problemsId, Room, Status, onUpdateStatus }) => {
     }
   };
 
-  // console.log("StatusStatus", Status);
-  // console.log("update",update);
+  const getProblemDetail = async () => { // giúp cập nhật trạng thái trên thanh select
+    try {
+      const res = await getDetailProblem(problemsId);
+      setUpdate(res.data.data.status);
+    } catch (error) {
+      console.log("error", error);
+    }
+  };
+  useEffect(() => {
+    getProblemDetail();
+  }, [problemsId]);
 
   const initialValues = {
-    status: "none",
+    status: update,
   };
   const validationSchema = Yup.object().shape({
     status: Yup.string().notOneOf(["none"], "Vui lòng chọn trạng thái"),
@@ -74,7 +83,7 @@ const ModalUpdateProblem = ({ problemsId, Room, Status, onUpdateStatus }) => {
                   className="form-control"
                   name="status"
                 >
-                  <MenuItem value={"none"}>Chưa giải quyết</MenuItem>
+                  <MenuItem value={"none"}>Chưa tiếp nhận</MenuItem>
 
                   <MenuItem value={"done"}>Đã giải quyết</MenuItem>
                   <MenuItem value={"pending"}>Đang chờ giải quyết</MenuItem>
