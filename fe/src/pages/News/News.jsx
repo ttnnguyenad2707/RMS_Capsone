@@ -39,7 +39,8 @@ export default function News() {
   const GetRoomsRenter = async () => {
     try {
       const roomsId = userData.roomId;
-      const respone = await dispatch(getOneRoomRedux({ roomsId }));
+      const response = await dispatch(getOneRoomRedux({ roomsId }));
+      setSelectedHouseId(response.payload.houseId._id);
     } catch (error) {
       console.log(error.message);
     }
@@ -50,11 +51,10 @@ export default function News() {
     dispatch(fetchNews({ id }));
   }, [selectedHouseId]);
   React.useEffect(() => {
-    if (userData.accountType == "renter") {
+    if (userData.accountType === "renter") {
       GetRoomsRenter();
-      setSelectedHouseId(room.houseId._id);
     }
-  }, []);
+  }, [userData]);
   console.log(room, "room");
   const commentNews = (data) => {
     if (data) {
@@ -98,21 +98,6 @@ export default function News() {
     setTypeModal(typeModal);
     handleOpen();
   };
-
-  // // Khai báo state
-  // const [anchorEl, setAnchorEl] = useState(null);
-
-  // // Xử lý sự kiện mở menu
-  // const handleMenuOpen = (event) => {
-  //   setAnchorEl(event.currentTarget);
-  // };
-
-  // // Xử lý sự kiện đóng menu
-  // const handleMenuClose = () => {
-  //   setAnchorEl(null);
-  // };
-  console.log(userData, "userData");
-  console.log(news, "news");
   return (
     <>
       {isLoading ? (
