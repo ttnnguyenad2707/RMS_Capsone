@@ -1,0 +1,22 @@
+.problem-detail-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 50vh;
+  width: 100vw;
+}
+
+.problem-card {
+  width: 50vw;
+  max-width: 90%;
+  .CardHeader {
+    // background-color: rgb(89, 111, 233);
+    // color: #fff;
+   
+  }
+  .head {
+    background-color: rgb(89, 111, 233);
+    color: #fff;
+        
+    }
+}
