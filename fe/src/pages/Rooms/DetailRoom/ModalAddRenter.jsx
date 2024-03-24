@@ -291,7 +291,7 @@ const ModalAddRenter = ({ setRooms,handleClose, open, room, setMembers }) => {
                   Huỷ
                 </Button>
                 <Button type="submit" variant="contained" color="primary" disabled={isSubmitting}>
-                  {isSubmitting ? <CircularProgress size={24} /> : 'Submit'}
+                  {isSubmitting ? <CircularProgress size={24} /> : 'Thêm'}
                 </Button>
               </Box>
             </Form>
