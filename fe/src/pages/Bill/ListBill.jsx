@@ -27,7 +27,6 @@ const ListBill = () => {
     const [roomAndBills, setRoomAndBills] = useState([])
     const [openBillDetail,setOpenBillDetail] = useState(false);
     const [billIdSelected,setBillIdSelected] = useState();
-
     useEffect(() => {
         async function fetchBills() {
             const query = {
@@ -42,12 +41,12 @@ const ListBill = () => {
     }, [selectedHouseId, monthSelected])
 
     const handleOpenBillDetail = (billId) => {
-        console.log(billId);
         setBillIdSelected(billId)
         setOpenBillDetail(true);
     }
     const handleCloseBillDetail = () => {
         setRoomIdSelected(null)
+        setBillIdSelected(null)
         setOpenBillDetail(false);
     }
 
@@ -71,6 +70,7 @@ const ListBill = () => {
                 console.log(error);
             }
         }
+        setBillIdSelected(null)
         setRoomIdSelected(null)
         setOpenAddBill(false);
     };
@@ -118,6 +118,7 @@ const ListBill = () => {
                                 <TableCell align="right">Thành tiền tháng này</TableCell>
                                 <TableCell align="right">Đã tạo hoá đơn</TableCell>
                                 <TableCell align="right">Đã thanh toán</TableCell>
+                                <TableCell align="right">Hình thức</TableCell>
                                 <TableCell align="right">Thao tác</TableCell>
                             </TableRow>
                         </TableHead>
@@ -139,11 +140,12 @@ const ListBill = () => {
                                             <Alert severity="error">Chưa thanh toán</Alert>
                                         )}
                                     </TableCell>
+                                    <TableCell align="right">{roomAndBill?.bill?.paymentMethod === "Banking" ? "Chuyển khoản" : (roomAndBill?.bill?.paymentMethod === "Cash" ? "Thanh toán bằng tiền mặt" : "Chưa thanh toán")}</TableCell>
                                     <TableCell sx={{
                                     }}>
                                         <Button sx={{mr:1}} variant="outlined" disabled={roomAndBill?.bill !== null} onClick={() => handleOpenAddBill(roomAndBill?.room?._id)} >Tạo hoá đơn</Button>
                                         <Button sx={{mr:1}} variant="outlined" disabled={roomAndBill?.bill === null} onClick={() => handleOpenBillDetail(roomAndBill?.bill?._id)}>Xem chi tiết</Button>
-                                        <Button sx={{mr:1}} variant="outlined" onClick={() => cashBill(roomAndBill?.bill?._id,roomAndBill?.room?.name,roomAndBill?.room?._id)} disabled={roomAndBill?.bill?.isPaid === true}>Đã thanh toán bằng tiền mặt</Button>
+                                        <Button sx={{mr:1}} variant="outlined" onClick={() => cashBill(roomAndBill?.bill?._id,roomAndBill?.room?.name,roomAndBill?.room?._id)} disabled={roomAndBill?.bill?.isPaid === true || roomAndBill?.bill === null}>Đã thanh toán bằng tiền mặt</Button>
                                     </TableCell>
                                 </TableRow>
                             ))}
