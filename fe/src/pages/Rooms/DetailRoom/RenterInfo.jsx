@@ -10,7 +10,7 @@ import ModalUpdateRenter from './ModalUpdateRenter';
 
 
 const RenterInfo = (props) => {
-    const { children, value, index, room, ...other } = props;
+    const { children, value, index, room,setRooms, ...other } = props;
     const [members, setMembers] = useState([]);
     const [memberIdUpdate, setMemberIdUpdate] = useState()
     useEffect(() => {
@@ -127,7 +127,7 @@ const RenterInfo = (props) => {
 
 
                     </Box>
-                    <ModalAddRenter handleClose={handleClose} open={open} room={room} setMembers={setMembers} />
+                    <ModalAddRenter setRooms={setRooms} handleClose={handleClose} open={open} room={room} setMembers={setMembers} />
                     <ModalUpdateRenter handleClose={handleCloseUpdate} open={openUpdate} room={room} setMembers={setMembers} memberId={memberIdUpdate} />
 
                 </>
