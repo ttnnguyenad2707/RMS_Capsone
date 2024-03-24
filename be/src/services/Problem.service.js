@@ -15,7 +15,6 @@ const ProblemService = {
             const room = await RoomsModel.findById(roomId).populate({path: "houseId",select: "hostId",populate: {path: "hostId",select: "_id"}});
             const creatorId = getCurrentUser(req);
             const data = await ProblemsModel.create({...req.body,creatorId,houseId:room.houseId});
-            room.problemId = [...room.problemId,data.id];
             await room.save();
             const roomAccount = await AccountModel.findOne({roomId: roomId})
             await Notification.create({

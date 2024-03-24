@@ -84,10 +84,6 @@ const Rooms = Schema ({
         type: Schema.ObjectId,
         ref: "Houses"
     },
-    problemId: [{
-        type: Schema.ObjectId,
-        ref: "Problems"
-    }],
     deleted: {
         type: Boolean,
         default: false,

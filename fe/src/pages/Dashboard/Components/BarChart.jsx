@@ -1,32 +1,45 @@
 import * as React from "react";
 import { BarChart } from "@mui/x-charts/BarChart";
-import Title from "./Title";
 import Typography from "@mui/material/Typography";
+import { statisticRevenue } from "../../../services/statistic";
+import Box from '@mui/material/Box';
+
 export default function BarChartDisplay() {
+  const [statistic, setStatistic] = React.useState()
+  const [month,setMonth] = React.useState(['']);
+  const [revenue,setRevenue] = React.useState(['']);
+
+  React.useEffect(() => {
+    async function fetchStatisticRevenue() {
+      statisticRevenue().then(data => {
+        setStatistic(data.data.data);
+        setMonth( Object.keys(data.data.data.revenueByMonth)  )
+        setRevenue(Object.values(data.data.data.revenueByMonth))
+      })
+      
+    }
+    fetchStatisticRevenue();
+  }, [])
+
   return (
-    <React.Fragment>
+    <Box >
       <Typography
         id="modal-modal-title"
         variant="h5"
         component="h3"
-        sx={{ fontWeight: "Bold", color: "#1976d2" }}
+        sx={{ fontWeight: "Bold", color: "#1976d2",pb:1 }}
       >
-        Thống Kê
+        Thống Kê năm {statistic?.year}
       </Typography>
 
-      <div style={{ width: "100%", flexGrow: 1, overflow: "hidden", marginTop:"15px"}}>
         <BarChart
           series={[
-            { data: [35, 44, 24, 34] },
-            { data: [51, 6, 49, 30] },
-            { data: [15, 25, 30, 50] },
-            { data: [60, 50, 15, 25] },
+            { data: revenue},
           ]}
-          height={290}
-          xAxis={[{ data: ["Q1", "Q2", "Q3", "Q4"], scaleType: "band" }]}
-          margin={{ top: 10, bottom: 30, left: 40, right: 10 }}
+          height={400}
+          xAxis={[{ data:month, scaleType: "band" }]}
+          margin={{ top: 10, bottom: 30, left: 100, right: 10 }}
         />
-      </div>
-    </React.Fragment>
+    </Box>
   );
 }
