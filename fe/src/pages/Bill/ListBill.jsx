@@ -89,6 +89,7 @@ const ListBill = () => {
                         updatedRoomAndBills.forEach(roomAndBill => {
                             if (roomAndBill?.room?._id === roomId) {
                                 roomAndBill.bill.isPaid = true; // Cập nhật trạng thái isPaid thành true
+                                roomAndBill.bill.paymentMethod = "Cash"
                             }
                         });
 
