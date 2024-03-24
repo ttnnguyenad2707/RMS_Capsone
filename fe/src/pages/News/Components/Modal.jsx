@@ -211,7 +211,11 @@ const ModalNews = ({ handleClose, open, typeModal, houseID, dataNews }) => {
           <Box sx={{ py: 2 }}>
             <p>
               <p>
-                <b className="fs-3">{userData.name}</b>
+                {userData.accountType == "host" ? (
+                  <b className="fs-5">{userData.name}</b>
+                ) : (
+                  <b className="fs-5">{userData.username}</b>
+                )}
               </p>
             </p>
             <textarea
@@ -302,7 +306,11 @@ const ModalNews = ({ handleClose, open, typeModal, houseID, dataNews }) => {
           <hr />
           <Box className="d-flex flex-column">
             <p>
-              <b  className="fs-3" >{dataNews.authorId.name}</b>
+              {userData.accountType == "host" ? (
+                <b className="fs-5">{dataNews.authorId.name}</b>
+              ) : (
+                <b className="fs-5">{dataNews.authorId.username}</b>
+              )}
             </p>
             <p className="fs-4">{dataNews.content}</p>
           </Box>
@@ -395,15 +403,18 @@ const ModalNews = ({ handleClose, open, typeModal, houseID, dataNews }) => {
           <hr />
           <Box>
             <p>
-              <b  className="fs-3">{dataNews.authorId.name}</b>
+              {userData.accountType == "host" ? (
+                <b className="fs-5">{dataNews.authorId.name}</b>
+              ) : (
+                <b className="fs-5">{dataNews.authorId.username}</b>
+              )}
             </p>
             <Box className="position-relative">
               <textarea
                 name=""
                 id="inputArea"
-                className="areastyle fs-4"
+                className="areastyle fs-5"
                 ref={inputContent}
-
               >
                 {dataNews.content}
               </textarea>

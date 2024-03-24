@@ -350,18 +350,23 @@ export default function BasicTable() {
           if (s.cellId === "numberRooms") {
             if (s.statusSort === true) {
               sortedRows.sort((a, b) =>
-                sortNumberBack(a.numberRooms, b.numberRooms)
+                a.numberRooms === b.numberRooms
+                  ? 0
+                  : sortNumberBack(a.numberRooms, b.numberRooms)
               );
               s.statusSort = false;
             } else {
               sortedRows.sort((a, b) =>
-                sortNumber(a.numberRooms, b.numberRooms)
+                a.numberRooms === b.numberRooms
+                  ? 0
+                  : sortNumber(a.numberRooms, b.numberRooms)
               );
               s.statusSort = true;
             }
           }
           return s;
         });
+
         setStatus(updateNumberRooms);
         break;
       default:
