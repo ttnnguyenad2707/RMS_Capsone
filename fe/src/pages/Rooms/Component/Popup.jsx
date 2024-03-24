@@ -54,7 +54,7 @@ const style = {
   overflow: "auto",
 };
 const stylesHeader = {
-  color: "#5A67BA",
+  color: "#1976d2",
   display: "flex",
   position: "relative",
   fontWeight: "Bold",
@@ -512,7 +512,7 @@ export default function SuperModal({
               id="modal-modal-title"
               variant="h4"
               component="h3"
-              sx={{ fontWeight: "Bold" }}
+              sx={{ fontWeight: "Bold", color: "#1976d2" }}
             >
               Thêm Phòng
             </Typography>
@@ -693,7 +693,7 @@ export default function SuperModal({
                   variant="contained"
                   sx={{
                     ml: "10px",
-                    backgroundColor: "#5A67BA",
+                    backgroundColor: "#1976d2",
                     fontWeight: "Bold",
                   }}
                   onClick={() => HandleSubmit()}
