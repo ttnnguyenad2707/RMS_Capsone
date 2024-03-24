@@ -1,5 +1,6 @@
 import DefaultPriceModel from "../models/DefaultPrice.model.js";
 import HousesModel from "../models/Houses.model.js";
+import RoomsModel from "../models/Rooms.model.js";
 import getCurrentUser from "../utils/getCurrentUser.js";
 const HouseService = {
     addHouse: async (req) => {
@@ -132,6 +133,7 @@ const HouseService = {
                 deletedAt: Date.now(),
             });
             const newData = await HousesModel.findById(houseId);
+            await RoomsModel.updateMany({houseId},{deleted:true,deletedAt: Date.now(),});
             return newData;
         } catch (error) {
             throw new Error(error.toString());
