@@ -306,10 +306,10 @@ const ModalNews = ({ handleClose, open, typeModal, houseID, dataNews }) => {
           <Box className="d-flex flex-column">
             <p>
               <AccountCircleIcon />
-              {dataNews.authorId.name === null ? (
-                <b className="fs-5">{dataNews.authorId.username}</b>
+              {dataNews?.authorId?.name === null ? (
+                <b className="fs-5">{dataNews.authorId?.username}</b>
               ) : (
-                <b className="fs-5">{dataNews.authorId.name}</b>
+                <b className="fs-5">{dataNews.authorId?.name}</b>
               )}
             </p>
             <p className="fs-4">{dataNews.content}</p>
@@ -351,10 +351,10 @@ const ModalNews = ({ handleClose, open, typeModal, houseID, dataNews }) => {
             {comments.data ? (
               comments.data.map((comment, index) => (
                 <Box className="d-flex flex-row" key={index}>
-                  {comment.creatorId.name === null ? (
-                    <p className="fw-bold me-3">{comment.creatorId.username}</p>
+                  {comment?.creatorId?.name === null ? (
+                    <p className="fw-bold me-3">{comment?.creatorId?.username}</p>
                   ) : (
-                    <p className="fw-bold me-3">{comment.creatorId.name}</p>
+                    <p className="fw-bold me-3">{comment?.creatorId?.name}</p>
                   )}
                   <p>{comment.content}</p>
                 </Box>
