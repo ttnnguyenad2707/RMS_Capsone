@@ -12,6 +12,7 @@ import { useSelector } from "react-redux";
 import "./RenterProblem.scss";
 import Notification from "../../CommonComponents/Notification";
 import ModalUpdateProblem from "./Component/ModalUpdateProblemByRenter";
+import { useNavigate } from "react-router-dom";
 
 const RenterProblem = () => {
   const userData = useSelector((state) => state.user.data); //state là rootReducer trong store ,counter cái tên đăng kí trong rootReducer
@@ -103,7 +104,11 @@ const RenterProblem = () => {
       )
     );
   };
-  
+  const navigate = useNavigate();
+
+  const HandlereadDetailProblem = (problemId) => {
+    navigate(`/problem/${problemId}`); // Chuyển hướng đến trang chi tiết với ID của vấn đề
+  };
 
   const convertStatusToVietnamese = (status) => {
     switch (status) {
@@ -162,6 +167,13 @@ const RenterProblem = () => {
                                 problemsId={problem._id}
                                 onUpdateStatus={handleUpdate}
                               />
+
+                              <button
+                                className="btn btn-warning m-2"
+                                onClick={() => HandlereadDetailProblem(problem._id)}
+                              >
+                                Xem chi tiết
+                              </button>
                             </div>
                           </td>
                         </tr>
