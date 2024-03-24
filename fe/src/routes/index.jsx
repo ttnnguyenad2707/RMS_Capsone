@@ -12,6 +12,7 @@ import BillSuccess from "../pages/Bill/BillSuccess";
 import ListBill from "../pages/Bill/ListBill";
 import Page404 from "../CommonComponents/Page404";
 import ProblemDetail from "../pages/ProblemsReport/ProblemDetail";
+import BillDetail from "../pages/Bill/BillDetail";
 export const appRoutes = createBrowserRouter([
   {
     path: "",
@@ -43,8 +44,12 @@ export const appRoutes = createBrowserRouter([
         element: <News />,
       },
       {
-        path: "/bill/:billId",
+        path: "/billsuccess/:billId",
         element: <BillSuccess />,
+      },
+      {
+        path: "/bill/:billId",
+        element: <BillDetail />,
       },
       {
         path: "/bill",

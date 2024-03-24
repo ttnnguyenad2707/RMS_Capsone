@@ -18,6 +18,7 @@ import FormControl from '@mui/material/FormControl';
 import { addBill, getDebt } from "../../../services/bill";
 import Notification from "../../../CommonComponents/Notification";
 import CircularProgress from '@mui/material/CircularProgress';
+import { socket } from "../../../socket/socket";
 
 
 
@@ -82,7 +83,7 @@ const ModalBillCreate = ({ open, handleClose, roomId }) => {
             await addBill(roomId, dataPayload).then(res => {
                 if (res.data.statusCode === 201) {
                     Notification("Success", "Thêm hoá đơn", "Thành công")                   
-
+                    socket.emit("addNotification", { message: "add" });
                     handleClose("added",res.data.data.bill,res.data.data.bill.roomId)
                 }
                 else {

@@ -18,6 +18,7 @@ import Alert from '@mui/material/Alert';
 import Notification from "../../CommonComponents/Notification";
 import ModalBillCreate from "../Rooms/Bills/ModalBillCreate";
 import ModalBillDetail from "./components/ModalBillDetail";
+import { socket } from "../../socket/socket";
 
 const ListBill = () => {
     const [roomIdSelected,setRoomIdSelected ] = useState()
@@ -82,6 +83,7 @@ const ListBill = () => {
             if (result) {
                 try {
                     confirmBill(billId,{paymentMethod: "Cash"}).then(res => {
+                        socket.emit("addNotification", { message: "add" });
                         const updatedRoomAndBills = [...roomAndBills];
 
                         updatedRoomAndBills.forEach(roomAndBill => {
