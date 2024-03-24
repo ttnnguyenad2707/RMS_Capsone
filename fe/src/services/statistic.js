@@ -32,3 +32,13 @@ export const statisticProblem = async (filterParams) => {
         },
     });
 };
+
+export const statisticRevenue = async () => {
+    const token = Cookies.get("accessToken");
+    return await axios.get(`${URL_SERVER}/statistic/revenue`, {
+        withCredentials: true,
+        headers: {
+            authorization: `Bearer ${token}`,
+        },
+    });
+}; 

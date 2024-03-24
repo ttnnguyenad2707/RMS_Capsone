@@ -1,4 +1,4 @@
-async function getPaginationData(model, page = 1, limit = 10, filter = {}, populateFields = []) {
+async function getPaginationData(model, page = 1, limit = 200, filter = {}, populateFields = []) {
     try {
         const pageNumber = parseInt(page) || 1;
         const limitPerPage = parseInt(limit) || 10;

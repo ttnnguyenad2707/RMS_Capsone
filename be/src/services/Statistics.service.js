@@ -130,8 +130,7 @@ const statisticsService = {
                         createdAt: { $gte: startOfMonth, $lt: endOfMonth },
                     });
                 }
-            }
-            else{
+            } else {
                 for (const house of houses) {
                     numberProblemNone += await ProblemsModel.countDocuments({
                         houseId: house.id,
@@ -153,9 +152,48 @@ const statisticsService = {
             return {
                 numberProblemNone,
                 numberProblemDoing,
-                numberProblemDone
-            }
+                numberProblemDone,
+            };
         } catch (error) {}
+    },
+    statisticRevenue: async (req) => {
+        const currentUserId = getCurrentUser(req);
+        const houses = await HousesModel.find({
+            hostId: currentUserId,
+            deleted: false,
+        });
+
+        const currentDate = new Date();
+        const currentYear = currentDate.getFullYear();
+        const currentMonth = currentDate.getMonth() + 1;
+
+        const revenueByMonth = {};
+
+        for (let i = 1; i <= 12; i++) {
+            revenueByMonth[`${i}`] = 0;
+        }
+        for (const house of houses) {
+            const bills = await BillsModel.find({
+                houseId: house.id,
+                isPaid: true,
+                createdAt: {
+                    $gte: new Date(currentYear, 0), // Bắt đầu từ đầu năm hiện tại
+                    $lte: currentDate, // Đến thời điểm hiện tại
+                },
+            });
+            for (const bill of bills) {
+                const createdAt = bill.createdAt;
+                const month = createdAt.getMonth() + 1;
+                const year = createdAt.getFullYear();
+                const key = `${month}`;
+            
+                revenueByMonth[key] += bill.total; // Tổng hợp số tiền từ mỗi hóa đơn
+            }
+        }
+        return {
+            year: currentYear,
+            revenueByMonth
+        };
     },
 };
 

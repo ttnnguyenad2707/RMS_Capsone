@@ -34,10 +34,8 @@ const RoomService = {
                     
                     if (existingRoomNames.includes(roomName)) {
                         throw new Error(`Phòng "${roomName}" đã tồn tại.`)
-                        continue; 
                     }
     
-                    existingRoomNames.push(roomName); 
                 }
             }
     
