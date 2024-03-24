@@ -33,6 +33,16 @@ const StatisticController = {
         }
 
     }),
+    statisticRevenue: asyncHandler(async (req,res,next) => {
+        try {
+            const statistics = await statisticsService.statisticRevenue(req);
+            if (statistics) return res.status(200).json(response.successResponse(200,statistics))
+            else res.status(404).json(response.errorResponse(404));            
+        } catch (error) {
+            return res.status(500).json(response.errorResponse(500,error.toString()));
+        }
+
+    }),
     
 }
 

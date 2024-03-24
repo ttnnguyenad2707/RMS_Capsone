@@ -34,7 +34,8 @@ const CommentService = {
                 throw new Error("News not found");
             }
             else{
-                const data = await getPaginationData(CommentsModel,page,limit,query);
+                const populateFields = ["creatorId"];
+                const data = await getPaginationData(CommentsModel,page,limit,query,populateFields);
                 return data;
             }
         } catch (error) {

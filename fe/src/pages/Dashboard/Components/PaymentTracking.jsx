@@ -41,7 +41,7 @@ const PaymentTracking = () => {
     }
     fetchStatisticBills()
   }, [month])
-  console.log(month);
+  
   return (
     <Box>
       <Box>

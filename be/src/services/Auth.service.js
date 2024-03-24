@@ -23,7 +23,7 @@ class AuthService {
             if (!comparePassword) {
                 return res.status(401).json({ error: "Wrong password" });
             }
-            const { _id, password, refreshToken, ...others } = findAccount._doc;
+            const {  password, refreshToken, ...others } = findAccount._doc;
             if (findAccount && comparePassword) {
                 const genAccessToken = await TokenService.genAccessToken(
                     findAccount._doc
