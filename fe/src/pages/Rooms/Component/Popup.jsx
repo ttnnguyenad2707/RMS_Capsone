@@ -236,7 +236,6 @@ export default function SuperModal({
   const handleInputName = () => {
     const inputValue = inputName.current.value;
     if (validateInputNumber(inputValue) && inputValue != " ") {
-      setName(inputValue);
       setErrorName(false);
     } else {
       setErrorName(true);
@@ -340,6 +339,7 @@ export default function SuperModal({
   const handleCloseAdd = () => setOpenAdd(false);
   // Add one rooms
   const HandleSubmit = async () => {
+    handleInputName();
     handleMember();
     handlePriceRoom();
     handleInputCostDeposit();
@@ -347,11 +347,11 @@ export default function SuperModal({
     handleInputUtilities();
     handleInputUtilitiesOrther();
     if (
-      inputName.current.value !== "" &&
-      parseInt(inputMember.current.value) > 0 &&
-      parseInt(inputPriceRoom.current.value) > 0 &&
-      parseInt(inputCostDeposit.current.value) > 0 &&
-      parseInt(inputCostArea.current.value) > 0 &&
+      inputName.current.value.trim().length !== 0 &&
+      Number(inputMember.current.value) > 0 &&
+      Number(inputPriceRoom.current.value) > 0 &&
+      Number(inputCostDeposit.current.value) > 0 &&
+      Number(inputCostArea.current.value) > 0 &&
       typeof status !== "undefined" &&
       typeof roomType !== "undefined" &&
       utilitiesRooms &&
@@ -408,8 +408,8 @@ export default function SuperModal({
     // AddRoomsFileService({data: formData} );
     const response = await dispatch(addRooms({ data: formData }));
     if (response.payload === "Created") {
-      // await dispatch(fetchRooms({ houseId }));
-      await dispatch(fetchHouses());
+      await dispatch(fetchRooms({ houseId }));
+      // await dispatch(fetchHouses());
       Notification("Success", "Thêm Danh Sách Phòng", "Thành Công");
       handleClose();
     } else {
@@ -538,8 +538,8 @@ export default function SuperModal({
             <Tab value="2" label="Thêm Danh Sách Phòng" />
           </Tabs>
           {value === "1" && (
-            <Box sx={stylesBody} className="mt-4">
-              <Box sx={{ display: "flex" }}>
+            <Box sx={stylesBody}>
+              <Box sx={{ display: "flex" }} className="mt-4">
                 <TextField
                   required
                   id="outlined-basic"
