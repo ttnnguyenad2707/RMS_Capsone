@@ -61,7 +61,7 @@ const ProblemDetail = ({ problem, handleDelete }) => {
         </div>
         <CardHeader
           className="CardHeader"
-          title={`${detailProblem?.creatorId?.name} - ${detailProblem?.creatorId?.username}`}
+          title={`${detailProblem?.creatorId?.name } - ${detailProblem?.creatorId?.username}`}
           subheader={`${convertTimeFormat(
             detailProblem?.creatorId?.createdAt
           )}`}

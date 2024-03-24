@@ -14,6 +14,7 @@ import {
 } from "@mui/material";
 import ModalUpdateProblemByHost from "../pages/ProblemsReport/Component/ModalUpdateProblemByHost";
 import { getProblemsInHouse } from "../services/problems";
+import { useNavigate } from "react-router-dom";
 // import { useSelector } from "react-redux";
 
 const TableData = ({ data, setDataSelect, deleteData, userData }) => {
@@ -30,7 +31,7 @@ const TableData = ({ data, setDataSelect, deleteData, userData }) => {
       )
     );
   };
-
+  const navigate = useNavigate();
   const convertStatusToVietnamese = (status) => {
     switch (status) {
       case "done":
@@ -42,6 +43,9 @@ const TableData = ({ data, setDataSelect, deleteData, userData }) => {
       default:
         return "Chưa giải quyết";
     }
+  };
+  const HandlereadDetailProblem = (problemId) => {
+    navigate(`/problem/${problemId}`); // Chuyển hướng đến trang chi tiết với ID của vấn đề
   };
 
   return (
@@ -83,6 +87,10 @@ const TableData = ({ data, setDataSelect, deleteData, userData }) => {
                     Status={row.Status}
                     onUpdateStatus={handleStatusUpdate}
                   />
+                  <button className="btn btn-warning" onClick={() => HandlereadDetailProblem(row.id)}>
+                    Xem chi tiết 
+                    
+                  </button>
                 </Stack>
               </TableCell>
             </TableRow>
