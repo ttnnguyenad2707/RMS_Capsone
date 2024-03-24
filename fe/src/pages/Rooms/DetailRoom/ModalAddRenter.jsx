@@ -28,7 +28,7 @@ const style = {
   p: 4,
   width: "60vw",
 };
-const ModalAddRenter = ({ handleClose, open, room, setMembers }) => {
+const ModalAddRenter = ({ setRooms,handleClose, open, room, setMembers }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [file, setFile] = useState();
   const [imagePreview, setImagePreview] = useState(null);
@@ -103,6 +103,32 @@ const ModalAddRenter = ({ handleClose, open, room, setMembers }) => {
             },
           },
         ]);
+        
+        setRooms(prevRooms => {
+          const updatedRooms = prevRooms.map((prevRoom) => {
+            if (prevRoom._id === room._id) {
+              return {
+                ...prevRoom,
+                members: [...prevRoom.members, {
+                  _id: data.data.data._id,
+                  name: values.name,
+                  phone: values.phone,
+                  cccd: values.cccd,
+                  gender: values.gender,
+                  dob: values.dob,
+                  note: values.note,
+                  avatar: {
+                    imageData: data.data.data.avatar,
+                  },
+                }]
+              };
+            } else {
+              return prevRoom;
+            }
+          });
+          return updatedRooms;
+        });
+
         handleClose();
         resetForm();
         setImagePreview(null);
@@ -265,7 +291,7 @@ const ModalAddRenter = ({ handleClose, open, room, setMembers }) => {
                   Huỷ
                 </Button>
                 <Button type="submit" variant="contained" color="primary" disabled={isSubmitting}>
-                  {isSubmitting ? <CircularProgress size={24} /> : 'Submit'}
+                  {isSubmitting ? <CircularProgress size={24} /> : 'Thêm'}
                 </Button>
               </Box>
             </Form>

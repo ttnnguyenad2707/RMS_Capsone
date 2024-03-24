@@ -165,7 +165,6 @@ const RoomList = ({ house }) => {
                                         <TableCell align="right">Diện tích (m2) </TableCell>
                                         <TableCell align="right">Số người tối đa</TableCell>
                                         <TableCell align="right">Số người hiện tại</TableCell>
-                                        <TableCell align="right">Số tiền chưa thanh toán</TableCell>
                                     </TableRow>
                                 </TableHead>
                                 <TableBody>
@@ -175,7 +174,6 @@ const RoomList = ({ house }) => {
                                         <TableCell align="right">{room.area}</TableCell>
                                         <TableCell align="right">{room.quantityMember}</TableCell>
                                         <TableCell align="right">{room.members.length}</TableCell>
-                                        <TableCell align="right">Số tiền chưa thanh toán</TableCell>
                                     </TableRow>
                                 </TableBody>
                             </Table>
@@ -194,8 +192,8 @@ const RoomList = ({ house }) => {
                     </AccordionDetails>
                 </Accordion>
             ))}
-            <PopupInfoRoom open={open} handleClose = {handleClose} roomId={roomIdSelect}/>
-            <ModalBillCreate open={openBill} handleClose={handleCloseBill} roomId={roomIdSelect}/>
+            <PopupInfoRoom setRooms={setRooms} open={open} handleClose = {handleClose} roomId={roomIdSelect}/>
+            <ModalBillCreate setRooms={setRooms} open={openBill} handleClose={handleCloseBill} roomId={roomIdSelect}/>
 
         </Box>
     );

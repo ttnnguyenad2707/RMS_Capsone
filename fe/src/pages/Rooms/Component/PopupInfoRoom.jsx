@@ -24,7 +24,7 @@ const style = {
     pb: 3,
 };
 
-const PopupInfoRoom = ({ roomId, open, handleClose }) => {
+const PopupInfoRoom = ({ setRooms,roomId, open, handleClose }) => {
     const [room, setRoom] = useState({});
     const [value, setValue] = useState(1);
 
@@ -57,7 +57,7 @@ const PopupInfoRoom = ({ roomId, open, handleClose }) => {
 
                 </Tabs>
                 <GeneralInfo value={value} index={1} room={room} />
-                <RenterInfo value={value} index={2} room={room} />
+                <RenterInfo setRooms={setRooms} value={value} index={2} room={room} />
                 <ListBill value={value} index={3} room={room}/>
 
 

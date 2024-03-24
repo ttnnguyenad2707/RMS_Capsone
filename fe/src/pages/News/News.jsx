@@ -98,6 +98,8 @@ export default function News() {
     setTypeModal(typeModal);
     handleOpen();
   };
+
+  console.log(news, "news");
   return (
     <>
       {isLoading ? (
@@ -167,7 +169,7 @@ export default function News() {
               }}
               // key={index}
             >
-              {news.data.map((ne, index) => (
+              {news.data.map((newItem, index) => (
                 <Paper
                   sx={{
                     p: 2,
@@ -180,11 +182,9 @@ export default function News() {
                   key={index}
                 >
                   <div style={{ display: "flex", alignItems: "center" }}>
-                    <p style={{ marginRight: "10px" }}>
-                      <b className="fs-5">{ne.authorId.name}</b>
-                    </p>
-                    <p>{ne.createdAt}</p>
-                    {ne.authorId.email === userData.email ? (
+                    <p style={{ marginRight: "10px" }}><b>{newItem?.authorId?.name?(newItem?.authorId?.name):(newItem?.authorId?.username)}</b></p>
+                    <p>{newItem.createdAt}</p>
+                    {newItem?.authorId?._id === userData._id ? (
                       <div
                         className="d-flex gap-2 "
                         style={{ marginLeft: "auto", marginTop: "-5px" }}
@@ -192,28 +192,28 @@ export default function News() {
                         <Button
                           variant="contained"
                           color="primary"
-                          onClick={() => updateNews(ne)}
+                          onClick={() => updateNews(newItem)}
                         >
                           Cập Nhật
                         </Button>
                         <Button
                           variant="contained"
                           color="primary"
-                          onClick={() => handleDeleteNews(ne._id)}
+                          onClick={() => handleDeleteNews(newItem._id)}
                         >
                           Xóa
                         </Button>
                       </div>
                     ) : null}
                   </div>
-                  <p>{ne.content}</p>
+                  <p>{newItem.content}</p>
                   <Box
                     sx={{ width: "100%" }}
                     className="d-flex justify-content-center mb-4 mt-4"
                   >
-                    {ne.images.length > 0 ? (
+                    {newItem.images.length > 0 ? (
                       <img
-                        src={ne.images[0]}
+                        src={newItem.images[0]}
                         alt="Image"
                         style={{ width: "45%" }}
                       />
@@ -224,7 +224,7 @@ export default function News() {
                       <Button
                         variant="contained"
                         color="primary"
-                        onClick={() => commentNews(ne)}
+                        onClick={() => commentNews(newItem)}
                       >
                         <ChatBubbleOutlineIcon fontSize="small"></ChatBubbleOutlineIcon>{" "}
                         Bình Luận
