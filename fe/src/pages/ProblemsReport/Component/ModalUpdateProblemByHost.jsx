@@ -30,9 +30,11 @@ const ModalUpdateProblem = ({ problemsId, Room, Status, onUpdateStatus }) => {
   const handleUpdate = async (values) => {
     try {
       const res = await updateStatusProblemsInHouse(problemsId, values);
-      console.log("res", res);
+      // console.log("res", res);
       toast.success("trạng thái đã được cập nhât !");
       onUpdateStatus(res.data.data);
+      setUpdate(res.data.data.status)
+      // console.log("update",update);
       handleClose();
       // console.log("res.data.data.id",res.data.data._id);
     } catch (error) {
@@ -51,7 +53,7 @@ const ModalUpdateProblem = ({ problemsId, Room, Status, onUpdateStatus }) => {
   };
   useEffect(() => {
     getProblemDetail();
-  }, [problemsId]);
+  }, [problemsId,update]);
 
   const initialValues = {
     status: update,
