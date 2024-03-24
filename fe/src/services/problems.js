@@ -50,3 +50,15 @@ export const updateStatusProblemsInHouse = async (problemId,data) => {
         },
     });
 };
+
+
+export const getDetailProblem = async (problemId) => {
+    // console.log("caller");
+    const token = Cookies.get("accessToken");
+    return await axios.get(`${URL_SERVER}/problem/${problemId}`, {
+        withCredentials: true,
+        headers: {
+            authorization: `Bearer ${token}`,
+        },
+    });
+};
