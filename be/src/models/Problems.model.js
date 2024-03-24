@@ -39,6 +39,6 @@ const Problems = Schema ({
         type : Date,
         default: null
     }
-})
+},{timestamps: true})
 
 export default model("Problems",Problems)

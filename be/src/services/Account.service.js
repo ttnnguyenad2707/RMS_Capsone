@@ -13,7 +13,6 @@ class AccountService {
 
             const {
                 password,
-                _id,
                 refreshToken,
                 passwordResetCode,
                 imageStores,

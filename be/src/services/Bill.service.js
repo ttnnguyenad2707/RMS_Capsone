@@ -147,12 +147,13 @@ const BillService = {
                     // amount: 10000,
                     description: "Thanh toán tiền phòng" + room.name,
                     cancelUrl: "http://localhost:5173/" + bill.id,
-                    returnUrl: "http://localhost:5173/bill/" + bill.id,
+                    returnUrl: "http://localhost:5173/billsuccess/" + bill.id,
                 };
                 try {
                     paymentLink = await payos.createPaymentLink(requestData);
                 } catch (error) {
-                    throw new Error(error.toString());
+                    await BillsModel.findByIdAndDelete(bill.id);
+                    throw new Error("Thông tin ngân hàng không hợp lệ");
                 }
             } else {
                 throw new Error("Thêm thông tin ngân hàng để tạo hoá đơn");
@@ -233,6 +234,19 @@ const BillService = {
                 bill.paymentMethod = paymentMethod;
             }
             await bill.save();
+            const roomAccount = await AccountModel.findOne({ roomId: bill.roomId });
+            await Notification.create({
+                sender: getCurrentUser(req),
+                recipients: [
+                    {
+                        user: roomAccount.id,
+                        isRead: false,
+                    },
+                ],
+                message: "Hoá đơn đã được xác nhận thanh toán bằng " + (paymentMethod === "Cash" ? " Tiền mặt" :(paymentMethod === "Banking" ? "Chuyển khoản": "") ),
+                type: "bill",
+                link: CLIENT_URL + "/bill/" + bill.id,
+            });
             return bill;
         } catch (error) {
             throw error;

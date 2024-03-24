@@ -87,7 +87,7 @@ const Login = () => {
                 <div className="mb-3">
                   <Field
                     type="text"
-                    label="Email"
+                    label="Email or Username"
                     className="form-control"
                     id="email"
                     variant="outlined"

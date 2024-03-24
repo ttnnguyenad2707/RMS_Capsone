@@ -1,4 +1,6 @@
 import AccountModel from "../models/Account.model.js";
+import HousesModel from "../models/Houses.model.js";
+import NewsModel from "../models/News.model.js";
 import Notification from "../models/Notification.model.js";
 import ProblemsModel from "../models/Problems.model.js";
 import RoomsModel from "../models/Rooms.model.js";
@@ -122,7 +124,49 @@ const ProblemService = {
         } catch (error) {
             throw error
         }
+    },
+    resetProblem: async (req) => {
+        try {
+            await NewsModel.deleteMany({deleted:true})
+            return "xoas thanhf coong"
+        } catch (error) {
+            throw error
+        }
     }
+    // resetProblem: async (req) => {
+    //     try {
+    //         const accounts = await AccountModel.find();
+    
+    //         for (const account of accounts) {
+    //             const roomExists = await RoomsModel.exists({ _id: account.roomId });
+    //             if (!roomExists) {
+    //                 await AccountModel.deleteOne({ _id: account._id });
+    //             }
+    //         }
+    
+    //         return "Xoá thành công.";
+    //     } catch (error) {
+    //         throw error;
+    //     }
+    // },
+    // resetProblem: async (req) => {
+    //     try {
+    //         const rooms = await RoomsModel.find();
+    
+    //         for (const room of rooms) {
+    //             const houseExists = await HousesModel.exists({ _id: room.houseId });
+    //             if (!houseExists) {
+    //                 // Xoá phòng không có houseId tồn tại trong houseModel
+    //                 await RoomsModel.deleteOne({ _id: room._id });
+    //             }
+    //         }
+    
+    //         return "Xoá thành công các phòng không liên kết với nhà.";
+    //     } catch (error) {
+    //         throw error;
+    //     }
+    // }
+    
     
 }
 
