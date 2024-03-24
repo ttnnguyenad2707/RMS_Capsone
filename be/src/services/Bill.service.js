@@ -156,6 +156,7 @@ const BillService = {
                     throw new Error("Thông tin ngân hàng không hợp lệ");
                 }
             } else {
+                await BillsModel.findByIdAndDelete(bill.id);
                 throw new Error("Thêm thông tin ngân hàng để tạo hoá đơn");
             }
             bill.paymentLink = paymentLink;
