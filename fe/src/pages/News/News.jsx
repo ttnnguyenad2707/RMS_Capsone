@@ -17,6 +17,7 @@ import Notification from "../../CommonComponents/Notification";
 import { IconButton, Menu } from "@mui/material";
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 import SelectHouse from "../../CommonComponents/SelectHouse";
+import { getOneRoomRedux } from "../../reduxToolkit/RoomSlice";
 import {
   AiOutlinePlus,
   AiFillDelete,
@@ -34,11 +35,27 @@ export default function News() {
   const [dataNews, setDataNews] = useState({});
   const news = useSelector((state) => state.new.news);
   const userData = useSelector((state) => state.user.data);
+  const room = useSelector((state) => state.room.rooms);
+  const GetRoomsRenter = async () => {
+    try {
+      const roomsId = userData.roomId;
+      const response = await dispatch(getOneRoomRedux({ roomsId }));
+      setSelectedHouseId(response.payload.houseId._id);
+    } catch (error) {
+      console.log(error.message);
+    }
+  };
   const dispatch = useDispatch();
   React.useEffect(() => {
     const id = selectedHouseId;
     dispatch(fetchNews({ id }));
   }, [selectedHouseId]);
+  React.useEffect(() => {
+    if (userData.accountType === "renter") {
+      GetRoomsRenter();
+    }
+  }, [userData]);
+  console.log(room, "room");
   const commentNews = (data) => {
     if (data) {
       setDataNews(data);
@@ -76,26 +93,11 @@ export default function News() {
     );
   };
   const handleAdd = (typeModal) => {
-    const empty = {}
+    const empty = {};
     setDataNews(empty);
     setTypeModal(typeModal);
     handleOpen();
   };
-
-  // // Khai báo state
-  // const [anchorEl, setAnchorEl] = useState(null);
-
-  // // Xử lý sự kiện mở menu
-  // const handleMenuOpen = (event) => {
-  //   setAnchorEl(event.currentTarget);
-  // };
-
-  // // Xử lý sự kiện đóng menu
-  // const handleMenuClose = () => {
-  //   setAnchorEl(null);
-  // };
-  console.log(userData, "userData");
-  console.log(news, "news");
   return (
     <>
       {isLoading ? (
@@ -111,7 +113,9 @@ export default function News() {
             width: "100vw",
           }}
         >
-          <SelectHouse onSelect={setSelectedHouseId} />
+          {userData.accountType == "host" ? (
+            <SelectHouse onSelect={setSelectedHouseId} />
+          ) : null}
           <Grid
             item
             xs={12}
@@ -177,7 +181,7 @@ export default function News() {
                 >
                   <div style={{ display: "flex", alignItems: "center" }}>
                     <p style={{ marginRight: "10px" }}>
-                      <b className="fs-3">{ne.authorId.name}</b>
+                      <b className="fs-5">{ne.authorId.name}</b>
                     </p>
                     <p>{ne.createdAt}</p>
                     {ne.authorId.email === userData.email ? (

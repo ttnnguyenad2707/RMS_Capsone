@@ -21,10 +21,9 @@ import CancelIcon from "@mui/icons-material/Cancel";
 import ImageList from "@mui/material/ImageList";
 import ImageListItem from "@mui/material/ImageListItem";
 import LinearProgress from "@mui/material/LinearProgress";
-import IconButton from "@mui/material/IconButton";
+import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import "../scss/modal.scss";
 const ModalNews = ({ handleClose, open, typeModal, houseID, dataNews }) => {
-  const comments = useSelector((state) => state.comment.comments);
   const [image_src, setImageSrc] = React.useState([]);
   const [selectedImages, setSelectedImages] = React.useState([]);
   const [isLoading, setIsLoading] = React.useState(false);
@@ -35,39 +34,38 @@ const ModalNews = ({ handleClose, open, typeModal, houseID, dataNews }) => {
   const fileRef = React.useRef();
   const inputContent = React.useRef();
   const userData = useSelector((state) => state.user.data);
+  const comments = useSelector((state) => state.comment.comments);
   const handleImageUpload = async (event) => {
     const files = event.target.files;
     const selectedImagesArray = Array.from(files);
     setSelectedImages(selectedImagesArray);
   };
-  // const handleTimeoutAction = () => {
-  //   if (isLoading === true) {
-  //     Notification(
-  //       "Error",
-  //       "Thêm ảnh thất bại do",
-  //       "thời gian phản hồi quá lâu"
-  //     );
-  //     setIsLoading(false);
-  //   }
-  // };
-  // React.useEffect(() => {
-  //   if (isLoading === true) {
-  //     setTimeout(() => {
-  //       handleTimeoutAction();
-  //     }, 10000);
-  //   }
-  // }, [isLoading]);
   const handleUpload = async (e) => {
     setIsLoading(true);
     e.preventDefault();
     const formData = new FormData();
-    console.log(selectedImages);
+    console.log(selectedImages)
+    // Kiểm tra điều kiện trước khi tải lên
+    if (selectedImages.length === 0) {
+      Notification("Error","Không có tệp tin được chọn.")
+      setIsLoading(false)
+      return;
+    }
+    const allowedExtensions = [".jpg", ".jpeg", ".png"];
     selectedImages.forEach((image) => {
+      const fileExtension = image.name.slice(image.name.lastIndexOf(".")).toLowerCase();
+      if (!allowedExtensions.includes(fileExtension)) {
+        Notification("Error",`Tệp tin ${image.name} không hợp lệ. Chỉ chấp nhận các tệp tin .jpg hoặc .png.`)
+        setIsLoading(false)
+        return;
+      }
       formData.append("file", image);
       formData.append("upload_preset", present_key);
       formData.append("folder", folder_name);
       formData.append("public_id", uuidv4());
       callToClould(formData);
+      fileRef.current.value = '';
+      setSelectedImages([])
     });
   };
   // Call to clound to update
@@ -211,7 +209,12 @@ const ModalNews = ({ handleClose, open, typeModal, houseID, dataNews }) => {
           <Box sx={{ py: 2 }}>
             <p>
               <p>
-                <b className="fs-3">{userData.name}</b>
+                <AccountCircleIcon />
+                {userData.accountType == "host" ? (
+                  <b className="fs-5">{userData.name}</b>
+                ) : (
+                  <b className="fs-5">{userData.username}</b>
+                )}
               </p>
             </p>
             <textarea
@@ -302,7 +305,12 @@ const ModalNews = ({ handleClose, open, typeModal, houseID, dataNews }) => {
           <hr />
           <Box className="d-flex flex-column">
             <p>
-              <b  className="fs-3" >{dataNews.authorId.name}</b>
+              <AccountCircleIcon />
+              {dataNews.authorId.name === null ? (
+                <b className="fs-5">{dataNews.authorId.username}</b>
+              ) : (
+                <b className="fs-5">{dataNews.authorId.name}</b>
+              )}
             </p>
             <p className="fs-4">{dataNews.content}</p>
           </Box>
@@ -343,7 +351,11 @@ const ModalNews = ({ handleClose, open, typeModal, houseID, dataNews }) => {
             {comments.data ? (
               comments.data.map((comment, index) => (
                 <Box className="d-flex flex-row" key={index}>
-                  <p className="fw-bold me-3">{comment.creatorId}</p>
+                  {comment.creatorId.name === null ? (
+                    <p className="fw-bold me-3">{comment.creatorId.username}</p>
+                  ) : (
+                    <p className="fw-bold me-3">{comment.creatorId.name}</p>
+                  )}
                   <p>{comment.content}</p>
                 </Box>
               ))
@@ -395,15 +407,19 @@ const ModalNews = ({ handleClose, open, typeModal, houseID, dataNews }) => {
           <hr />
           <Box>
             <p>
-              <b  className="fs-3">{dataNews.authorId.name}</b>
+              <AccountCircleIcon />
+              {dataNews.authorId.name === null ? (
+                <b className="fs-5">{dataNews.authorId.username}</b>
+              ) : (
+                <b className="fs-5">{dataNews.authorId.name}</b>
+              )}
             </p>
             <Box className="position-relative">
               <textarea
                 name=""
                 id="inputArea"
-                className="areastyle fs-4"
+                className="areastyle fs-5"
                 ref={inputContent}
-
               >
                 {dataNews.content}
               </textarea>
