@@ -19,7 +19,7 @@ const ProblemDetail = ({ problem, handleDelete }) => {
   // console.log("problem",problem);
   const { problemId } = useParams();
   const [detailProblem, setDetailProblem] = useState();
-  console.log("problemId", problemId);
+//   console.log("problemId", problemId);
   const convertStatusToVietnamese = (status) => {
     switch (status) {
       case "done":
@@ -33,10 +33,17 @@ const ProblemDetail = ({ problem, handleDelete }) => {
     }
   };
 
- const handleStatusUpdate = (datares) => {
-    // console.log("problemsId", datares._id);
-    setDetailProblem(datares)
-    
+//  const handleStatusUpdate = (datares) => {
+//     // console.log("problemsId", datares._id);
+//     setDetailProblem(datares)
+//     console.log("detailProblem after",detailProblem);
+//   };
+  const handleStatusUpdate = (datares) => {
+    console.log("datares", datares);
+    setDetailProblem((prevDetailProblem) => ({
+      ...prevDetailProblem,
+      status: datares.status
+    }));
   };
 
   useEffect(() => {
@@ -61,7 +68,7 @@ const ProblemDetail = ({ problem, handleDelete }) => {
         </div>
         <CardHeader
           className="CardHeader"
-          title={`${detailProblem?.creatorId?.name } - ${detailProblem?.creatorId?.username}`}
+          title={`${detailProblem?.creatorId?.name || '' }  - ${detailProblem?.creatorId?.username}`}
           subheader={`${convertTimeFormat(
             detailProblem?.creatorId?.createdAt
           )}`}
