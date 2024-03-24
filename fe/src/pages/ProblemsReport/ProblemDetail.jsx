@@ -70,7 +70,7 @@ const ProblemDetail = ({ problem, handleDelete }) => {
           className="CardHeader"
           title={`${detailProblem?.creatorId?.name || '' }  - ${detailProblem?.creatorId?.username}`}
           subheader={`${convertTimeFormat(
-            detailProblem?.creatorId?.createdAt
+            detailProblem?.createdAt
           )}`}
         />
         <CardContent>

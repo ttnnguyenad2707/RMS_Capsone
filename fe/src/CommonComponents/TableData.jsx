@@ -41,7 +41,7 @@ const TableData = ({ data, setDataSelect, deleteData, userData }) => {
       case "doing":
         return "Đang xử lý vấn đề";
       default:
-        return "Chưa giải quyết";
+        return "Chưa tiếp nhận";
     }
   };
   const HandlereadDetailProblem = (problemId) => {
