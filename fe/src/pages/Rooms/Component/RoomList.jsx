@@ -149,7 +149,7 @@ const RoomList = ({ house }) => {
                                 display: "flex",
                                 gap: 3
                             }}>
-                                <Button variant="contained" onClick={handleEditButtonClick}>Sửa thông tin</Button>
+                                {/* <Button variant="contained" onClick={handleEditButtonClick}>Sửa thông tin</Button> */}
                                 <Button variant="contained" color="error" onClick={(e) => handleDeleteButtonClick(e,room._id,room.name)}>Xoá</Button>
 
                             </Box>

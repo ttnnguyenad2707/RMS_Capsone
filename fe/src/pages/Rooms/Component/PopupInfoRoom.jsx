@@ -53,7 +53,6 @@ const PopupInfoRoom = ({ setRooms,roomId, open, handleClose }) => {
                     <Tab label="Thông tin phòng" value={1} />
                     <Tab label="Khách thuê" value={2} />
                     <Tab label="Thông tin hoá đơn" value={3} />
-                    <Tab label="Vấn đề" value={4} />
 
                 </Tabs>
                 <GeneralInfo value={value} index={1} room={room} />

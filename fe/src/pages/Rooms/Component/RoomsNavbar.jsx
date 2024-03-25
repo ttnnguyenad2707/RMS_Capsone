@@ -61,12 +61,12 @@ const RoomsNavbar = ({ dataHouse, selectHouse }) => {
       <h5 className="me-4">Lựa Chọn Nhà Trọ:</h5>
       <SelectHouse onSelect={setHouseSelect} />
       <Box sx={{ display: "flex" }}>
-        <Button color="info" variant="contained" className="me-3">
+        {/* <Button color="info" variant="contained" className="me-3">
           Tất Cả Hóa Đơn Tiền Nhà
         </Button>
         <Button color="info" variant="contained" className="me-3">
           In Tất Cả Hóa Đơn
-        </Button>
+        </Button> */}
         <Button
           color="info"
           variant="contained"
