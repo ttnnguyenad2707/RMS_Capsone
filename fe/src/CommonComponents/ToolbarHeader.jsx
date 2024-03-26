@@ -246,15 +246,7 @@ export default function ToolbarHeader() {
                             </Typography>
                           </MenuItem>
                         );
-                      } else if (setting === "Cài đặt") {
-                        return (
-                          <MenuItem key={setting}>
-                            <Typography textAlign="center">
-                              {setting}
-                            </Typography>
-                          </MenuItem>
-                        );
-                      } else if (setting === "Đăng Xuất") {
+                      }  else if (setting === "Đăng Xuất") {
                         return (
                           <MenuItem key={setting} onClick={handleLogout}>
                             <Typography textAlign="center">

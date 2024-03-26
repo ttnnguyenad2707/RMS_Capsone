@@ -128,7 +128,7 @@ const Login = () => {
                 </div>
               </Form>
             </Formik>
-            <div className=" justify-content-center text-center mt-3 ">
+            {/* <div className=" justify-content-center text-center mt-3 ">
               <button
                 className=" w-100 my-2 col-md-11 btn btn-danger btn-lg btn-Login m-control-lg "
                 type="submit"
@@ -138,7 +138,7 @@ const Login = () => {
               >
                 Login with google
               </button>
-            </div>
+            </div> */}
             <div className="my-3">
               <p className="font-semibold text-center text-gray-600 text-xl ">
                 Do not have a account ?

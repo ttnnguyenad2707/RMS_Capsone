@@ -110,18 +110,18 @@ export const secondaryListItems = (
     <ListSubheader component="div" inset>
       Others
     </ListSubheader>
-    <ListItemButton>
+    {/* <ListItemButton>
       <ListItemIcon>
         <SettingsIcon />
       </ListItemIcon>
       <ListItemText primary="Cài Đặt" />
-    </ListItemButton>
-    <ListItemButton>
+    </ListItemButton> */}
+    {/* <ListItemButton>
       <ListItemIcon>
         <EqualizerIcon />
       </ListItemIcon>
       <ListItemText primary="Thống kê tài chính" />
-    </ListItemButton>
+    </ListItemButton> */}
     <Link to="/profile" style={{ textDecoration: 'none', color: 'inherit' }}>
       <ListItemButton>
         <ListItemIcon>
@@ -130,11 +130,11 @@ export const secondaryListItems = (
         <ListItemText primary="Tài khoản" />
       </ListItemButton>
     </Link>
-    <ListItemButton>
+    {/* <ListItemButton>
       <ListItemIcon>
         <HelpIcon />
       </ListItemIcon>
       <ListItemText primary="Trợ giúp" />
-    </ListItemButton>
+    </ListItemButton> */}
   </React.Fragment >
 );

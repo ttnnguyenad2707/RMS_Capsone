@@ -49,7 +49,8 @@ const Rooms = Schema ({
     },
     status: {
         type: String,
-        enum: ["Empty","Full","Available"]
+        enum: ["Empty","Full","Available"],
+        default: "Empty"
     },
     quantityMember : {
         type: Number,
@@ -59,7 +60,8 @@ const Rooms = Schema ({
     members: [member],
     roomType: {
         type : String,
-        enum: ['normal','premium']
+        enum: ['normal','premium'],
+        default: "normal"
     },
     roomPrice: {
         type : Number,
