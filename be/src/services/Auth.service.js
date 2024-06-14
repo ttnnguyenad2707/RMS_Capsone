@@ -63,7 +63,7 @@ class AuthService {
             if (checkEmailExists !== null)
                 return res.status(400).json({ message: "Email has exists" });
             const checkUsername = await Account.findOne({username})
-            if (checkEmailExists !== null) {
+            if (checkUsername !== null) {
                 return res.status(400).json({ message: "Username has exists" });
             }
 

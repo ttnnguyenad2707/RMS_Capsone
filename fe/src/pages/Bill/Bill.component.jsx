@@ -15,12 +15,11 @@ import Box from '@mui/material/Box';
 import { formatMoney } from '../../Utils';
 import { Button } from '@mui/material'
 
-import { usePayOS, PayOSConfig } from "payos-checkout";
 
 
 
 const BillComponent = ({ bill }) => {
-    
+
     return (
         <>
             <Box sx={{
@@ -99,6 +98,10 @@ const BillComponent = ({ bill }) => {
                                     <TableRow>
                                         <TableCell colSpan={6}><Typography sx={{ fontWeight: 600 }}>Tiền phòng/tháng</Typography></TableCell>
                                         <TableCell align="right">{formatMoney(bill.roomPrice)}</TableCell>
+                                    </TableRow>
+                                    <TableRow>
+                                        <TableCell colSpan={6}><Typography sx={{ fontWeight: 600 }}>Tiền Nợ</Typography></TableCell>
+                                        <TableCell align="right">{formatMoney(bill.debt)}</TableCell>
                                     </TableRow>
                                     <TableRow>
                                         <TableCell colSpan={6}><Typography sx={{ fontWeight: 600 }}>Tổng</Typography></TableCell>

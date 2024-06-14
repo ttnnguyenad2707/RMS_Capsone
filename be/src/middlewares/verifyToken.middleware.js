@@ -31,6 +31,17 @@ export const verifyTokenRenter = asyncHandler(async(req,res,next) => {
     })
 })
 
+export const verifyTokenManager = asyncHandler(async(req,res,next) => {
+    await verifyToken(req,res, () => {
+        if (req.user.accountType === "manager") {
+            next();
+            
+        }else{
+            return res.status(403).json("You are not an manager");
+        }
+    })
+})
+
 export const verifyTokenHost = asyncHandler(async(req,res,next) => {
     await verifyToken(req,res, () => {
         if (req.user.accountType === "host") {

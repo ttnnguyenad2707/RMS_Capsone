@@ -1,5 +1,20 @@
 import { Schema, Types, model } from "mongoose";
 
+const identifyCard = new Schema({
+    identityNumber : {
+        type: String,
+        default: null
+    },
+    imageFront: {
+        type: String,
+        default: null
+    },
+    imageBack: {
+        type: String,
+        default: null
+    }
+    
+})
 
 const Account = new Schema({
     name: {
@@ -27,9 +42,12 @@ const Account = new Schema({
         type: String,
         default: null,
     },
+    identityCard: {
+        type: identifyCard,
+        default: null,
+    },
     password: {
         type: String,
-        // required: true,
         minlength: 8,
     },
     provider: {
@@ -48,7 +66,7 @@ const Account = new Schema({
     },
     status: {
         type: Boolean,
-        default: true,
+        default: false,
     },
     refreshToken: {
         type: String,
