@@ -4,11 +4,13 @@ import bcrypt from "bcrypt";
 import TokenService from "./Token.service.js";
 import { customAlphabet } from "nanoid";
 import sendEmail from "../utils/mailer.js";
+import prisma from '../utils/prismaClient.js'
  
 class AuthService {
     async login(req, res) {
         try {
-            const findAccount = await Account.findOne({
+            const findAccount = await prisma.account.findUnique()
+            const findAccoun = await Account.findOne({
                 $or: [{ email: req.body.email }, { username: req.body.email }],
             });
             if (!findAccount) {

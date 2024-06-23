@@ -1,0 +1,366 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = "mysql://root:0000@localhost:3306/rentready"
+}
+
+model Account {
+  id                Int                 @id @default(autoincrement())
+  createdAt         DateTime            @default(now())
+  deletedAt         DateTime            @default(now())
+  name              String              @db.VarChar(255)
+  username          String              @unique @db.VarChar(255)
+  email             String              @unique @db.VarChar(255)
+  phone             String              @db.VarChar(255)
+  avatar            String
+  password          String
+  provider          Provider
+  accountType       AccountType
+  Room              Room                @relation(fields: [roomId], references: [id])
+  roomId            Int                 @unique
+  status            Boolean             @default(true)
+  identifyCard      IdentifyCard?
+  passwordResetCode PasswordResetCode[]
+  PaymentGateway    PaymentGateway?
+  OtherUtilites     OtherUtilites[]
+  House             House[]
+  problem           Problem[]
+  notification      Notification[]
+  recipients        Recipients[]
+  news              News[]
+  Comment           Comment[]
+}
+
+model PasswordResetCode {
+  id        Int      @id @default(autoincrement())
+  code      String
+  expiredAt DateTime
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  Account   Account  @relation(fields: [accountId], references: [id])
+  accountId Int
+}
+
+model PaymentGateway {
+  clientId  String
+  APIKey    String
+  checksum  String
+  account   Account @relation(fields: [accountId], references: [id])
+  accountId Int     @unique
+}
+
+model IdentifyCard {
+  identifyNumber String
+  imageFrontSide String
+  imageBackSide  String
+  account        Account @relation(fields: [accountId], references: [id])
+  accountId      Int     @unique
+}
+
+enum Provider {
+  register
+  gmail
+}
+
+enum AccountType {
+  owner
+  renter
+  manager
+  admin
+}
+
+model Room {
+  id            Int               @id @default(autoincrement())
+  floor         Int
+  name          String
+  status        StatusRoom        @default(Empty)
+  member        MemberOfRoom[]
+  roomType      RoomType
+  roomPrice     Float
+  deposit       Float
+  utilities     DefaultUtilites[]
+  otherUtilites OtherUtilites[]
+  area          Int
+  house         House             @relation(fields: [houseId], references: [id])
+  houseId       Int
+  problem       Problem[]
+  bill          Bill[]
+  contract      Contract[]
+  createdAt     DateTime          @default(now())
+  updatedAt     DateTime          @updatedAt
+  Account       Account?
+}
+
+model OtherUtilites {
+  id      Int     @id @default(autoincrement())
+  name    String
+  user    Account @relation(fields: [userID], references: [id])
+  userID  Int
+  Room    Room?   @relation(fields: [roomId], references: [id])
+  roomId  Int?
+  House   House?  @relation(fields: [houseId], references: [id])
+  houseId Int?
+}
+
+model MemberOfRoom {
+  id              Int              @id @default(autoincrement())
+  name            String
+  phone           String
+  dob             String
+  gender          Gender
+  avatar          String
+  email           String
+  district        String
+  ward            String
+  province        String
+  detailLocation  String
+  cccd            String
+  issueDateCCCD   DateTime
+  placeIssueCCCD  String
+  imageFront      String
+  imageBack       String
+  note            String
+  room            Room             @relation(fields: [roomId], references: [id])
+  roomId          Int
+  isOut           Boolean          @default(false)
+  outDate         DateTime
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  Contract        Contract?
+  TemporyResident TemporyResident?
+}
+
+model DefaultUtilites {
+  id      Int    @id @default(autoincrement())
+  name    String
+  Room    Room?  @relation(fields: [roomId], references: [id])
+  roomId  Int?
+  House   House? @relation(fields: [houseId], references: [id])
+  houseId Int?
+}
+
+enum RoomType {
+  normal
+  premium
+}
+
+enum Gender {
+  male
+  female
+}
+
+enum StatusRoom {
+  Empty
+  Full
+  Available
+}
+
+model House {
+  id             Int               @id @default(autoincrement())
+  name           String
+  status         Boolean
+  location       LocationSchema    @relation(fields: [locationId], references: [id])
+  locationId     Int               @unique
+  numberOfRoom   Int
+  electricPrice  Int
+  waterPrice     Int
+  servicePrice   Int
+  priceList      PriceListItem[]
+  utilities      DefaultUtilites[]
+  otherUtilities OtherUtilites[]
+  Account        Account           @relation(fields: [hostId], references: [id])
+  hostId         Int
+  room           Room[]
+  news           News[]
+  createdAt      DateTime          @default(now())
+  updatedAt      DateTime          @updatedAt
+}
+
+model PriceListItem {
+  id      Int          @id @default(autoincrement())
+  base    DefaultPrice @relation(fields: [baseId], references: [id])
+  baseId  Int
+  price   Float
+  house   House?       @relation(fields: [houseId], references: [id])
+  houseId Int?
+}
+
+model DefaultPrice {
+  id             Int             @id @default(autoincrement())
+  name           String
+  unit           UnitPrice
+  priceListItems PriceListItem[]
+  PriceItemBill  PriceItemBill[]
+}
+
+enum UnitPrice {
+  DONG_PER_MONTH   @map("đồng/tháng")
+  DONG_PER_QUARTER @map("đồng/quý")
+  DONG_PER_kWh     @map("đồng/kWh")
+  DONG_PER_m3      @map("đồng/khối")
+  DONG_PER_PERSON  @map("đồng/người")
+}
+
+model LocationSchema {
+  id             Int    @id @default(autoincrement())
+  district       String
+  ward           String
+  province       String
+  detailLocation String
+  house          House?
+}
+
+model Problem {
+  id        Int           @id @default(autoincrement())
+  type      TypeProblem   @default(common)
+  status    StatusProblem @default(none)
+  title     String
+  content   String
+  room      Room          @relation(fields: [roomId], references: [id])
+  roomId    Int
+  creator   Account       @relation(fields: [creatorId], references: [id])
+  creatorId Int
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+}
+
+enum TypeProblem {
+  common
+  electric
+  water
+  other
+}
+
+enum StatusProblem {
+  none
+  doing
+  pending
+  done
+}
+
+model Notification {
+  id        Int              @id @default(autoincrement())
+  senderRef Account          @relation(fields: [sender], references: [id])
+  sender    Int
+  recipents Recipients[]
+  message   String
+  type      TypeNotification
+  link      String
+  createdAt DateTime         @default(now())
+  updatedAt DateTime         @updatedAt
+}
+
+enum TypeNotification {
+  bill
+  news
+  problem
+  general
+}
+
+model Recipients {
+  id           Int           @id @default(autoincrement())
+  userRef      Account       @relation(fields: [user], references: [id])
+  user         Int
+  isRead       Boolean
+  Notification Notification? @relation(fields: [notification], references: [id])
+  notification Int?
+}
+
+model News {
+  id       Int          @id @default(autoincrement())
+  Account  Account?     @relation(fields: [authorId], references: [id])
+  authorId Int?
+  House    House?       @relation(fields: [houseId], references: [id])
+  houseId  Int?
+  title    String
+  content  String
+  images   ImagesNews[]
+  comment  Comment[]
+}
+
+model ImagesNews {
+  id     Int    @id @default(autoincrement())
+  url    String
+  News   News?  @relation(fields: [newsId], references: [id])
+  newsId Int?
+}
+
+model Comment {
+  id        Int      @id @default(autoincrement())
+  Account   Account  @relation(fields: [createdId], references: [id])
+  createdId Int
+  News      News?    @relation(fields: [newsId], references: [id])
+  newsId    Int?
+  content   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Bill {
+  id           Int             @id @default(autoincrement())
+  Room         Room?           @relation(fields: [roomId], references: [id])
+  roomId       Int?
+  billCode     Float
+  roomPrice    Float
+  priceList    PriceItemBill[]
+  debt         Float
+  total        Float
+  note         String
+  paymentLink  String
+  isPaid       Boolean
+  paymentMetod PaymentMethod   @default(None)
+  evidence     String
+  createdAt    DateTime        @default(now())
+  updatedAt    DateTime        @updatedAt
+}
+
+enum PaymentMethod {
+  Banking
+  Cash
+  None
+}
+
+model PriceItemBill {
+  id           Int          @id @default(autoincrement())
+  Bill         Bill?        @relation(fields: [billId], references: [id])
+  billId       Int?
+  DefaultPrice DefaultPrice @relation(fields: [base], references: [id])
+  base         Int
+  unitPrice    Float
+  startUnit    Int
+  endUnit      Int
+  totalUnit    Int
+}
+
+model Contract {
+  id        Int          @id @default(autoincrement())
+  Room      Room?        @relation(fields: [roomId], references: [id])
+  roomId    Int?
+  Member    MemberOfRoom @relation(fields: [signatory], references: [id])
+  signatory Int          @unique
+  startDate DateTime     @default(now())
+  endDate   DateTime
+  isExpired Boolean
+  note      String
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
+}
+
+model TemporyResident {
+  id        Int          @id @default(autoincrement())
+  Member    MemberOfRoom @relation(fields: [memberId], references: [id])
+  memberId  Int          @unique
+  pathFile  String
+  isExpired Boolean
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
+}
