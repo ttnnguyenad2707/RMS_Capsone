@@ -9,7 +9,7 @@ import HouseRoute from "./House.router.js";
 import UtilitiesRoute from "./Utilities.route.js";
 import problemRoute from "./problem.router.js";
 import newsRouter from "./news.router.js";
-import defaultPriceRoute from "./Defaultprice.route.js";
+import defaultPriceRoute from "./DefaultPrice.route.js";
 import paymentRoute from "./Payment.route.js";
 import BillController from "../controllers/Bill.controller.js";
 import billRoute from "./Bill.route.js";

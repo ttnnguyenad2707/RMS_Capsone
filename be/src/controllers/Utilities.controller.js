@@ -15,12 +15,12 @@ const UtilitiesController = {
     }),
     getDefaultUtilities:  asyncHandler(async (req,res,next) => {
         const utilities = await UtilitiesService.getDefaultUtilities(req);
-        if (utilities) return res.status(201).json(response.successResponse(201,utilities))
+        if (utilities) return res.status(200).json(response.successResponse(200,utilities))
         else return res.status(404).json(response.errorResponse(404))
     }),
     getOtherUtilities:  asyncHandler(async (req,res,next) => {
         const utilities = await UtilitiesService.getOtherUtilities(req);
-        if (utilities) return res.status(201).json(response.successResponse(201,utilities))
+        if (utilities) return res.status(200).json(response.successResponse(200,utilities))
         else return res.status(404).json(response.errorResponse(404))
     }),
 }

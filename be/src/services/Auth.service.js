@@ -4,15 +4,27 @@ import bcrypt from "bcrypt";
 import TokenService from "./Token.service.js";
 import { customAlphabet } from "nanoid";
 import sendEmail from "../utils/mailer.js";
-import prisma from '../utils/prismaClient.js'
- 
+import prisma from "../utils/prismaClient.js";
+
 class AuthService {
     async login(req, res) {
         try {
-            const findAccount = await prisma.account.findUnique()
-            const findAccoun = await Account.findOne({
-                $or: [{ email: req.body.email }, { username: req.body.email }],
-            });
+            let findAccount = null;
+
+            // Check by email first
+            if (req.body.email) {
+                findAccount = await prisma.account.findUnique({
+                    where: { email: req.body.email },
+                });
+            }
+
+            // If no account found with email, check by username
+            if (!findAccount && req.body.email) {
+                findAccount = await prisma.account.findUnique({
+                    where: { username: req.body.email },
+                });
+            }
+
             if (!findAccount) {
                 return res
                     .status(401)
@@ -25,13 +37,13 @@ class AuthService {
             if (!comparePassword) {
                 return res.status(401).json({ error: "Wrong password" });
             }
-            const {  password, refreshToken, ...others } = findAccount._doc;
+            const { password, refreshToken, ...others } = findAccount;
             if (findAccount && comparePassword) {
                 const genAccessToken = await TokenService.genAccessToken(
-                    findAccount._doc
+                    findAccount
                 );
                 const genRefreshToken = await TokenService.genRefreshToken(
-                    findAccount._doc
+                    findAccount
                 );
 
                 res.cookie("accessToken", genAccessToken, {
@@ -40,52 +52,59 @@ class AuthService {
                     path: "/",
                     sameSite: "strict",
                 });
-                await Account.findByIdAndUpdate(
-                    { _id: findAccount.id },
-                    { refreshToken: genRefreshToken }
-                );
-                return res
-                    .status(200)
-                    .json({
-                        message: "Login Successfully",
-                        data: { ...others },
-                    });
+                await prisma.account.update({
+                    where: { id: findAccount.id },
+                    data: { refreshToken: genRefreshToken },
+                });
+                return res.status(200).json({
+                    message: "Login Successfully",
+                    data: { ...others },
+                });
             }
         } catch (error) {
             return res.status(500).json({
-                message: "Internal Server Error",
+                message: error.toString(),
             });
         }
     }
     async register(req, res) {
-        const { email,username, password, name } = req.body;
+        const { email, username, password, name } = req.body;
 
         try {
-            const checkEmailExists = await Account.findOne({ email: email });
+            // const checkEmailExists = await Account.findOne({ email: email });
+            const checkEmailExists = await prisma.account.findUnique({
+                where: { email },
+            });
             if (checkEmailExists !== null)
                 return res.status(400).json({ message: "Email has exists" });
-            const checkUsername = await Account.findOne({username})
+            const checkUsername = await prisma.account.findUnique({
+                where: { username },
+            });
             if (checkUsername !== null) {
                 return res.status(400).json({ message: "Username has exists" });
             }
 
             const salt = await bcrypt.genSalt(10);
             const hashedPassword = await bcrypt.hash(password, salt);
-            await Account.create({
-                username,
-                name,
-                email,
-                password: hashedPassword,
-            }).then((data) => {
-                return res.status(201).json({
-                    message: "Register Successfully",
+            await prisma.account
+                .create({
                     data: {
-                        username: data.username,
-                        name: data.name,
-                        email: data.email,
+                        username,
+                        name,
+                        email,
+                        password: hashedPassword,
                     },
+                })
+                .then((data) => {
+                    return res.status(201).json({
+                        message: "Register Successfully",
+                        data: {
+                            username: data.username,
+                            name: data.name,
+                            email: data.email,
+                        },
+                    });
                 });
-            });
         } catch (error) {
             return res.status(500).json({
                 message: "Internal Server Error",
@@ -117,12 +136,10 @@ class AuthService {
             subject: "Reset your password",
             text: `Password reset code: ${passwordResetCode}`,
         });
-        return res
-            .status(200)
-            .json({
-                message: "Check Email",
-                data: { accountId: account._doc._id },
-            });
+        return res.status(200).json({
+            message: "Check Email",
+            data: { accountId: account._doc._id },
+        });
     }
 
     async verifyPasswordResetCode(req, res) {
@@ -148,12 +165,10 @@ class AuthService {
         const account = await Account.findById(id);
 
         if (!account) {
-            return res
-                .status(400)
-                .json({
-                    message:
-                        "Could not reset user password, because account not found !!",
-                });
+            return res.status(400).json({
+                message:
+                    "Could not reset user password, because account not found !!",
+            });
         } else {
             account.passwordResetCode = null;
             const salt = await bcrypt.genSalt(10);

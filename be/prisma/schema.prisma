@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -13,110 +7,146 @@ datasource db {
   url      = "mysql://root:0000@localhost:3306/rentready"
 }
 
-model Account {
+model account {
   id                Int                 @id @default(autoincrement())
   createdAt         DateTime            @default(now())
   deletedAt         DateTime            @default(now())
   name              String              @db.VarChar(255)
-  username          String              @unique @db.VarChar(255)
-  email             String              @unique @db.VarChar(255)
-  phone             String              @db.VarChar(255)
-  avatar            String
+  username          String              @unique(map: "Account_username_key") @db.VarChar(255)
+  email             String              @unique(map: "Account_email_key") @db.VarChar(255)
+  phone             String              @default("")
+  avatar            String              @default("")
   password          String
-  provider          Provider
-  accountType       AccountType
-  Room              Room                @relation(fields: [roomId], references: [id])
-  roomId            Int                 @unique
+  provider          account_provider    @default(register)
+  accountType       account_accountType @default(owner)
   status            Boolean             @default(true)
-  identifyCard      IdentifyCard?
-  passwordResetCode PasswordResetCode[]
-  PaymentGateway    PaymentGateway?
-  OtherUtilites     OtherUtilites[]
-  House             House[]
-  problem           Problem[]
-  notification      Notification[]
-  recipients        Recipients[]
-  news              News[]
-  Comment           Comment[]
+  roomId            Int?                @unique(map: "Account_roomId_key")
+  refreshToken      String?
+  room              room?               @relation(fields: [roomId], references: [id], map: "Account_roomId_fkey")
+  comment           comment[]
+  house             house[]
+  identifycard      identifycard?
+  news              news[]
+  notification      notification[]
+  otherutilities    otherutilities[]
+  passwordresetcode passwordresetcode[]
+  paymentgateway    paymentgateway?
+  problem           problem[]
+  recipients        recipients[]
 }
 
-model PasswordResetCode {
-  id        Int      @id @default(autoincrement())
-  code      String
-  expiredAt DateTime
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  Account   Account  @relation(fields: [accountId], references: [id])
-  accountId Int
+model bill {
+  id            Int               @id @default(autoincrement())
+  roomId        Int?
+  billCode      Float
+  roomPrice     Float
+  debt          Float
+  total         Float
+  note          String
+  paymentLink   String
+  isPaid        Boolean
+  paymentMetod  bill_paymentMetod @default(None)
+  evidence      String
+  createdAt     DateTime          @default(now())
+  updatedAt     DateTime?
+  room          room?             @relation(fields: [roomId], references: [id], map: "Bill_roomId_fkey")
+  priceitembill priceitembill[]
+
+  @@index([roomId], map: "Bill_roomId_fkey")
 }
 
-model PaymentGateway {
-  clientId  String
-  APIKey    String
-  checksum  String
-  account   Account @relation(fields: [accountId], references: [id])
-  accountId Int     @unique
+model comment {
+  id        Int       @id @default(autoincrement())
+  createdId Int
+  newsId    Int?
+  content   String
+  createdAt DateTime  @default(now())
+  updatedAt DateTime?
+  account   account   @relation(fields: [createdId], references: [id], map: "Comment_createdId_fkey")
+  news      news?     @relation(fields: [newsId], references: [id], map: "Comment_newsId_fkey")
+
+  @@index([createdId], map: "Comment_createdId_fkey")
+  @@index([newsId], map: "Comment_newsId_fkey")
 }
 
-model IdentifyCard {
+model contract {
+  id           Int          @id @default(autoincrement())
+  roomId       Int?
+  signatory    Int          @unique(map: "Contract_signatory_key")
+  startDate    DateTime     @default(now())
+  endDate      DateTime
+  isExpired    Boolean
+  note         String
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime?
+  room         room?        @relation(fields: [roomId], references: [id], map: "Contract_roomId_fkey")
+  memberofroom memberofroom @relation(fields: [signatory], references: [id], map: "Contract_signatory_fkey")
+
+  @@index([roomId], map: "Contract_roomId_fkey")
+}
+
+model defaultprice {
+  id            Int               @id @default(autoincrement())
+  name          String
+  unit          defaultprice_unit
+  priceitembill priceitembill[]
+  pricelistitem pricelistitem[]
+}
+
+model house {
+  id                    Int                     @id @default(autoincrement())
+  name                  String
+  status                Boolean
+  locationId            Int                     @unique(map: "House_locationId_key")
+  electricPrice         Int
+  waterPrice            Int
+  hostId                Int
+  createdAt             DateTime                @default(now())
+  updatedAt             DateTime?
+  account               account?                @relation(fields: [hostId], references: [id], map: "House_hostId_fkey")
+  locationschema        locationschema          @relation(fields: [locationId], references: [id], map: "House_locationId_fkey")
+  housedefaultutilities housedefaultutilities[]
+  houseotherutilities   houseotherutilities[]
+  news                  news[]
+  pricelistitem         pricelistitem[]
+  room                  room[]
+  
+
+  @@index([hostId], map: "House_hostId_fkey")
+}
+
+model identifycard {
   identifyNumber String
   imageFrontSide String
   imageBackSide  String
-  account        Account @relation(fields: [accountId], references: [id])
-  accountId      Int     @unique
+  accountId      Int     @unique(map: "IdentifyCard_accountId_key")
+  account        account @relation(fields: [accountId], references: [id], map: "IdentifyCard_accountId_fkey")
 }
 
-enum Provider {
-  register
-  gmail
+model imagesnews {
+  id     Int    @id @default(autoincrement())
+  url    String
+  newsId Int?
+  news   news?  @relation(fields: [newsId], references: [id], map: "ImagesNews_newsId_fkey")
+
+  @@index([newsId], map: "ImagesNews_newsId_fkey")
 }
 
-enum AccountType {
-  owner
-  renter
-  manager
-  admin
+model locationschema {
+  id             Int    @id @default(autoincrement())
+  district       String
+  ward           String
+  province       String
+  detailLocation String
+  house          house?
 }
 
-model Room {
-  id            Int               @id @default(autoincrement())
-  floor         Int
-  name          String
-  status        StatusRoom        @default(Empty)
-  member        MemberOfRoom[]
-  roomType      RoomType
-  roomPrice     Float
-  deposit       Float
-  utilities     DefaultUtilites[]
-  otherUtilites OtherUtilites[]
-  area          Int
-  house         House             @relation(fields: [houseId], references: [id])
-  houseId       Int
-  problem       Problem[]
-  bill          Bill[]
-  contract      Contract[]
-  createdAt     DateTime          @default(now())
-  updatedAt     DateTime          @updatedAt
-  Account       Account?
-}
-
-model OtherUtilites {
-  id      Int     @id @default(autoincrement())
-  name    String
-  user    Account @relation(fields: [userID], references: [id])
-  userID  Int
-  Room    Room?   @relation(fields: [roomId], references: [id])
-  roomId  Int?
-  House   House?  @relation(fields: [houseId], references: [id])
-  houseId Int?
-}
-
-model MemberOfRoom {
-  id              Int              @id @default(autoincrement())
+model memberofroom {
+  id              Int                 @id @default(autoincrement())
   name            String
   phone           String
   dob             String
-  gender          Gender
+  gender          memberofroom_gender
   avatar          String
   email           String
   district        String
@@ -129,238 +159,250 @@ model MemberOfRoom {
   imageFront      String
   imageBack       String
   note            String
-  room            Room             @relation(fields: [roomId], references: [id])
   roomId          Int
-  isOut           Boolean          @default(false)
+  isOut           Boolean             @default(false)
+  createdAt       DateTime            @default(now())
+  updatedAt       DateTime?
   outDate         DateTime
-  createdAt       DateTime         @default(now())
-  updatedAt       DateTime         @updatedAt
-  Contract        Contract?
-  TemporyResident TemporyResident?
+  contract        contract?
+  room            room                @relation(fields: [roomId], references: [id], map: "MemberOfRoom_roomId_fkey")
+  temporyresident temporyresident?
+
+  @@index([roomId], map: "MemberOfRoom_roomId_fkey")
 }
 
-model DefaultUtilites {
-  id      Int    @id @default(autoincrement())
-  name    String
-  Room    Room?  @relation(fields: [roomId], references: [id])
-  roomId  Int?
-  House   House? @relation(fields: [houseId], references: [id])
-  houseId Int?
+model news {
+  id         Int          @id @default(autoincrement())
+  authorId   Int?
+  houseId    Int?
+  title      String
+  content    String
+  comment    comment[]
+  imagesnews imagesnews[]
+  account    account?     @relation(fields: [authorId], references: [id], map: "News_authorId_fkey")
+  house      house?       @relation(fields: [houseId], references: [id], map: "News_houseId_fkey")
+
+  @@index([authorId], map: "News_authorId_fkey")
+  @@index([houseId], map: "News_houseId_fkey")
 }
 
-enum RoomType {
-  normal
-  premium
+model notification {
+  id                                               Int               @id @default(autoincrement())
+  sender                                           Int
+  message                                          String
+  type                                             notification_type
+  link                                             String
+  createdAt                                        DateTime          @default(now())
+  updatedAt                                        DateTime?
+  account                                          account           @relation(fields: [sender], references: [id], map: "Notification_sender_fkey")
+  recipients_recipients_notificationTonotification recipients[]      @relation("recipients_notificationTonotification")
+
+  @@index([sender], map: "Notification_sender_fkey")
 }
 
-enum Gender {
-  male
-  female
+model otherutilities {
+  id                  Int                   @id @default(autoincrement())
+  name                String
+  userID              Int
+  houseotherutilities houseotherutilities[]
+  account             account               @relation(fields: [userID], references: [id], map: "OtherUtilities_userID_fkey")
+
+  @@index([userID], map: "OtherUtilities_userID_fkey")
 }
 
-enum StatusRoom {
-  Empty
-  Full
-  Available
+model passwordresetcode {
+  id        Int       @id @default(autoincrement())
+  code      String
+  expiredAt DateTime
+  createdAt DateTime  @default(now())
+  updatedAt DateTime?
+  accountId Int
+  account   account   @relation(fields: [accountId], references: [id], map: "PasswordResetCode_accountId_fkey")
+
+  @@index([accountId], map: "PasswordResetCode_accountId_fkey")
 }
 
-model House {
-  id             Int               @id @default(autoincrement())
-  name           String
-  status         Boolean
-  location       LocationSchema    @relation(fields: [locationId], references: [id])
-  locationId     Int               @unique
-  numberOfRoom   Int
-  electricPrice  Int
-  waterPrice     Int
-  servicePrice   Int
-  priceList      PriceListItem[]
-  utilities      DefaultUtilites[]
-  otherUtilities OtherUtilites[]
-  Account        Account           @relation(fields: [hostId], references: [id])
-  hostId         Int
-  room           Room[]
-  news           News[]
-  createdAt      DateTime          @default(now())
-  updatedAt      DateTime          @updatedAt
+model paymentgateway {
+  clientId  String
+  APIKey    String
+  checksum  String
+  accountId Int     @unique(map: "PaymentGateway_accountId_key")
+  account   account @relation(fields: [accountId], references: [id], map: "PaymentGateway_accountId_fkey")
 }
 
-model PriceListItem {
-  id      Int          @id @default(autoincrement())
-  base    DefaultPrice @relation(fields: [baseId], references: [id])
-  baseId  Int
-  price   Float
-  house   House?       @relation(fields: [houseId], references: [id])
-  houseId Int?
+model priceitembill {
+  id           Int          @id @default(autoincrement())
+  billId       Int?
+  base         Int
+  unitPrice    Float
+  startUnit    Int
+  endUnit      Int
+  totalUnit    Int
+  defaultprice defaultprice @relation(fields: [base], references: [id], map: "PriceItemBill_base_fkey")
+  bill         bill?        @relation(fields: [billId], references: [id], map: "PriceItemBill_billId_fkey")
+
+  @@index([base], map: "PriceItemBill_base_fkey")
+  @@index([billId], map: "PriceItemBill_billId_fkey")
 }
 
-model DefaultPrice {
-  id             Int             @id @default(autoincrement())
-  name           String
-  unit           UnitPrice
-  priceListItems PriceListItem[]
-  PriceItemBill  PriceItemBill[]
+model pricelistitem {
+  id           Int          @id @default(autoincrement())
+  baseId       Int
+  price        Float
+  houseId      Int?
+  defaultprice defaultprice @relation(fields: [baseId], references: [id], map: "PriceListItem_baseId_fkey")
+  house        house?       @relation(fields: [houseId], references: [id], map: "PriceListItem_houseId_fkey")
+
+  @@index([baseId], map: "PriceListItem_baseId_fkey")
+  @@index([houseId], map: "PriceListItem_houseId_fkey")
 }
 
-enum UnitPrice {
-  DONG_PER_MONTH   @map("đồng/tháng")
-  DONG_PER_QUARTER @map("đồng/quý")
-  DONG_PER_kWh     @map("đồng/kWh")
-  DONG_PER_m3      @map("đồng/khối")
-  DONG_PER_PERSON  @map("đồng/người")
-}
-
-model LocationSchema {
-  id             Int    @id @default(autoincrement())
-  district       String
-  ward           String
-  province       String
-  detailLocation String
-  house          House?
-}
-
-model Problem {
-  id        Int           @id @default(autoincrement())
-  type      TypeProblem   @default(common)
-  status    StatusProblem @default(none)
+model problem {
+  id        Int            @id @default(autoincrement())
+  type      problem_type   @default(common)
+  status    problem_status @default(none)
   title     String
   content   String
-  room      Room          @relation(fields: [roomId], references: [id])
   roomId    Int
-  creator   Account       @relation(fields: [creatorId], references: [id])
   creatorId Int
-  createdAt DateTime      @default(now())
-  updatedAt DateTime      @updatedAt
+  createdAt DateTime       @default(now())
+  updatedAt DateTime?
+  account   account        @relation(fields: [creatorId], references: [id], map: "Problem_creatorId_fkey")
+  room      room           @relation(fields: [roomId], references: [id], map: "Problem_roomId_fkey")
+
+  @@index([creatorId], map: "Problem_creatorId_fkey")
+  @@index([roomId], map: "Problem_roomId_fkey")
 }
 
-enum TypeProblem {
+model recipients {
+  id                                                 Int           @id @default(autoincrement())
+  user                                               Int
+  isRead                                             Boolean
+  notification                                       Int?
+  notification_recipients_notificationTonotification notification? @relation("recipients_notificationTonotification", fields: [notification], references: [id], map: "Recipients_notification_fkey")
+  account                                            account       @relation(fields: [user], references: [id], map: "Recipients_user_fkey")
+
+  @@index([notification], map: "Recipients_notification_fkey")
+  @@index([user], map: "Recipients_user_fkey")
+}
+
+model room {
+  id           Int            @id @default(autoincrement())
+  floor        Int
+  name         String
+  status       room_status    @default(Empty)
+  roomType     room_roomType
+  roomPrice    Float
+  deposit      Float
+  area         Int
+  houseId      Int
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime?
+  account      account?
+  bill         bill[]
+  contract     contract[]
+  memberofroom memberofroom[]
+  problem      problem[]
+  house        house          @relation(fields: [houseId], references: [id], map: "Room_houseId_fkey")
+
+  @@index([houseId], map: "Room_houseId_fkey")
+}
+
+model temporyresident {
+  id           Int          @id @default(autoincrement())
+  memberId     Int          @unique(map: "TemporyResident_memberId_key")
+  pathFile     String
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime?
+  isExpired    Boolean
+  memberofroom memberofroom @relation(fields: [memberId], references: [id], map: "TemporyResident_memberId_fkey")
+}
+
+model defaultutilities {
+  id                    Int                     @id @default(autoincrement())
+  name                  String
+  housedefaultutilities housedefaultutilities[]
+}
+
+model housedefaultutilities {
+  houseId            Int
+  defaultUtilitiesId Int
+  defaultutilities   defaultutilities @relation(fields: [defaultUtilitiesId], references: [id], onDelete: Cascade, map: "houseDefaultUtilities_defaultUtilitiesId_fkey")
+  house              house            @relation(fields: [houseId], references: [id], onDelete: Cascade, map: "houseDefaultUtilities_houseId_fkey")
+
+  @@id([houseId, defaultUtilitiesId])
+  @@index([defaultUtilitiesId], map: "houseDefaultUtilities_defaultUtilitiesId_fkey")
+}
+
+model houseotherutilities {
+  houseId          Int
+  otherUtilitiesId Int
+  house            house          @relation(fields: [houseId], references: [id], onDelete: Cascade, map: "HouseOtherUtilities_houseId_fkey")
+  otherutilities   otherutilities @relation(fields: [otherUtilitiesId], references: [id], onDelete: Cascade, map: "HouseOtherUtilities_otherUtilitiesId_fkey")
+
+  @@id([houseId, otherUtilitiesId])
+  @@index([otherUtilitiesId], map: "HouseOtherUtilities_otherUtilitiesId_fkey")
+}
+
+enum problem_type {
   common
   electric
   water
   other
 }
 
-enum StatusProblem {
+enum defaultprice_unit {
+  DONG_PER_MONTH     @map("đồng/tháng")
+  DONG_PER_QUARTERLY @map("đồng/quý")
+  DONG_PER_kWh       @map("đồng/kWh")
+  DONG_PER_BLOCK     @map("đồng/khối")
+  DONG_PER_PERSON    @map("đồng/người")
+}
+
+enum problem_status {
   none
   doing
   pending
   done
 }
 
-model Notification {
-  id        Int              @id @default(autoincrement())
-  senderRef Account          @relation(fields: [sender], references: [id])
-  sender    Int
-  recipents Recipients[]
-  message   String
-  type      TypeNotification
-  link      String
-  createdAt DateTime         @default(now())
-  updatedAt DateTime         @updatedAt
-}
-
-enum TypeNotification {
+enum notification_type {
   bill
   news
   problem
   general
 }
 
-model Recipients {
-  id           Int           @id @default(autoincrement())
-  userRef      Account       @relation(fields: [user], references: [id])
-  user         Int
-  isRead       Boolean
-  Notification Notification? @relation(fields: [notification], references: [id])
-  notification Int?
+enum room_status {
+  Empty
+  Full
+  Available
 }
 
-model News {
-  id       Int          @id @default(autoincrement())
-  Account  Account?     @relation(fields: [authorId], references: [id])
-  authorId Int?
-  House    House?       @relation(fields: [houseId], references: [id])
-  houseId  Int?
-  title    String
-  content  String
-  images   ImagesNews[]
-  comment  Comment[]
+enum memberofroom_gender {
+  male
+  female
 }
 
-model ImagesNews {
-  id     Int    @id @default(autoincrement())
-  url    String
-  News   News?  @relation(fields: [newsId], references: [id])
-  newsId Int?
+enum room_roomType {
+  normal
+  premium
 }
 
-model Comment {
-  id        Int      @id @default(autoincrement())
-  Account   Account  @relation(fields: [createdId], references: [id])
-  createdId Int
-  News      News?    @relation(fields: [newsId], references: [id])
-  newsId    Int?
-  content   String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+enum account_provider {
+  register
+  gmail
 }
 
-model Bill {
-  id           Int             @id @default(autoincrement())
-  Room         Room?           @relation(fields: [roomId], references: [id])
-  roomId       Int?
-  billCode     Float
-  roomPrice    Float
-  priceList    PriceItemBill[]
-  debt         Float
-  total        Float
-  note         String
-  paymentLink  String
-  isPaid       Boolean
-  paymentMetod PaymentMethod   @default(None)
-  evidence     String
-  createdAt    DateTime        @default(now())
-  updatedAt    DateTime        @updatedAt
-}
-
-enum PaymentMethod {
+enum bill_paymentMetod {
   Banking
   Cash
   None
 }
 
-model PriceItemBill {
-  id           Int          @id @default(autoincrement())
-  Bill         Bill?        @relation(fields: [billId], references: [id])
-  billId       Int?
-  DefaultPrice DefaultPrice @relation(fields: [base], references: [id])
-  base         Int
-  unitPrice    Float
-  startUnit    Int
-  endUnit      Int
-  totalUnit    Int
-}
-
-model Contract {
-  id        Int          @id @default(autoincrement())
-  Room      Room?        @relation(fields: [roomId], references: [id])
-  roomId    Int?
-  Member    MemberOfRoom @relation(fields: [signatory], references: [id])
-  signatory Int          @unique
-  startDate DateTime     @default(now())
-  endDate   DateTime
-  isExpired Boolean
-  note      String
-  createdAt DateTime     @default(now())
-  updatedAt DateTime     @updatedAt
-}
-
-model TemporyResident {
-  id        Int          @id @default(autoincrement())
-  Member    MemberOfRoom @relation(fields: [memberId], references: [id])
-  memberId  Int          @unique
-  pathFile  String
-  isExpired Boolean
-  createdAt DateTime     @default(now())
-  updatedAt DateTime     @updatedAt
+enum account_accountType {
+  owner
+  renter
+  manager
+  admin
 }
