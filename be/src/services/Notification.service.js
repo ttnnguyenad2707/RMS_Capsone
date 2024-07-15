@@ -1,66 +1,55 @@
 import Notification from "../models/Notification.model.js";
 import getCurrentUser from "../utils/getCurrentUser.js";
 import mongoose from "mongoose";
+import prisma from "../utils/prismaClient.js";
 
 const NotificationService = {
     getAll: async (req) => {
         try {
-            const currentUserId = getCurrentUser(req); // Giả sử bạn đã có hàm này để lấy ID người dùng hiện tại
-            const notifications = await Notification.aggregate([
-                {
-                    $match: {
-                        "recipients.user": new mongoose.Types.ObjectId(currentUserId)
-                    }
-                },
-                {
-                    $unwind: "$recipients"
-                },
-                {
-                    $match: {
-                        "recipients.user": new mongoose.Types.ObjectId(currentUserId),
-                    }
-                },
-                {
-                    $lookup: {
-                    from: "accounts", // Tên collection trong cơ sở dữ liệu của bạn
-                    let: { senderId: "$sender" }, // Định nghĩa biến `senderId` để sử dụng trong pipeline
-                    pipeline: [
-                        {
-                            $match: {
-                                $expr: {
-                                    $eq: ["$_id", "$$senderId"] // So sánh để tìm document phù hợp
-                                }
-                            }
-                        },
-                        {
-                            $project: { name: 1, email: 1,avatar: 1,username :1,roomId: 1 } // Chỉ giới hạn lấy các trường `name` và `email`
-                        }
-                    ],
-                    as: "senderDetails"
-                }
-                },
-                {
-                    $unwind: "$senderDetails" // Để "flatten" mảng senderDetails, giả sử mỗi thông báo chỉ có một người gửi
-                },
-                {
-                    $sort: {
-                        "createdAt": -1
-                    }
-                },
-                {
-                    $project: {
-                        sender: "$senderDetails", // Đặt lại trường sender để chứa thông tin đã populate
-                        message: 1,
-                        type: 1,
-                        link: 1,
-                        isRead: "$recipients.isRead",
-                        createdAt: 1,
-                        updatedAt: 1,
-                    }
-                }
-            ]);
+            const currentUserId = getCurrentUser(req); // Assuming you have this function to get the current user ID
     
-            return notifications;
+            // Fetch notifications for the current user
+            const notifications = await prisma.notification.findMany({
+                where: {
+                    recipients: {
+                        some: {
+                            userId: currentUserId
+                        }
+                    }
+                },
+                include: {
+                    account: {
+                        select: {
+                            id: true,
+                            name: true,
+                            email: true,
+                            avatar: true,
+                            username: true,
+                            roomId: true,
+                        }
+                    },
+                    recipients: true
+                },
+                orderBy: {
+                    createdAt: 'desc'
+                }
+            });
+    
+            // Transform notifications to match the expected structure
+            const transformedNotifications = notifications.map(notification => {
+                const recipient = notification.recipients.find(r => r.userId === currentUserId);
+                return {
+                    sender: notification.account,
+                    message: notification.message,
+                    type: notification.type,
+                    link: notification.link,
+                    isRead: recipient.isRead,
+                    createdAt: notification.createdAt,
+                    updatedAt: notification.updatedAt,
+                };
+            });
+    
+            return transformedNotifications;
         } catch (error) {
             throw error;
         }
@@ -69,29 +58,52 @@ const NotificationService = {
     updateOne: async (req) => {
         try {
             const { notificationId } = req.params;
-            const {isRead} = req.body
+            const { isRead } = req.body;
             const currentUserId = getCurrentUser(req);
     
-            const notification = await Notification.findOneAndUpdate(
-                {
-                    _id: notificationId,
-                    "recipients.user": new mongoose.Types.ObjectId(currentUserId),
+            // Find the recipient entry that matches the notification ID and current user ID
+            const recipient = await prisma.recipients.findFirst({
+                where: {
+                    notificationId: parseInt(notificationId),
+                    userId: currentUserId,
                 },
-                {
-                    $set: {
-                        "recipients.$.isRead": isRead,
-                    },
-                },
-                {
-                    new: true, 
-                }
-            );
+            });
     
-            if (!notification) {
+            if (!recipient) {
                 return { message: "Notification not found or you do not have permission to update it." };
             }
     
-            return notification;
+            // Update the isRead status of the recipient
+            const updatedRecipient = await prisma.recipients.update({
+                where: {
+                    id: recipient.id,
+                },
+                data: {
+                    isRead: Boolean( isRead ),
+                },
+            });
+    
+            // Fetch the updated notification including the updated recipient
+            const updatedNotification = await prisma.notification.findUnique({
+                where: {
+                    id: parseInt(notificationId),
+                },
+                include: {
+                    recipients: true,
+                    account: {
+                        select: {
+                            id: true,
+                            name: true,
+                            email: true,
+                            avatar: true,
+                            username: true,
+                            roomId: true,
+                        },
+                    },
+                },
+            });
+    
+            return updatedNotification;
         } catch (error) {
             throw error;
         }

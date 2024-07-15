@@ -6,164 +6,219 @@ import bcrypt from "bcrypt";
 import Image from "../models/Upload.model.js";
 import { v2 as cloudinary } from "cloudinary";
 import BillsModel from "../models/Bills.model.js";
+import prisma from "../utils/prismaClient.js";
 
 const RoomService = {
     addRoom: async (req) => {
         try {
             const { houseId } = req.body;
-            const house = await HousesModel.findById(houseId);
+            const house = await prisma.house.findUnique({
+                where: { id: parseInt(houseId) },
+                include: {
+                    housedefaultutilities: true,
+                    houseotherutilities: true,
+                },
+            });
+
+            if (!house) {
+                throw new Error(`House with ID ${houseId} not found.`);
+            }
+
             const workbook = new exceljs.Workbook();
             const buffer = req.file.buffer;
             await workbook.xlsx.load(buffer);
             const worksheet = workbook.worksheets[0];
-    
+
             const salt = await bcrypt.genSalt(10);
             const hashedPassword = await bcrypt.hash("Rms@12345", salt);
-    
-            const rooms = await Rooms.find({houseId,deleted:false}); 
-            const existingRoomNames = []
-            rooms.map(room => {
-                existingRoomNames.push(room.name);
-            })
+
+            const existingRooms = await prisma.room.findMany({
+                where: { houseId: parseInt(houseId), deleted: false },
+            });
+            const existingRoomNames = existingRooms.map((room) => room.name);
             console.log(existingRoomNames);
-    
-            for (let rowNumber = 1; rowNumber <= worksheet.rowCount; rowNumber++) {
+
+            for (
+                let rowNumber = 1;
+                rowNumber <= worksheet.rowCount;
+                rowNumber++
+            ) {
                 const row = worksheet.getRow(rowNumber);
                 if (rowNumber !== 1 && row.getCell(1).value) {
                     const roomName = row.getCell(1).value.toString().trim();
-                    
                     if (existingRoomNames.includes(roomName)) {
-                        throw new Error(`Phòng "${roomName}" đã tồn tại.`)
+                        throw new Error(`Phòng "${roomName}" đã tồn tại.`);
                     }
-    
                 }
             }
-    
-            for (let rowNumber = 1; rowNumber <= worksheet.rowCount; rowNumber++) {
+
+            for (
+                let rowNumber = 1;
+                rowNumber <= worksheet.rowCount;
+                rowNumber++
+            ) {
                 const row = worksheet.getRow(rowNumber);
                 if (rowNumber !== 1 && row.getCell(1).value) {
                     const roomName = row.getCell(1).value.toString().trim();
-                    const floor = roomName.charAt(0);
-                    
-                    // Kiểm tra xem tên phòng đã được kiểm tra và không trùng lặp
+                    const floor = parseInt(roomName.charAt(0));
+
                     if (!existingRoomNames.includes(roomName)) {
-                        const rowData = await Rooms.create({
-                            floor: floor,
-                            name: roomName,
-                            status: row.getCell(2).value,
-                            quantityMember: row.getCell(3).value,
-                            roomType: row.getCell(4).value,
-                            roomPrice: row.getCell(5).value,
-                            deposit: row.getCell(6).value,
-                            area: row.getCell(7).value,
-                            houseId: houseId,
-                            utilities: house?.utilities || [],
-                            otherUtilities: house?.otherUtilities || [],
+                        const rowData = await prisma.room.create({
+                            data: {
+                                floor: floor,
+                                name: roomName,
+                                status: row.getCell(2).value,
+                                roomType: row.getCell(4).value,
+                                roomPrice: parseFloat(row.getCell(5).value),
+                                deposit: parseFloat(row.getCell(6).value),
+                                area: parseInt(row.getCell(7).value),
+                                house: { connect: { id: parseInt(houseId) } },
+                                createdAt: new Date(),
+                                updatedAt: new Date(),
+                            },
                         });
-                        const accountData = await AccountModel.create({
-                            username: house.name.replace(/\s/g, "") + roomName,
-                            password: hashedPassword,
-                            accountType: "renter",
-                            roomId: rowData.id,
-                            status: false,
+
+                        await prisma.account.create({
+                            data: {
+                                username:
+                                    house.name.replace(/\s/g, "") + roomName,
+                                password: hashedPassword,
+                                accountType: "renter",
+                                roomId: rowData.id,
+                                status: false,
+                            },
                         });
-                        house.numberOfRoom += 1;
-                        await house.save();
                     }
                 }
             }
-            return {
-                message: "oke",
-            };
+            return { message: "oke" };
         } catch (error) {
-            throw error
+            throw new Error(error.toString());
         }
     },
-    
 
     addOne: async (req) => {
         try {
             const { houseId } = req.params;
-            const house = await HousesModel.findById(houseId);
-
-            const existingRoom = await Rooms.findOne({
-                houseId,
-                name: req.body.name.trim(),
-                deleted: false
+            const house = await prisma.house.findUnique({
+                where: { id: parseInt(houseId) },
+                include: {
+                    housedefaultutilities: true,
+                    houseotherutilities: true,
+                },
             });
-            if (existingRoom) {
-                throw new Error(
-                    "Phòng đã tồn tại. Vui lòng chọn tên khác."
-                );
+
+            if (!house) {
+                throw new Error(`House with ID ${houseId} not found.`);
             }
 
-            const data = await Rooms.create({
-                houseId,
-                floor: req.body.name.trim().charAt(0),
-                ...req.body,
-                utilities: house.utilities,
-                otherUtilities: house.otherUtilities,
-            });
-            house.numberOfRoom += 1;
-            await house.save();
-            const salt = await bcrypt.genSalt(10);
-            const hashedPassword = await bcrypt.hash("Rms@12345", salt);
-            const accountData = await AccountModel.create({
-                username: house.name.replace(/\s/g, "") + req.body.name,
-                password: hashedPassword,
-                accountType: "renter",
-                roomId: data.id,
-                status: false,
+            const existingRoom = await prisma.room.findFirst({
+                where: {
+                    houseId: parseInt(houseId),
+                    name: req.body.name.trim(),
+                    deleted: false,
+                },
             });
 
-            return data;
+            if (existingRoom) {
+                throw new Error("Phòng đã tồn tại. Vui lòng chọn tên khác.");
+            }
+
+            const salt = await bcrypt.genSalt(10);
+            const hashedPassword = await bcrypt.hash("Rms@12345", salt);
+
+            const createdRoom = await prisma.room.create({
+                data: {
+                    houseId: parseInt(houseId),
+                    floor: req.body.floor,
+                    name: req.body.name.trim(),
+                    status: req.body.status,
+                    roomType: req.body.roomType,
+                    roomPrice: req.body.roomPrice,
+                    deposit: req.body.deposit,
+                    area: req.body.area,
+                    createdAt: new Date(),
+                    updatedAt: new Date(),
+                    roomdefaultutilities: {
+                        create: req.body.utilities.map((utilId) => ({
+                            defaultutilities: {
+                                connect: { id: parseInt(utilId) },
+                            },
+                        })),
+                    },
+                    roomotherutilities: {
+                        create: req.body.otherUtilities.map((utilId) => ({
+                            otherutilities: {
+                                connect: { id: parseInt(utilId) },
+                            },
+                        })),
+                    },
+                },
+            });
+
+            await prisma.account.create({
+                data: {
+                    username: house.name.replace(/\s/g, "") + req.body.name,
+                    password: hashedPassword,
+                    accountType: "renter",
+                    roomId: createdRoom.id,
+                    status: false,
+                },
+            });
+
+            return createdRoom;
         } catch (error) {
-            throw error;
+            throw new Error(error.toString());
         }
     },
     getRooms: async (req) => {
         try {
             const { houseId } = req.params;
-            const { page, limit, option } = req.query;
-            const { floor, name, status, quantityMember, roomType, area } =
-                req.query;
+            const {
+                page,
+                limit,
+                option,
+                floor,
+                name,
+                status,
+                quantityMember,
+                roomType,
+                area,
+            } = req.query;
             const pageNumber = parseInt(page) || 1;
             const limitPerPage = parseInt(limit) || 10;
-
             const skip = (pageNumber - 1) * limitPerPage;
 
-            const totalRooms = await Rooms.countDocuments({ houseId });
+            const where = {
+                houseId: parseInt(houseId),
+                deleted: false,
+                ...(floor && { floor: parseInt(floor) }),
+                ...(name && { name }),
+                ...(status && { status }),
+                ...(area && { area: parseInt(area) }),
+            };
+
+            const totalRooms = await prisma.room.count({ where });
             const totalPages = Math.ceil(totalRooms / limitPerPage);
 
-            const query = { houseId, deleted: false };
-            if (floor) {
-                query.floor = floor;
-            }
-            if (name) {
-                query.name = { $regex: name, $options: "i" };
-            }
-            if (status) {
-                query.status = status;
-            }
-            if (quantityMember) {
-                query.quantityMember = quantityMember;
-            }
-            if (roomType) {
-                query.roomType = roomType;
-            }
-            if (area) {
-                query.area = area;
-            }
             let data;
             if (String(option) === "all") {
-                data = await Rooms.find(query).sort({ createdAt: -1 }).exec();
+                data = await prisma.room.findMany({
+                    where,
+                    orderBy: { createdAt: "desc" },
+                    include: { house: true },
+                });
                 return data;
             } else {
-                data = await Rooms.find(query)
-                    .skip(skip)
-                    .limit(limitPerPage)
-                    .sort({ createdAt: -1 })
-                    .exec();
+                data = await prisma.room.findMany({
+                    where,
+                    skip,
+                    take: limitPerPage,
+                    orderBy: { createdAt: "desc" },
+                    include: {
+                        house: true,
+                    },
+                });
                 return {
                     pagination: {
                         currentPage: pageNumber,
@@ -175,160 +230,250 @@ const RoomService = {
                 };
             }
         } catch (error) {
-            console.log(error);
-            throw error;
+            console.error(error);
+            throw new Error(error.toString());
         }
     },
     getOne: async (req) => {
         try {
             const { roomId } = req.params;
-            const room = await Rooms.findById(roomId)
-                .populate("utilities")
-                .populate("otherUtilities")
-                .populate("houseId")
-                .populate("members.avatar")
-                .populate({
-                    path: "houseId",
-                    populate: { path: "priceList", populate: "base" },
-                });
+            const room = await prisma.room.findUnique({
+                where: {
+                    id: parseInt(roomId),
+                },
+                include: {
+                    roomdefaultutilities: true, // assuming you have a relation defined for utilities
+                    roomotherutilities: true, // assuming you have a relation defined for otherUtilities
+                    house: {
+                        include: {
+                            pricelistitem: {
+                                include: {
+                                    defaultprice: true,
+                                },
+                            },
+                        },
+                    },
+                    members: true,
+                },
+            });
+
+            if (!room) {
+                return {
+                    error: "Room not found",
+                    status: 404,
+                };
+            }
+
             return {
-                ...room._doc,
+                ...room,
                 currentMember: room.members.length,
             };
         } catch (error) {
-            throw error;
+            throw new Error(error.toString());
         }
     },
     updateOne: async (req) => {
         try {
             const { roomId } = req.params;
 
-            await Rooms.findByIdAndUpdate(roomId, { ...req.body });
+            // Update the room with the new data from req.body
+            const updatedRoom = await prisma.room.update({
+                where: {
+                    id: parseInt(roomId),
+                },
+                data: {
+                    ...req.body,
+                    updatedAt: new Date(), // update the updatedAt field
+                },
+            });
 
-            const newRoom = await Rooms.findById(roomId);
-            return newRoom;
+            return updatedRoom;
         } catch (error) {
-            throw error;
+            throw new Error(error.toString());
         }
     },
     deleteOne: async (req) => {
         try {
             const { roomId } = req.params;
-            await Rooms.findByIdAndUpdate(roomId, {
-                deleted: true,
-                deletedAt: Date.now(),
+
+            // Update the room to mark it as deleted
+            const updatedRoom = await prisma.room.update({
+                where: {
+                    id: parseInt(roomId),
+                },
+                data: {
+                    deleted: true,
+                    deletedAt: new Date(),
+                },
             });
-            await AccountModel.findOneAndDelete({ roomId });
-            const newData = await Rooms.findById(roomId);
-            return newData;
+
+            // Delete the associated account
+            await prisma.account.deleteMany({
+                where: {
+                    roomId: parseInt(roomId),
+                },
+            });
+
+            return updatedRoom;
         } catch (error) {
-            throw error;
+            throw new Error(error.toString());
         }
     },
     getFloor: async (req) => {
         try {
             const { houseId } = req.params;
-            const floor = await Rooms.distinct("floor", {
-                houseId,
-                deleted: false,
+
+            // Fetch all rooms with the given houseId and deleted is false
+            const rooms = await prisma.room.findMany({
+                where: {
+                    houseId: parseInt(houseId),
+                    deleted: false,
+                },
+                select: {
+                    floor: true,
+                },
             });
-            return floor;
+
+            // Extract distinct floor values
+            const floors = [...new Set(rooms.map((room) => room.floor))];
+
+            return floors;
         } catch (error) {
-            throw error;
+            throw new Error(error.toString());
         }
     },
     addMember: async (req) => {
         try {
             const { roomId } = req.params;
-            const room = await Rooms.findById(roomId);
+            const { phone, cccd, ...memberData } = req.body;
+
+            // Check if room exists
+            const room = await prisma.room.findUnique({
+                where: { id: parseInt(roomId) },
+                include: { members: true },
+            });
+
+            if (!room) {
+                throw new Error("Room not found.");
+            }
+
+            // Check if a member with the same phone or CCCD already exists
             const existingMember = room.members.find(
-                (member) =>
-                    member.phone === req.body.phone ||
-                    member.cccd === req.body.cccd
+                (member) => member.phone === phone || member.cccd === cccd
             );
+
             if (existingMember) {
                 throw new Error(
                     "Số điện thoại hoặc số CCCD đã tồn tại trong phòng."
                 );
             }
-            let image;
+
+            // Handle image upload
+            let imageData;
             if (req.file) {
                 const result = await cloudinary.uploader.upload(req.file.path);
-    
-                image = new Image({
-                    imageName: req.file.mimetype,
-                    imageData: result.secure_url,
-                });
+                imageData = result.secure_url;
+            } else {
+                imageData =
+                    "https://quanlynhatro.com/frontend3/assets/img/placeholder.png";
+            }
 
-            }
-            else{
-                image = new Image({
-                    imageName: "default",
-                    imageData: "https://quanlynhatro.com/frontend3/assets/img/placeholder.png",
-                });
-            }
-            await image.save();
-            room.members.push({ ...req.body, avatar: image.id });
-            await room.save();
-            return {
-                ...room.members[room.members.length - 1]._doc,
-                avatar: image.imageData,
-            };
+            // Create a new member
+            const newMember = await prisma.members.create({
+                data: {
+                    ...memberData,
+                    phone,
+                    cccd,
+                    avatar: imageData,
+                    roomId: parseInt(roomId),
+                },
+            });
+
+            return newMember;
         } catch (error) {
-            throw error;
+            throw new Error(error.toString());
         }
     },
     removeMember: async (req) => {
         try {
             const { roomId } = req.params;
-            const { memberId } = req.body;
-            const room = await Rooms.findById(roomId);
-            room.members = room.members.filter(
-                (member) => member.id !== memberId
+            const { memberId } = req.params;
+
+            // Check if room exists
+            const room = await prisma.room.findUnique({
+                where: { id: parseInt(roomId) },
+                include: { members: true },
+            });
+
+            if (!room) {
+                throw new Error("Room not found.");
+            }
+
+            // Check if member exists in the room
+            const memberExists = room.members.some(
+                (member) => member.id === parseInt(memberId)
             );
-            await room.save();
-            return room;
+
+            if (!memberExists) {
+                throw new Error("Member not found in the room.");
+            }
+
+            // Remove the member from the room
+            await prisma.members.update({
+                where: { id: parseInt(memberId) },
+                data: {
+                    deleted: true,
+                    deletedAt: new Date(),
+                },
+            });
+
+            // Retrieve the updated room
+            const updatedRoom = await prisma.room.findUnique({
+                where: { id: parseInt(roomId) },
+                include: { members: true },
+            });
+
+            return updatedRoom;
         } catch (error) {
-            throw error;
+            throw new Error(error.toString());
         }
     },
     updateMember: async (req) => {
         try {
             const { roomId } = req.params;
             const { memberId, ...updateInfo } = req.body;
-            const room = await Rooms.findById(roomId).populate(
-                "members.avatar"
-            );
-            let image;
-            if (req.file) {
-                const result = await cloudinary.uploader.upload(req.file.path);
 
-                image = new Image({
-                    imageName: req.file.mimetype,
-                    imageData: result.secure_url,
-                });
-                await image.save();
-            }
-            const memberIndex = room.members.findIndex(
-                (member) => member.id === memberId
-            );
-            if (memberIndex === -1) {
+            // Fetch the room including its members
+            const room = await prisma.room.findUnique({
+                where: { id: parseInt(roomId) },
+                include: {
+                    members: {
+                        where: { id: parseInt(memberId) },
+                    },
+                },
+            });
+
+            if (!room || room.members.length === 0) {
                 throw new Error("Member not found in the room");
             }
-            if (image) {
-                room.members[memberIndex] = { ...updateInfo, avatar: image.id };
-            } else {
-                room.members[memberIndex] = {
-                    ...updateInfo,
-                    avatar: room.members[memberIndex].avatar,
-                };
+
+            // Handle image upload if a file is provided
+            let imageData;
+            if (req.file) {
+                const result = await cloudinary.uploader.upload(req.file.path);
+                imageData = result.secure_url;
             }
 
-            await room.save();
-            const roomUpdate = await Rooms.findById(roomId).populate(
-                "members.avatar"
-            );
-            return roomUpdate.members[memberIndex];
+            // Update the member details including the avatar if imageData is available
+            const updatedMember = await prisma.members.update({
+                where: { id: parseInt(memberId) },
+                data: {
+                    ...updateInfo,
+                    avatar: imageData,
+                },
+            });
+
+            return updatedMember;
         } catch (error) {
             throw error;
         }
@@ -336,16 +481,30 @@ const RoomService = {
     getMember: async (req) => {
         try {
             const { roomId, memberId } = req.params;
-            const room = await Rooms.findById(roomId).populate(
-                "members.avatar"
-            );
-            const memberIndex = await room.members.findIndex(
-                (member) => member.id == memberId
-            );
-            if (memberIndex === -1) {
+
+            // Fetch the room and include its members
+            const room = await prisma.room.findUnique({
+                where: { id: parseInt(roomId) },
+                
+            });
+
+            // Check if the room exists
+            if (!room) {
+                throw new Error("Room not found");
+            }
+
+            // Find the member in the room's members array
+            const member = await prisma.members.findUnique({
+                where: { id: parseInt(memberId) },
+                include: { room: true },
+            });
+            
+            // Check if the member exists
+            if (!member) {
                 throw new Error("Member not found in the room");
             }
-            return room.members[memberIndex];
+
+            return member;
         } catch (error) {
             throw error;
         }
@@ -353,13 +512,21 @@ const RoomService = {
     countRoomsByMembership: async (req) => {
         try {
             const { houseId } = req.params;
-            const rooms = await Rooms.find({
-                houseId: houseId,
-                deleted: false,
+            
+            // Fetch all rooms with their members for the given houseId
+            const rooms = await prisma.room.findMany({
+                where: {
+                    houseId: parseInt(houseId),
+                    deleted: false,
+                },
+                include: {
+                    members: true,
+                },
             });
+    
             let countWithMembers = 0;
             let countWithoutMembers = 0;
-
+    
             rooms.forEach((room) => {
                 if (room.members && room.members.length > 0) {
                     countWithMembers++;
@@ -367,6 +534,7 @@ const RoomService = {
                     countWithoutMembers++;
                 }
             });
+    
             return {
                 totalRooms: rooms.length,
                 withMembers: countWithMembers,
@@ -380,26 +548,51 @@ const RoomService = {
         try {
             const { houseId } = req.params;
             const { month } = req.query;
-            const rooms = await Rooms.find({ houseId, deleted: false });
+            const rooms = await prisma.room.findMany({
+                where: {
+                    houseId: parseInt(houseId),
+                    deleted: false
+                },
+                include: {
+                    house: {
+                        select: {
+                            id:true,
+                            name: true
+                        }
+                    }
+                },
+            });
+    
             const newData = [];
     
             for (let room of rooms) {
                 let bill = null;
                 if (month) {
-                    const [mm, yyyy] = month.split('-');
+                    const [mm, yyyy] = month.split("-");
                     const startOfMonth = new Date(yyyy, mm - 1, 1);
                     const endOfMonth = new Date(yyyy, mm, 0);
     
-                    bill = await BillsModel.findOne({
-                        roomId: room.id,
-                        houseId,
-                        createdAt: { $gte: startOfMonth, $lt: endOfMonth }
+                    bill = await prisma.bill.findFirst({
+                        where: {
+                            roomId: room.id,
+                            createdAt: {
+                                gte: startOfMonth,
+                                lt: endOfMonth
+                            }
+                        }
                     });
                 } else {
-                    bill = await BillsModel.findOne({ roomId: room.id, houseId }).sort({ createdAt: -1 });
+                    bill = await prisma.bill.findFirst({
+                        where: {
+                            roomId: room.id,
+                        },
+                        orderBy: {
+                            createdAt: 'desc'
+                        }
+                    });
                 }
                 newData.push({
-                    room: room._doc,
+                    room: room,
                     bill: bill || null
                 });
             }
@@ -407,9 +600,7 @@ const RoomService = {
         } catch (error) {
             throw error;
         }
-    }
-    
-    
+    },
 };
 
 export default RoomService;

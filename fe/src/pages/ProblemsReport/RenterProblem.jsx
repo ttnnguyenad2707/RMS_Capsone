@@ -191,7 +191,7 @@ const RenterProblem = () => {
             ""
           )}
 
-          {userData?.accountType == "host" ? (
+          {userData?.accountType == "owner" ? (
             <>
               <SelectHouse onSelect={setSelectedHouseId} />
               <TableData

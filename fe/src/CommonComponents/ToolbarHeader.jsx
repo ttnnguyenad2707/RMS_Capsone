@@ -278,7 +278,7 @@ export default function ToolbarHeader() {
                 </IconButton>
               </Toolbar>
               <Divider />
-              {userData.accountType == "host" ? (
+              {userData.accountType == "owner" ? (
                 <List component="nav">
                   {mainListItems}
                   <Divider sx={{ my: 1 }} />

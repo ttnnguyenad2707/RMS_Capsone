@@ -99,7 +99,7 @@ const ProblemDetail = ({ problem, handleDelete }) => {
             </div>
           </Typography>
           <hr></hr>
-          {userData?.accountType == "host" ? (
+          {userData?.accountType == "owner" ? (
             <>
               {/* <Button
                 variant="contained"

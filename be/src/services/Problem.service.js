@@ -7,69 +7,132 @@ import RoomsModel from "../models/Rooms.model.js";
 import getCurrentUser from "../utils/getCurrentUser.js";
 import getPaginationData from "../utils/getPaginationData.js";
 import * as dotenv from 'dotenv'
+import prisma from "../utils/prismaClient.js";
 dotenv.config();
 const {CLIENT_URL} = process.env
 
 const ProblemService = {
     addOne: async(req) => {
         try {
-            const {roomId} = req.body;
-            const room = await RoomsModel.findById(roomId).populate({path: "houseId",select: "hostId",populate: {path: "hostId",select: "_id"}});
+            const { roomId, title, content, type, status } = req.body;
             const creatorId = getCurrentUser(req);
-            const data = await ProblemsModel.create({...req.body,creatorId,houseId:room.houseId});
-            await room.save();
-            const roomAccount = await AccountModel.findOne({roomId: roomId})
-            await Notification.create({
-                sender: getCurrentUser(req),
-                recipients: [
-                    {
-                        user: room.houseId.hostId._id,                        
-                    }
-                ],
-                message: "1 problem đã được thêm vào phòng " + room.name,
-                type: "problem",
-                link: CLIENT_URL + "/problem/" + data.id
-            })
+    
+            // Fetch the room with houseId and hostId
+            const room = await prisma.room.findUnique({
+                where: { id: parseInt(roomId) },
+                include: {
+                    house: {
+                        select: {
+                            hostId: true,
+                        },
+                    },
+                },
+            });
+    
+            if (!room) {
+                throw new Error("Room not found");
+            }
+    
+            // Create the problem
+            const data = await prisma.problem.create({
+                data: {
+                    title,
+                    content,
+                    type,
+                    status,
+                    roomId: parseInt(roomId),
+                    creatorId: parseInt(creatorId),
+                },
+            });
+    
+            // Create the notification
+            const roomAccount = await prisma.account.findUnique({
+                where: { id: room.house.hostId },
+            });
+    
+            if (roomAccount) {
+                await prisma.notification.create({
+                    data: {
+                        sender: creatorId,
+                        recipients: {
+                            create: [
+                                {
+                                    userId: room.house.hostId,
+                                    isRead: false,
+                                },
+                            ],
+                        },
+                        message: `1 problem đã được thêm vào phòng ${room.name}`,
+                        type: 'problem',
+                        link: `${CLIENT_URL}/problem/${data.id}`,
+                    },
+                });
+            }
+    
             return data;
         } catch (error) {
-            throw error
+            throw error;
         }
     },/*  */
     getInHouse: async (req) => {
         try {
-            const {houseId} = req.params;
-            const {page,limit} = req.query;
-            const query = {houseId,deleted: false};
-            const populateFields = ["roomId","creatorId"]
-            const data = await getPaginationData(ProblemsModel,page,limit,query,populateFields);
-            return data
+            const { houseId } = req.params;
+            const problems = await prisma.problem.findMany({
+                where: {
+                    room: {
+                        houseId: parseInt(houseId)
+                    },
+                    deleted:false
+                },
+                include: {
+                    account: true, // Include account details of the creator
+                    room: true // Include room details
+                },
+                orderBy: {
+                    createdAt: 'desc' // Order by createdAt descending
+                }
+            });
+    
+            return problems;
         } catch (error) {
-            throw error
-            
+            throw error;
         }
         
     },
     getByFilter: async(req) => {
         try {
-            const {roomId} = req.params; 
-            const {page,limit,type,status,title,content} = req.query;
-            const query = {roomId,deleted: false};
+            const { roomId } = req.params;
+            const { page = 1, limit = 10, type, status, title, content } = req.query;
+    
+            let filter = {
+                roomId: parseInt(roomId),
+                deleted: false, // Exclude deleted problems
+            };
+    
             if (type) {
-                query.type = type;
+                filter.type = type;
             }
-            if (status){
-                query.status = status;
+            if (status) {
+                filter.status = status;
             }
             if (title) {
-                query.title = {$regex: title, $options: "i"};
+                filter.title = {
+                    contains: title,
+                };
             }
             if (content) {
-                query.content = {$regex: content, $options: "i"}
+                filter.content = {
+                    contains: content,
+                };
             }
-            const data = await getPaginationData(ProblemsModel,page,limit,query);
+    
+            const populateFields = ['account', 'room']; // Adjust based on your schema
+    
+            const data = await getPaginationData(prisma.problem, page, limit, filter, populateFields);
+    
             return data;
         } catch (error) {
-            throw error
+            throw error;
         }
 
     },
@@ -84,45 +147,92 @@ const ProblemService = {
     },
     getOne: async (req) => {
         try {
-            const {problemId} = req.params;
-            const data =  await ProblemsModel.findById(problemId).populate([{path: "creatorId"}, {path: "roomId"}]);
+            const { problemId } = req.params;
+    
+            const data = await prisma.problem.findUnique({
+                where: {
+                    id: parseInt(problemId),
+                },
+                include: {
+                    account: true,
+                    room: true,
+                },
+            });
+    
             return data;
-
         } catch (error) {
-            throw error
+            throw error;
         }
     },
     updateOne: async (req) => {
         try {
-            const {problemId} = req.params;
-            await ProblemsModel.findByIdAndUpdate(problemId,{...req.body});
-            const newData = await ProblemsModel.findById(problemId);
-            const roomAccount = await AccountModel.findOne({roomId: newData.roomId})
-            const room = await RoomsModel.findById(newData.roomId)
-            await Notification.create({
-                sender: getCurrentUser(req),
-                recipients: [
-                    {
-                        user: roomAccount,                        
-                    }
-                ],
-                message: "Problem phòng " + room.name + " đã được cập nhật",
-                type: "problem",
-                link: CLIENT_URL + "/problem/" + newData.id
-            })
-            return newData
+            const { problemId } = req.params;
+            const newData = await prisma.problem.update({
+                where: {
+                    id: parseInt(problemId),
+                },
+                data: {
+                    ...req.body,
+                },
+                include: {
+                    room: true,
+                    account: true,
+                },
+            });
+    
+            // Fetch room account
+            const roomAccount = await prisma.account.findFirst({
+                where: {
+                    roomId: newData.roomId,
+                },
+            });
+    
+            // Fetch room
+            const room = await prisma.room.findUnique({
+                where: {
+                    id: newData.roomId,
+                },
+            });
+    
+            // Create notification
+            await prisma.notification.create({
+                data: {
+                    sender: getCurrentUser(req),
+                    recipients: {
+                        create: [
+                            {
+                                userId: roomAccount.id,
+                                isRead: false,
+                            },
+                        ],
+                    },
+                    message: `Problem phòng ${room.name} đã được cập nhật`,
+                    type: "problem",
+                    link: `${CLIENT_URL}/problem/${newData.id}`,
+                },
+            });
+    
+            return newData;
         } catch (error) {
-            throw error
+            throw error;
         }
     },
     deleteOne: async (req) => {
         try {
-            const {problemId} = req.params;
-            await ProblemsModel.findByIdAndUpdate(problemId,{deleted: true,deletedAt: Date.now()});
-            const newData = await ProblemsModel.findById(problemId);
-            return newData;
+            const { problemId } = req.params;
+            const deletedProblem = await prisma.problem.update({
+                where: {
+                    id: parseInt(problemId),
+                },
+                data: {
+                    deleted: true,
+                    deletedAt: new Date(),
+                },
+            });
+    
+            return deletedProblem;
         } catch (error) {
-            throw error
+            throw error;
         }
     },
     resetProblem: async (req) => {

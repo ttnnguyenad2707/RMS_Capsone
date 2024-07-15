@@ -12,7 +12,7 @@ const HousePage = () => {
   if (userData.accountType == "renter") {
     nav("/404")
   }
-  if (userData.accountType == "host") {
+  if (userData.accountType == "owner") {
     return (
       <Container
         maxWidth="false"

@@ -194,18 +194,18 @@ export default function BasicTable() {
     if (houses) {
       const dataTable = houses.map((house) => {
         const address =
-          house.location.district +
+          house.locationschema.district +
           "-" +
-          house.location.province +
+          house.locationschema.province +
           "-" +
-          house.location.ward +
+          house.locationschema.ward +
           "-" +
-          house.location.detailLocation;
+          house.locationschema.detailLocation;
         return createData(
           1,
           house._id,
           house.name,
-          house.numberOfRoom,
+          house.room.length,
           address,
           house.electricPrice,
           house.waterPrice,
@@ -219,7 +219,7 @@ export default function BasicTable() {
                   1,
                   house._id,
                   house.name,
-                  house.numberOfRoom,
+                  house.room.length,
                   address,
                   house.hostId.name,
                   house.hostId.phone,
@@ -237,7 +237,7 @@ export default function BasicTable() {
               variant="contained"
               sx={{ fontWeight: "bold", margin: "10px" }}
               color="error"
-              onClick={() => DeleteHouse(house._id)}
+              onClick={() => DeleteHouse(house.id)}
             >
               Xóa
             </Button>

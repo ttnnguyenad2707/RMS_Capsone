@@ -115,7 +115,7 @@ export default function News() {
             width: "100vw",
           }}
         >
-          {userData.accountType == "host" ? (
+          {userData.accountType == "owner" ? (
             <SelectHouse onSelect={setSelectedHouseId} />
           ) : null}
           <Grid

@@ -210,7 +210,7 @@ const ModalNews = ({ handleClose, open, typeModal, houseID, dataNews }) => {
             <p>
               <p>
                 <AccountCircleIcon />
-                {userData.accountType == "host" ? (
+                {userData.accountType == "owner" ? (
                   <b className="fs-5">{userData.name}</b>
                 ) : (
                   <b className="fs-5">{userData.username}</b>

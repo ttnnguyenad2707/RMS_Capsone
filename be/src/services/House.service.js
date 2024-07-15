@@ -18,7 +18,14 @@ const HouseService = {
                 otherUtilities,
                 rules,
             } = req.body;
-
+            const existHouseByName = await prisma.house.findUnique({
+                where: {
+                    name,
+                },
+            })
+            if (existHouseByName){
+                throw new Error("Toà Nhà " + name + " đã tồn tại")
+            }
             const defaultPriceWater = await prisma.defaultprice.findFirst({
                 where: {
                     name: "Tiền nước theo khối",
@@ -112,6 +119,11 @@ const HouseService = {
                         defaultprice: true,
                     },
                 },
+                room: {
+                    select: {
+                        id: true,
+                    }
+                }
             };
             if (String(option) === "all") {
                 data = await prisma.house.findMany({
@@ -172,7 +184,7 @@ const HouseService = {
                             detailLocation,
                         },
                     },
-                }
+                },
             });
             return updatedHouse;
         } catch (error) {
@@ -206,9 +218,7 @@ const HouseService = {
                         },
                     },
                 },
-                
             });
-            
 
             return data;
         } catch (error) {
@@ -218,16 +228,33 @@ const HouseService = {
     deleteOne: async (req) => {
         try {
             const { houseId } = req.params;
-            await HousesModel.findByIdAndUpdate(houseId, {
-                deleted: true,
-                deletedAt: Date.now(),
+
+            // Update the house to set deleted and deletedAt fields
+            const updatedHouse = await prisma.house.update({
+                where: {
+                    id: parseInt(houseId),
+                },
+                data: {
+                    deleted: true,
+                    deletedAt: new Date(),
+                },
+                include: {
+                    room: true, // Include related rooms if needed
+                },
             });
-            const newData = await HousesModel.findById(houseId);
-            await RoomsModel.updateMany(
-                { houseId },
-                { deleted: true, deletedAt: Date.now() }
-            );
-            return newData;
+
+            // Update all rooms associated with the house to set deleted and deletedAt fields
+            await prisma.room.updateMany({
+                where: {
+                    houseId: parseInt(houseId),
+                },
+                data: {
+                    deleted: true,
+                    deletedAt: new Date(),
+                },
+            });
+
+            return updatedHouse;
         } catch (error) {
             throw new Error(error.toString());
         }
@@ -236,6 +263,8 @@ const HouseService = {
         try {
             const { houseId } = req.params;
             const { base, price } = req.body;
+
+            // Check if the house exists and fetch its price list items
             const house = await prisma.house.findUnique({
                 where: {
                     id: parseInt(houseId),
@@ -243,58 +272,118 @@ const HouseService = {
                 include: {
                     pricelistitem: true,
                 },
-            })
-            const existingPriceItem = house.priceList.find(
-                (item) => item.baseId === base
+            });
+
+            if (!house) {
+                throw new Error(`House with ID ${houseId} not found.`);
+            }
+
+            // Check if the price item already exists
+            const existingPriceItem = house.pricelistitem.find(
+                (item) => item.baseId === parseInt(base)
             );
+
             if (existingPriceItem) {
                 throw new Error("Đơn giá đã được tồn tại");
             }
+
+            // Create new price list item
             const newPriceItem = await prisma.pricelistitem.create({
                 data: {
-                  baseId: parseInt(base),
-                  price: parseFloat(price),
-                  house: {
-                    connect: { id: parseInt(houseId) },
-                  },
+                    baseId: parseInt(base),
+                    price: parseFloat(price),
+                    houseId: parseInt(houseId),
                 },
                 include: {
-                  defaultprice: true, // Include related defaultprice if needed
+                    defaultprice: true, // Include related defaultprice if needed
                 },
-              });
-          
-              return newPriceItem;
+            });
+
+            return newPriceItem;
         } catch (error) {
-            throw error;
+            throw new Error(error.toString());
         }
     },
     updatePriceItem: async (req) => {
         try {
-            const { houseId } = req.params;
-            const { id, base, price } = req.body;
-        } catch (error) {
-            throw error;
-        }
+            const { houseId, priceItemId } = req.params;
+            const { base, price } = req.body;
+        
+            // Find the house to ensure it exists
+            const house = await prisma.house.findUnique({
+              where: {
+                id: parseInt(houseId),
+              },
+              include: {
+                pricelistitem: true,
+              },
+            });
+        
+            if (!house) {
+              throw new Error(`House with ID ${houseId} not found.`);
+            }
+        
+            // Check if the price item exists in the house's price list
+            const priceItem = house.pricelistitem.find(
+              (item) => item.id === parseInt(priceItemId)
+            );
+        
+            if (!priceItem) {
+              throw new Error("Price item not found");
+            }
+        
+            // Update only the price field of the price item
+            const updatedPriceItem = await prisma.pricelistitem.update({
+              where: {
+                id: parseInt(priceItemId),
+              },
+              data: {
+                price: parseFloat(price),
+              },
+            });
+        
+            return updatedPriceItem;
+          } catch (error) {
+            throw new Error(error.toString());
+          }
     },
     removePriceItem: async (req) => {
         try {
             const { houseId, priceItemId } = req.params;
 
-            const house = await HousesModel.findById(houseId);
+            // Find the house to ensure it exists
+            const house = await prisma.house.findUnique({
+                where: {
+                    id: parseInt(houseId),
+                },
+                include: {
+                    pricelistitem: true,
+                },
+            });
 
-            const indexToRemove = house.priceList.findIndex(
-                (item) => item._id.toString() === priceItemId
+            if (!house) {
+                throw new Error(`House with ID ${houseId} not found.`);
+            }
+
+            // Check if the price item exists in the house's price list
+            const priceItem = house.pricelistitem.find(
+                (item) => item.id === parseInt(priceItemId)
             );
-            if (indexToRemove === -1) {
+
+            if (!priceItem) {
                 throw new Error("Price item not found");
             }
 
-            house.priceList.splice(indexToRemove, 1);
-            await house.save();
+            // Delete the price item
+            await prisma.pricelistitem.delete({
+                where: {
+                    id: parseInt(priceItemId),
+                },
+            });
 
             return { message: "Đơn giá xoá thành công" };
         } catch (error) {
-            throw error;
+            throw new Error(error.toString());
         }
     },
 };

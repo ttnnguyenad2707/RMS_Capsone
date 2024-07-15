@@ -18,7 +18,7 @@ const RoomsPage = () => {
     setHouseSelect(selectHouse);
   };
   React.useEffect(() => {
-    if (userData.accountType == "host") {
+    if (userData.accountType == "owner") {
       dispatch(fetchHouses());
     }
   }, []);
@@ -27,7 +27,7 @@ const RoomsPage = () => {
   }, [housesSelect]);
   return (
     <div style={{ backgroundColor: "#F1F2F7", padding: "30px", width: "100%" }}>
-      {userData.accountType == "host" ? (
+      {userData.accountType == "owner" ? (
         <>
           <div
             style={{

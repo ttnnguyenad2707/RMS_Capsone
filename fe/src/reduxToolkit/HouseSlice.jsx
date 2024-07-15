@@ -44,7 +44,6 @@ export const deleteHouse = createAsyncThunk(
   "houses/deleteHouse",
   async ({ id }) => {
     const response = await DeleteHouseService(id);
-    console.log(response, "response");
     return response.data.message;
   }
 );

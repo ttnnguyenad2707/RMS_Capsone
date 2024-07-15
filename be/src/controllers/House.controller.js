@@ -66,6 +66,17 @@ const HouseController = {
             
         }
     }),
+    updatePriceItem: asyncHandler(async (req,res) => {
+        try {
+            const price = await HouseService.updatePriceItem(req);
+            if (price) return res.status(200).json(response.successResponse(200,price));
+            else return res.status(404).json(response.errorResponse(404));
+        } catch (error) {
+            
+            return res.status(500).json(response.errorResponse(500,error.toString()))
+            
+        }
+    }),
     removePriceItem: asyncHandler(async (req,res) => {
         try {
             const price = await HouseService.removePriceItem(req);
