@@ -133,7 +133,6 @@ export default function BasicTable() {
   ]);
   const dispatch = useDispatch();
   const [dataModelUpdate, setDataModelUpdate] = useState();
-  const [houseSelect, setHouseSelect] = useState();
   const [open, setOpen] = useState(false);
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [page, setPage] = useState(0);
@@ -161,7 +160,6 @@ export default function BasicTable() {
           console.log(error);
         }
       } else {
-        console.log("Người dùng đã chọn Cancel");
         // Xử lý khi người dùng chọn Cancel
       }
     });
@@ -193,19 +191,21 @@ export default function BasicTable() {
   useEffect(() => {
     if (houses) {
       const dataTable = houses.map((house) => {
+        
+
         const address =
-          house.locationschema.district +
+          house?.locationschema?.district +
           "-" +
-          house.locationschema.province +
+          house?.locationschema?.province +
           "-" +
-          house.locationschema.ward +
+          house?.locationschema?.ward +
           "-" +
-          house.locationschema.detailLocation;
+          house?.locationschema?.detailLocation;
         return createData(
           1,
-          house._id,
+          house.id,
           house.name,
-          house.room.length,
+          house?.room?.length,
           address,
           house.electricPrice,
           house.waterPrice,
@@ -217,9 +217,9 @@ export default function BasicTable() {
               onClick={() =>
                 updateHouse(
                   1,
-                  house._id,
+                  house.id,
                   house.name,
-                  house.room.length,
+                  house?.room?.length,
                   address,
                   house.hostId.name,
                   house.hostId.phone,
@@ -293,7 +293,7 @@ export default function BasicTable() {
     ortherUtils
   ) => {
     handleOpen();
-    console.log(open);
+    
     const addressParts = address.split("-");
     const City = addressParts[0];
     const Ward = addressParts[1];
@@ -322,7 +322,7 @@ export default function BasicTable() {
   };
   const handleSort = (cellId) => {
     const sortedRows = rows.slice();
-    console.log(cellId);
+    
 
     // Sắp xếp mảng sao chép
     switch (cellId) {

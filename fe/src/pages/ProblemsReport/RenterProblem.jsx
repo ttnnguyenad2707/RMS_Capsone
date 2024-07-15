@@ -33,7 +33,7 @@ const RenterProblem = () => {
           setDataTable((prev) => [
             ...prev,
             {
-              id: data._id,
+              id: data.id,
               Title: data.title,
               Content: data.content,
               Status: data.status,
@@ -79,7 +79,7 @@ const RenterProblem = () => {
           const res = await deleteProblem(id);
           console.log("res", res);
           setDataTableForRenter((prevDataTableForRenter) =>
-            prevDataTableForRenter.filter((problem) => problem._id !== id)
+            prevDataTableForRenter.filter((problem) => problem.id !== id)
           );
           toast.success("Delete successfully");
         } catch (error) {
@@ -95,10 +95,10 @@ const RenterProblem = () => {
 
   // };
   const handleUpdate = (datares) => {
-    console.log("problemsId", datares._id);
+    console.log("problemsId", datares.id);
     setDataTableForRenter((prevDisplayData) =>
       prevDisplayData.map((row) =>
-        row._id === datares._id
+        row.id === datares.id
           ? { ...row, title: datares.title, content: datares.content }
           : row
       )
@@ -158,19 +158,19 @@ const RenterProblem = () => {
                             <div className="d-flex align-items-center">
                               <button
                                 className="btn btn-danger m-2"
-                                onClick={() => handleDelete(problem._id)}
+                                onClick={() => handleDelete(problem.id)}
                               >
                                 Xóa vấn đề
                               </button>
                               <ModalUpdateProblem
                                 problem={problem}
-                                problemsId={problem._id}
+                                problemsId={problem.id}
                                 onUpdateStatus={handleUpdate}
                               />
 
                               <button
                                 className="btn btn-warning m-2"
-                                onClick={() => HandlereadDetailProblem(problem._id)}
+                                onClick={() => HandlereadDetailProblem(problem.id)}
                               >
                                 Xem chi tiết
                               </button>

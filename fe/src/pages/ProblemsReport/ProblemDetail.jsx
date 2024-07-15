@@ -34,7 +34,7 @@ const ProblemDetail = ({ problem, handleDelete }) => {
   };
 
 //  const handleStatusUpdate = (datares) => {
-//     // console.log("problemsId", datares._id);
+//     // console.log("problemsId", datares.id);
 //     setDetailProblem(datares)
 //     console.log("detailProblem after",detailProblem);
 //   };
@@ -104,7 +104,7 @@ const ProblemDetail = ({ problem, handleDelete }) => {
               {/* <Button
                 variant="contained"
                 color="error"
-                onClick={() => handleDelete(problem._id)}
+                onClick={() => handleDelete(problem.id)}
               >
                 Cập nhật vấn đề
               </Button> */}

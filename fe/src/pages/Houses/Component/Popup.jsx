@@ -129,11 +129,11 @@ export default function BasicModal() {
   const settingWard = () => {
     if (location !== null && typeof location !== "undefined") {
       if (city !== null && typeof city !== "undefined") {
-        console.log(city);
+        
         const selectedCity = location.find((c) => c.value === city);
 
         if (selectedCity) {
-          console.log("hello");
+          
           const listWard = selectedCity.children.map((ward) => ({
             title: ward.title,
             value: ward.value,
@@ -202,7 +202,7 @@ export default function BasicModal() {
     }
   };
   const handleInputUtilitiesOrther = (data) => {
-    console.log(data, " orther util");
+    
     if (data) {
       setUtilitiesOther(data);
     }
@@ -235,7 +235,7 @@ export default function BasicModal() {
         otherUtilities: utilitiesOther,
       };
       const response = await dispatch(addHouse(setData));
-      console.log(response, "response");
+      
       if (response) {
         setErrorWater(false);
         setErrorName(false);

@@ -129,6 +129,7 @@ const HouseService = {
                 data = await prisma.house.findMany({
                     where: {
                         hostId: hostId,
+                        deleted: false,
                     },
                     include: includeRelations,
                     orderBy: {
@@ -142,6 +143,7 @@ const HouseService = {
                 data = await prisma.house.findMany({
                     where: {
                         hostId: hostId,
+                        deleted: false,
                     },
                     include: includeRelations,
                     skip: skip,

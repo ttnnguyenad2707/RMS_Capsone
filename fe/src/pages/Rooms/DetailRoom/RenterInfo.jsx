@@ -16,7 +16,7 @@ const RenterInfo = (props) => {
     useEffect(() => {
         async function fetchRoom () {
 
-            await getOneRoom(room._id).then(data => {
+            await getOneRoom(room.id).then(data => {
                 setMembers(data.data.data.members)
             })
         }
@@ -56,7 +56,7 @@ const RenterInfo = (props) => {
                             Notification("Error", "Xảy ra lỗi", "");
                         }
                     });
-                    setMembers(prev => prev.filter(member => member._id !== memberId))
+                    setMembers(prev => prev.filter(member => member.id !== memberId))
                 }
                 else {
                     console.log("cancel")
@@ -104,7 +104,7 @@ const RenterInfo = (props) => {
                                         gap: 2,
                                         p: 2
                                     }}>
-                                        <img src={member?.avatar?.imageData ? member?.avatar?.imageData : "https://quanlynhatro.com/frontend3/assets/img/avatar_thue@1x.png"} alt="avatar" height="100px" width="100px" />
+                                        <img src={member?.avatar ? member?.avatar : "https://quanlynhatro.com/frontend3/assets/img/avatar_thue@1x.png"} alt="avatar" height="100px" width="100px" />
                                         <Box sx={{
                                             width: "100%",
                                             display: "flex",
@@ -115,8 +115,8 @@ const RenterInfo = (props) => {
                                             <Typography>SĐT : {member?.phone}</Typography>
                                             <Typography>Giới tính  : {member?.gender === "male" ? "Nam" : "Nữ"}</Typography>
                                             <Typography>Ngày sinh  : {member?.dob}</Typography>
-                                            <Button variant='outlined' sx={{ mt: 2 }} onClick={() => handleOpenUpdate(member._id)}>Cập nhật thông tin khách thuê</Button>
-                                            <Button variant='outlined' color='error' sx={{ mt: 2 }} onClick={() => handleRemoveMember(member._id, room._id)}>Xoá khách thuê</Button>
+                                            <Button variant='outlined' sx={{ mt: 2 }} onClick={() => handleOpenUpdate(member.id)}>Cập nhật thông tin khách thuê</Button>
+                                            <Button variant='outlined' color='error' sx={{ mt: 2 }} onClick={() => handleRemoveMember(member.id, room.id)}>Xoá khách thuê</Button>
                                         </Box>
                                     </Box>
                                 </Box>

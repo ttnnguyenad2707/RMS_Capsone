@@ -24,10 +24,10 @@ const TableData = ({ data, setDataSelect, deleteData, userData }) => {
   }
   const [displayData, setDisplayData] = useState(data);
   const handleStatusUpdate = (datares) => {
-    console.log("problemsId", datares._id);
+    
     setDisplayData((prevDisplayData) =>
       prevDisplayData.map((row) =>
-        row.id === datares._id ? { ...row, Status: datares.status } : row
+        row.id === datares.id ? { ...row, Status: datares.status } : row
       )
     );
   };

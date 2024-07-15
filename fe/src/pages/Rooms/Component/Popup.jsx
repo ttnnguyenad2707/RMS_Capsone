@@ -191,7 +191,7 @@ export default function SuperModal({
               variant="contained"
               sx={{ fontWeight: "bold", margin: "10px" }}
               color="error"
-              onClick={() => handleDeletePrice(house._id)}
+              onClick={() => handleDeletePrice(house.id)}
             >
               Xóa
             </Button>
@@ -204,7 +204,7 @@ export default function SuperModal({
   React.useEffect(() => {
     if (inputUnitPrice.current) {
       console.log(unit, "unit");
-      const getUnit = defaultPriceSystem.find((price) => unit === price._id);
+      const getUnit = defaultPriceSystem.find((price) => unit === price.id);
       console.log(getUnit, "getUnit");
       if (getUnit) {
         inputUnitPrice.current.value = getUnit.unit;
@@ -283,10 +283,10 @@ export default function SuperModal({
       typeof UnitPrice !== "undefined" &&
       typeof unit !== "undefined"
     ) {
-      const getUnit = defaultPriceSystem.find((price) => unit === price._id);
+      const getUnit = defaultPriceSystem.find((price) => unit === price.id);
       const newPrice = {
         base: {
-          _id: getUnit._id,
+          id: getUnit.id,
           name: getUnit.name,
           unit: getUnit.unit,
         },
@@ -310,7 +310,7 @@ export default function SuperModal({
   };
   // delete price
   const handleDeletePrice = async (idPrice) => {
-    const getUnit = defaultPrice.filter((price) => idPrice !== price._id);
+    const getUnit = defaultPrice.filter((price) => idPrice !== price.id);
     const setData = {
       priceList: getUnit,
     };
@@ -405,21 +405,17 @@ export default function SuperModal({
     const formData = new FormData();
     formData.append("excelFile", selectedFile);
     formData.set("houseId", houseId);
-    // AddRoomsFileService({data: formData} );
     const response = await dispatch(addRooms({ data: formData }));
     if (response.payload === "Created") {
       await dispatch(fetchRooms({ houseId }));
-      // await dispatch(fetchHouses());
       Notification("Success", "Thêm Danh Sách Phòng", "Thành Công");
+      window.location.reload();
       handleClose();
     } else {
       Notification("Error", "Thêm Danh Sách Phòng Thất Bại", response.payload);
     }
   };
-  // const validateInput = (input) => {
-  //   const regex = /^[\p{L}\d\s]+$/u;
-  //   return regex.test(input);
-  // };
+  
   const sortCharacter = (character1, character2) => {
     return character1.toLowerCase().localeCompare(character2.toLowerCase());
   };
@@ -863,7 +859,7 @@ export default function SuperModal({
                 >
                   {defaultPriceSystem ? (
                     defaultPriceSystem.map((d, index) => (
-                      <MenuItem value={d._id} key={index}>
+                      <MenuItem value={d.id} key={index}>
                         {d.name}
                       </MenuItem>
                     ))

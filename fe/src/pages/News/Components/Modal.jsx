@@ -62,7 +62,7 @@ const ModalNews = ({ handleClose, open, typeModal, houseID, dataNews }) => {
       formData.append("file", image);
       formData.append("upload_preset", present_key);
       formData.append("folder", folder_name);
-      formData.append("public_id", uuidv4());
+      formData.append("publicid", uuidv4());
       callToClould(formData);
       fileRef.current.value = '';
       setSelectedImages([])
@@ -113,7 +113,7 @@ const ModalNews = ({ handleClose, open, typeModal, houseID, dataNews }) => {
   };
   React.useEffect(() => {
     if (dataNews) {
-      const idNews = dataNews._id;
+      const idNews = dataNews.id;
       dispatch(fetchCommentNews({ idNews }));
     }
   }, [dataNews]);
@@ -156,7 +156,7 @@ const ModalNews = ({ handleClose, open, typeModal, houseID, dataNews }) => {
       const comment = {
         content: inputValue,
       };
-      const idNews = dataNews._id;
+      const idNews = dataNews.id;
       dispatch(addCommentNews({ idNews, comment }));
       dispatch(fetchCommentNews({ idNews }));
       inputContent.current.value = "";
@@ -166,7 +166,7 @@ const ModalNews = ({ handleClose, open, typeModal, houseID, dataNews }) => {
   const handleUpdateNews = async () => {
     const inputValue = inputContent.current.value;
     if (inputValue !== "" && typeof inputValue !== "undefined") {
-      const idNews = dataNews._id;
+      const idNews = dataNews.id;
       const data = {
         content: inputValue,
         images: image_src,

@@ -79,12 +79,12 @@ const BillComponent = ({ bill }) => {
                                 </TableHead>
                                 <TableBody>
 
-                                    {bill?.priceList?.map((priceItem, index) => (
+                                    {bill?.priceitembill?.map((priceItem, index) => (
                                         <TableRow key={index}>
                                             <TableCell>{index + 1}</TableCell>
-                                            <TableCell align="left">{priceItem?.base?.name}</TableCell>
+                                            <TableCell align="left">{priceItem?.defaultprice?.name}</TableCell>
                                             <TableCell align="left">{formatMoney(priceItem?.unitPrice)}</TableCell>
-                                            <TableCell align="left">{priceItem?.base?.unit}</TableCell>
+                                            <TableCell align="left">{priceItem?.defaultprice?.unit}</TableCell>
                                             <TableCell align="left">{priceItem?.startUnit}</TableCell>
                                             <TableCell align="left">{priceItem?.endUnit}</TableCell>
                                             <TableCell align="right">{formatMoney(priceItem?.totalUnit)}</TableCell>
@@ -109,7 +109,7 @@ const BillComponent = ({ bill }) => {
                         {bill.isPaid ? "" : (
                             <Typography sx={{ fontWeight: 600, mt: 3 }}>
                                 Link Thanh Toán:
-                                <Link to={bill?.paymentLink?.checkoutUrl} target='_blank'>
+                                <Link to={bill?.paymentLink} target='_blank'>
                                     <Button variant="outlined"> Nhấn vào đây</Button>
 
                                 </Link>

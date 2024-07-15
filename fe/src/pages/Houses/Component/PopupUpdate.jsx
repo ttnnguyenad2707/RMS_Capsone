@@ -192,7 +192,7 @@ export default function BasicModalUpdate({
     }
   };
   const handleInputUtilitiesOrther = (data) => {
-    console.log(data, " orther util");
+    
     if (data) {
       setUtilitiesOther(data);
     }
@@ -201,7 +201,7 @@ export default function BasicModalUpdate({
     handleInputCostElectric();
     handleInputCostWater();
     handleInputUtilities();
-    console.log(utilities, " sao ");
+    
     if (
       utilities &&
       utilitiesOther &&
@@ -296,7 +296,6 @@ export default function BasicModalUpdate({
   const validateInputNumber = (input) => {
     return !isNaN(input) && Number(input) > 0;
   };
-  console.log(data);
   return (
     <div>
       {data ? (

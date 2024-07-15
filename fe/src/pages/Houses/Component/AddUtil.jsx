@@ -8,7 +8,7 @@ const AddUtil = () => {
   const inputAddress = React.useRef();
   const handleAddUtil = () => {
     const utilValue = inputAddress.current.value;
-    console.log(utilValue);
+    
     const data = {
         name: utilValue
     }

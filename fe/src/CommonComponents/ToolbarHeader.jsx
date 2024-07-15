@@ -139,7 +139,7 @@ export default function ToolbarHeader() {
         if (error.response && error.response.status === 403) {
           navigate("/login");
         }
-        console.log(error);
+        
       });
   }, [dispatch, accessToken]);
 
@@ -153,7 +153,7 @@ export default function ToolbarHeader() {
       setIsLoading(false);
     }
   }, [userData]);
-  console.log("userData",userData);
+  
   const handleLogout = () => {
     logout();
     Cookies.remove("accessToken");

@@ -40,7 +40,7 @@ export default function News() {
     try {
       const roomsId = userData.roomId;
       const response = await dispatch(getOneRoomRedux({ roomsId }));
-      setSelectedHouseId(response.payload.houseId._id);
+      setSelectedHouseId(response.payload.houseId.id);
     } catch (error) {
       console.log(error.message);
     }
@@ -184,7 +184,7 @@ export default function News() {
                   <div style={{ display: "flex", alignItems: "center" }}>
                     <p style={{ marginRight: "10px" }}><b>{newItem?.authorId?.name?(newItem?.authorId?.name):(newItem?.authorId?.username)}</b></p>
                     <p>{newItem.createdAt}</p>
-                    {newItem?.authorId?._id === userData._id ? (
+                    {newItem?.authorId?.id === userData.id ? (
                       <div
                         className="d-flex gap-2 "
                         style={{ marginLeft: "auto", marginTop: "-5px" }}
@@ -199,7 +199,7 @@ export default function News() {
                         <Button
                           variant="contained"
                           color="primary"
-                          onClick={() => handleDeleteNews(newItem._id)}
+                          onClick={() => handleDeleteNews(newItem.id)}
                         >
                           Xóa
                         </Button>

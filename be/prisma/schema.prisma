@@ -45,7 +45,7 @@ model bill {
   note          String
   paymentLink   String?
   isPaid        Boolean @default(false)
-  paymentMetod  bill_paymentMetod @default(None)
+  paymentMethod  bill_paymentMethod @default(None)
   evidence      String?
   createdAt     DateTime          @default(now())
   updatedAt     DateTime?
@@ -305,6 +305,7 @@ model room {
   floor                Int?
   name                 String?
   status               room_status            @default(Empty)
+  quantityMember       Int?
   roomType             room_roomType?
   roomPrice            Float?
   deposit              Float?
@@ -435,7 +436,7 @@ enum account_provider {
   gmail
 }
 
-enum bill_paymentMetod {
+enum bill_paymentMethod {
   Banking
   Cash
   None

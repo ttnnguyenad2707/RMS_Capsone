@@ -86,7 +86,7 @@ const SettingPrice = ({ houseId }) => {
     useEffect(() => {
         async function fetchHouse() {
             const response = await dispatch(fetchOneHouse({ houseId }));
-            setSettingPrices(response?.payload?.priceList)
+            setSettingPrices(response?.payload?.pricelistitem)
         }
         fetchHouse()
     }, [houseId])
@@ -97,7 +97,7 @@ const SettingPrice = ({ houseId }) => {
             async (result) => {
                 if (result) {
                     RemovePriceItem(id,idPrice).then(data => {
-                        setSettingPrices(prev => prev.filter(item => item._id !== idPrice))
+                        setSettingPrices(prev => prev.filter(item => item.id !== idPrice))
                         Notification("Success",data.data.data.message,"")
                     })
                     
@@ -181,16 +181,16 @@ const SettingPrice = ({ houseId }) => {
                                                 {index + 1}
                                             </TableCell>
                                             <TableCell align="left" sx={{ width: "20%" }}>
-                                                {settingPrice?.base?.name}
+                                                {settingPrice?.defaultprice?.name}
                                             </TableCell>
                                             <TableCell align="left" sx={{ width: "20%" }}>
                                                 {formatMoney(settingPrice?.price)}
                                             </TableCell>
                                             <TableCell align="left" sx={{ width: "20%" }}>
-                                                {settingPrice?.base?.unit}
+                                                {settingPrice?.defaultprice?.unit}
                                             </TableCell>
                                             <TableCell align="left" sx={{ width: "30%" }}>
-                                                <Button variant="outlined" color="error" onClick={() => handleDeletePrice(settingPrice?._id)}>Xoá</Button>
+                                                <Button variant="outlined" color="error" onClick={() => handleDeletePrice(settingPrice?.id)}>Xoá</Button>
                                             </TableCell>
                                         </TableRow>
                                     ))}

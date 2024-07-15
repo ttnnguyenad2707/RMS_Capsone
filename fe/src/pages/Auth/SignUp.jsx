@@ -48,9 +48,9 @@ const Login = () => {
 
   const handleSubmit = async (values) => {
     try {
-      console.log(values);
+      
       const res = await registerService(values);
-      console.log("res register", res.data.data);
+      
 
       //    dispatch(login(res.data.data))
       toast.success(res.data.message);
@@ -58,7 +58,7 @@ const Login = () => {
       nav("/login");
     } catch (error) {
       toast.warning(error.response.data.error);
-      console.log(error);
+      
     }
   };
 

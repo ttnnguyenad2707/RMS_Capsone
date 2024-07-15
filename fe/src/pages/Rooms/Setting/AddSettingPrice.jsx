@@ -140,7 +140,7 @@ const AddSettingPrice = ({ houseId, setSettingPrices }) => {
                                             <InputLabel htmlFor="priceName">Loại phí</InputLabel>
                                             <Field as={Select} id="priceName" name="priceName"  >
                                                 {defaultPrices?.map((defaultPrice, index) => (
-                                                    <MenuItem key={index} value={defaultPrice?._id} onClick={() => setFieldValue("unit", defaultPrice?.unit)}>{defaultPrice?.name}</MenuItem>
+                                                    <MenuItem key={index} value={defaultPrice?.id} onClick={() => setFieldValue("unit", defaultPrice?.unit)}>{defaultPrice?.name}</MenuItem>
                                                 ))}
                                             </Field>
                                             <ErrorMessage name="priceName" component={FormHelperText} />

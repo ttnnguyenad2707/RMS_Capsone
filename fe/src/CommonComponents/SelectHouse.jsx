@@ -14,8 +14,8 @@ const SelectHouse = ({ onSelect }) => {
         GetHouseService().then(data => {
             const fetchedHouses = data.data.data.houses;
             setHouses(fetchedHouses);
-            setHouseSelected(fetchedHouses.length > 0 ? fetchedHouses[0]._id : '');
-            onSelect(fetchedHouses.length > 0 ? fetchedHouses[0]._id : '');
+            setHouseSelected(fetchedHouses.length > 0 ? fetchedHouses[0].id : '');
+            onSelect(fetchedHouses.length > 0 ? fetchedHouses[0].id : '');
         });
     }, []);
 
@@ -37,7 +37,7 @@ const SelectHouse = ({ onSelect }) => {
                     onChange={handleChange}
                 >
                     {houses.map((house, index) => (
-                        <MenuItem key={index} value={house._id}>{house.name}</MenuItem>
+                        <MenuItem key={index} value={house.id}>{house.name}</MenuItem>
                     ))}
                 </Select>
             </FormControl>

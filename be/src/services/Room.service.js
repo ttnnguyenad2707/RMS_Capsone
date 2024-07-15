@@ -68,6 +68,7 @@ const RoomService = {
                                 floor: floor,
                                 name: roomName,
                                 status: row.getCell(2).value,
+                                quantityMember: row.getCell(3).value,
                                 roomType: row.getCell(4).value,
                                 roomPrice: parseFloat(row.getCell(5).value),
                                 deposit: parseFloat(row.getCell(6).value),
@@ -133,6 +134,7 @@ const RoomService = {
                     floor: req.body.floor,
                     name: req.body.name.trim(),
                     status: req.body.status,
+                    quantityMember: req.body.quantityMember,
                     roomType: req.body.roomType,
                     roomPrice: req.body.roomPrice,
                     deposit: req.body.deposit,
@@ -206,7 +208,9 @@ const RoomService = {
                 data = await prisma.room.findMany({
                     where,
                     orderBy: { createdAt: "desc" },
-                    include: { house: true },
+                    include: {
+                        house: true,members: true,house: {include:{pricelistitem:true,pricelistitem: {include: {defaultprice:true}}}}
+                    },
                 });
                 return data;
             } else {
@@ -216,7 +220,7 @@ const RoomService = {
                     take: limitPerPage,
                     orderBy: { createdAt: "desc" },
                     include: {
-                        house: true,
+                        house: true,members: true,house: {include:{pricelistitem:true,pricelistitem: {include: {defaultprice:true}}}}
                     },
                 });
                 return {
@@ -559,7 +563,8 @@ const RoomService = {
                             id:true,
                             name: true
                         }
-                    }
+                    },
+                    members: true
                 },
             });
     

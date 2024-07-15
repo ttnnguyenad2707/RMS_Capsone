@@ -19,7 +19,7 @@ const ListBill = (props) => {
     useEffect(() => {
         async function fetchRoom() {
             const params = {
-                roomId: room._id
+                roomId: room.id
             }
             await getBills(params).then(data => {
                 setBills(data.data.data)
@@ -33,7 +33,7 @@ const ListBill = (props) => {
         // const RETURN_URL = `${window.location.href}/`;
         // const payOSConfig = {
         //     RETURN_URL: RETURN_URL,
-        //     ELEMENT_ID: "config_root",
+        //     ELEMENTid: "config_root",
         //     CHECKOUT_URL: "https://pay.payos.vn/web/316c64f1f211480e89cd3f29a8ab7fb3",
         //     onSuccess: (event) => {
         //         console.log("ok")
@@ -136,12 +136,12 @@ const ListBill = (props) => {
                                             </TableHead>
                                             <TableBody>
 
-                                                {bill?.priceList?.map((priceItem, index) => (
+                                                {bill?.priceitembill?.map((priceItem, index) => (
                                                     <TableRow key={index}>
                                                         <TableCell>{index + 1}</TableCell>
-                                                        <TableCell align="left">{priceItem?.base?.name}</TableCell>
+                                                        <TableCell align="left">{priceItem?.defaultprice?.name}</TableCell>
                                                         <TableCell align="left">{formatMoney(priceItem?.unitPrice)}</TableCell>
-                                                        <TableCell align="left">{priceItem?.base?.unit}</TableCell>
+                                                        <TableCell align="left">{priceItem?.defaultprice?.unit}</TableCell>
                                                         <TableCell align="left">{priceItem?.startUnit}</TableCell>
                                                         <TableCell align="left">{priceItem?.endUnit}</TableCell>
                                                         <TableCell align="right">{formatMoney(priceItem?.totalUnit)}</TableCell>
@@ -164,7 +164,7 @@ const ListBill = (props) => {
                                         </Table>
                                     </TableContainer>
                                     <Typography sx={{mt: 4,fontWeight: 600}}> Ghi Chú: {bill.note}</Typography>
-                                    {bill.isPaid ? "" : (<Typography sx={{ fontWeight: 600, mt: 3 }}>Link Thanh Toán: <Button variant="outlined" onClick={() => handleLinkToPay(bill?.paymentLink?.checkoutUrl,index)}> Nhấn vào đây</Button> </Typography>)}
+                                    {bill.isPaid ? "" : (<Typography sx={{ fontWeight: 600, mt: 3 }}>Link Thanh Toán: <Button variant="outlined" onClick={() => handleLinkToPay(bill?.paymentLink,index)}> Nhấn vào đây</Button> </Typography>)}
                                 </Box>
                             </Box>
                         ))}

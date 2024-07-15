@@ -21,7 +21,7 @@ const RoomsNavbar = ({ dataHouse, selectHouse }) => {
     if (dataHouse) {
       const data = dataHouse.map((h) => {
         return {
-          houseId: h._id,
+          houseId: h.id,
           name: h.name,
         };
       });

@@ -88,33 +88,36 @@ const BillService = {
                 listDebt.length > 0
                     ? listDebt.reduce((debt, item) => debt + item)
                     : 0;
-            
-            
+
             let priceListForBill = [];
-            priceList.forEach((item) => {
-                if (item.startUnit > item.endUnit) {
-                    throw new Error("Chỉ số đầu không thể lớn hơn chỉ số cuối");
+            for (const item of priceList) {
+                const baseId = parseInt(item.base);
+                const base = await prisma.defaultprice.findUnique({
+                    where: { id: baseId },
+                });
+                if (!base) {
+                    throw new Error(`Không tìm thấy đơn giá có id ${baseId}`);
                 }
                 let totalUnit = 0;
-                if (item.base.unit === "đồng/tháng") {
+                if (base.unit === "DONG_PER_MONTH") {
                     totalUnit = item.unitPrice;
-                } else if (
-                    item.base.unit === "đồng/kWh" ||
-                    item.base.unit === "đồng/khối"
-                ) {
-                    totalUnit =
-                        (item.endUnit - item.startUnit) * item.unitPrice;
-                } else if (item.base.unit === "đồng/người") {
-                    totalUnit = item.unitPrice * room.memberofroom.length;
+                } else if (["DONG_PER_kWh", "DONG_PER_BLOCK"].includes(base.unit)) {
+                    // Assume default values for startUnit and endUnit
+                    const startUnit = item.startUnit || 0;
+                    const endUnit = item.endUnit || 30;
+                    totalUnit = (endUnit - startUnit) * item.unitPrice;
+                } else if (base.unit === "DONG_PER_PERSON") {
+                    totalUnit = item.unitPrice * room.members.length;
                 }
+
                 priceListForBill.push({
-                    base: item.base.id,
-                    unitPrice: item.unitPrice,
-                    startUnit: item.startUnit,
-                    endUnit: item.endUnit,
+                    base: baseId,
+                    unit: item.unitPrice,
+                    startUnit: item.startUnit || 0, // Default value if not provided
+                    endUnit: item.endUnit || 30, // Default value if not provided
                     totalUnit: totalUnit,
                 });
-            });
+            }
 
             const totalUnits = priceListForBill.reduce(
                 (total, item) => total + item.totalUnit,
@@ -131,7 +134,7 @@ const BillService = {
                 where: { roomId: parseInt(roomId), isPaid: false },
                 data: {
                     isPaid: true,
-                }
+                },
             });
             const bill = await prisma.bill.create({
                 data: billData,
@@ -141,7 +144,7 @@ const BillService = {
                 data: priceListForBill.map((item) => ({
                     billId: bill.id,
                     base: parseInt(item.base),
-                    unitPrice: item.unitPrice,
+                    unitPrice: item.unit,
                     startUnit: item.startUnit,
                     endUnit: item.endUnit,
                     totalUnit: item.totalUnit,
@@ -222,29 +225,29 @@ const BillService = {
     getBill: async (req) => {
         try {
             const { billId } = req.params;
-            
+
             const bill = await prisma.bill.findUnique({
                 where: {
-                    id: parseInt(billId)
+                    id: parseInt(billId),
                 },
                 include: {
                     room: {
                         select: {
-                            name: true
-                        }
+                            name: true,
+                        },
                     },
                     priceitembill: {
                         include: {
-                            defaultprice: true
-                        }
-                    }
-                }
+                            defaultprice: true,
+                        },
+                    },
+                },
             });
-    
+
             if (!bill) {
                 throw new Error("Bill not found");
             }
-    
+
             return bill;
         } catch (error) {
             throw error;
@@ -253,36 +256,36 @@ const BillService = {
     getBills: async (req) => {
         try {
             const { roomId, option, houseId } = req.query;
-    
+
             const query = {};
-    
+
             if (roomId) {
                 query.roomId = parseInt(roomId);
             }
-    
+
             if (houseId) {
                 query.houseId = parseInt(houseId);
             }
-    
+
             const bills = await prisma.bill.findMany({
                 where: query,
                 include: {
                     room: {
                         select: {
-                            name: true
-                        }
+                            name: true,
+                        },
                     },
                     priceitembill: {
                         include: {
-                            defaultprice: true
-                        }
-                    }
+                            defaultprice: true,
+                        },
+                    },
                 },
                 orderBy: {
-                    createdAt: 'desc'
-                }
+                    createdAt: "desc",
+                },
             });
-    
+
             return bills;
         } catch (error) {
             throw error;
@@ -292,19 +295,19 @@ const BillService = {
         try {
             const { billId } = req.params;
             const { paymentMethod } = req.body;
-    
+
             const bill = await prisma.bill.findUnique({
                 where: { id: parseInt(billId) },
                 include: {
                     room: { select: { name: true } },
-                    priceitembill: { include: { defaultprice: true } }
-                }
+                    priceitembill: { include: { defaultprice: true } },
+                },
             });
-    
+
             if (!bill) {
-                throw new Error('Bill not found');
+                throw new Error("Bill not found");
             }
-    
+
             if (bill.isPaid) {
                 return { message: "Bill đã thanh toán rồi !!" };
             } else {
@@ -312,36 +315,44 @@ const BillService = {
                     where: { id: parseInt(billId) },
                     data: {
                         isPaid: true,
-                        paymentMethod
-                    }
+                        paymentMethod,
+                    },
                 });
             }
-    
+
             const roomAccount = await prisma.account.findFirst({
-                where: { roomId: bill.roomId }
+                where: { roomId: bill.roomId },
             });
-    
+
             if (!roomAccount) {
-                throw new Error('Room account not found');
+                throw new Error("Room account not found");
             }
-    
+
             const currentUser = getCurrentUser(req);
-    
+
             await prisma.notification.create({
                 data: {
                     sender: currentUser,
-                    message: `Hoá đơn đã được xác nhận thanh toán bằng ${paymentMethod === "Cash" ? " Tiền mặt" : paymentMethod === "Banking" ? "Chuyển khoản" : ""}`,
+                    message: `Hoá đơn đã được xác nhận thanh toán bằng ${
+                        paymentMethod === "Cash"
+                            ? " Tiền mặt"
+                            : paymentMethod === "Banking"
+                            ? "Chuyển khoản"
+                            : ""
+                    }`,
                     type: "bill",
                     link: `${CLIENT_URL}/bill/${bill.id}`,
                     recipients: {
-                        create: [{
-                            userId: roomAccount.id,
-                            isRead: false
-                        }]
-                    }
-                }
+                        create: [
+                            {
+                                userId: roomAccount.id,
+                                isRead: false,
+                            },
+                        ],
+                    },
+                },
             });
-    
+
             return bill;
         } catch (error) {
             throw error;

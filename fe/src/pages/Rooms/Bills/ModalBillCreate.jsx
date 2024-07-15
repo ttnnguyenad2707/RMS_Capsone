@@ -63,12 +63,12 @@ const ModalBillCreate = ({ open, handleClose, roomId }) => {
             setIsSubmitting(true);
 
             const priceListToAdd = []
-            room?.houseId?.priceList?.map((priceItem, index) => {
+            room?.house?.pricelistitem?.map((priceItem, index) => {
                 const startUnitKey = `startUnit-${index}`
                 const endUnitKey = `endUnit-${index}`
 
                 const itemPriceToAdd = {
-                    base: priceItem.base,
+                    base: priceItem.baseId,
                     unitPrice: priceItem.price,
                     startUnit: values[startUnitKey] || 0,
                     endUnit: values[endUnitKey] || 0,
@@ -122,14 +122,13 @@ const ModalBillCreate = ({ open, handleClose, roomId }) => {
     };
 
     const handleTotal = (values, setFieldValue) => {
-        // console.log(values[`total-3`]);
-        // console.log(convertStringToNumber(values[`total-1`]))
+       
 
-        const total = room?.houseId?.priceList?.reduce((init, item, index) => {
-            if (item.base.unit === "đồng/người") {
+        const total = room?.house?.pricelistitem?.reduce((init, item, index) => {
+            if (item.defaultprice.unit === "DONG_PER_PERSON") {
                 const totalUnit = item.price * room.members.length
                 return init + totalUnit
-            } else if (item.base.unit === "đồng/tháng") {
+            } else if (item.defaultprice.unit === "DONG_PER_MONTH") {
                 const totalUnit = item.price
                 return init + totalUnit
             }
@@ -218,12 +217,12 @@ const ModalBillCreate = ({ open, handleClose, roomId }) => {
 
 
 
-                                                {room?.houseId?.priceList.map((priceItem, index) => (
+                                                {room?.house?.pricelistitem.map((priceItem, index) => (
                                                     <TableRow key={index}>
 
                                                         <TableCell>{index + 1}</TableCell>
-                                                        <TableCell align="left">{priceItem?.base?.name}</TableCell>
-                                                        <TableCell align="left">{priceItem?.base?.unit}</TableCell>
+                                                        <TableCell align="left">{priceItem?.defaultprice?.name}</TableCell>
+                                                        <TableCell align="left">{priceItem?.defaultprice?.unit}</TableCell>
                                                         <TableCell align="left">{formatMoney(priceItem?.price)}</TableCell>
                                                         <TableCell align="left">
                                                             <Field
@@ -233,7 +232,7 @@ const ModalBillCreate = ({ open, handleClose, roomId }) => {
                                                                 min="0"
                                                                 name={`startUnit-${index}`}
                                                                 onBlur={() => handleCalculateTotal(index, values, setFieldValue, priceItem?.price)}
-                                                                disabled={!(priceItem?.base?.unit === "đồng/khối" || priceItem?.base?.unit === "đồng/kWh")}
+                                                                disabled={!(priceItem?.defaultprice?.unit === "DONG_PER_BLOCK" || priceItem?.defaultprice?.unit === "DONG_PER_kWh")}
                                                             />
                                                         </TableCell>
                                                         <TableCell align="left">
@@ -244,11 +243,11 @@ const ModalBillCreate = ({ open, handleClose, roomId }) => {
                                                                 min="0"
                                                                 name={`endUnit-${index}`}
                                                                 onBlur={() => handleCalculateTotal(index, values, setFieldValue, priceItem?.price)}
-                                                                disabled={!(priceItem?.base?.unit === "đồng/khối" || priceItem?.base?.unit === "đồng/kWh")}
+                                                                disabled={!(priceItem?.defaultprice?.unit === "DONG_PER_BLOCK" || priceItem?.defaultprice?.unit === "DONG_PER_kWh")}
                                                             />
                                                         </TableCell>
                                                         <TableCell align="left">
-                                                            {(priceItem?.base?.unit === "đồng/khối" || priceItem?.base?.unit === "đồng/kWh") ? (
+                                                            {(priceItem?.defaultprice?.unit === "DONG_PER_BLOCK" || priceItem?.defaultprice?.unit === "DONG_PER_kWh") ? (
 
                                                                 <Field
                                                                     type="text"
@@ -262,7 +261,7 @@ const ModalBillCreate = ({ open, handleClose, roomId }) => {
                                                                     id={`total-${index}`}
                                                                     name={`total-${index}`}
                                                                     disabled={true}
-                                                                    value={priceItem?.base?.unit === "đồng/tháng" ? formatMoney(priceItem?.price) : (priceItem?.base?.unit === "đồng/người" ? formatMoney((priceItem?.price * room?.members.length)) : "")}
+                                                                    value={priceItem?.defaultprice?.unit === "DONG_PER_MONTH" ? formatMoney(priceItem?.price) : (priceItem?.defaultprice?.unit === "DONG_PER_PERSON" ? formatMoney((priceItem?.price * room?.members.length)) : "")}
                                                                 />
                                                             )}
                                                         </TableCell>

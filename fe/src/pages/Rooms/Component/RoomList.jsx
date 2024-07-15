@@ -29,7 +29,7 @@ const RoomList = ({ house }) => {
     const [openBill,setOpenBill] = useState(false);
     useEffect(() => {
         async function fetchFloor(){
-            getFloor(house._id).then(data => {
+            getFloor(house.id).then(data => {
                 setFloors(data.data.data);
             })
         }
@@ -43,7 +43,7 @@ const RoomList = ({ house }) => {
                 page: 1,
                 limit: 30,
             }
-            GetRooms(house._id,filterParams).then(data => {
+            GetRooms(house.id,filterParams).then(data => {
                 setRooms(data.data.data);
             })
         }
@@ -97,7 +97,7 @@ const RoomList = ({ house }) => {
                         await removeRoom(roomId).then(data => {
                             if (data.data.message === 'Updated'){
                                 Notification("Success", "Đã Xóa", "Thành Công");
-                                setRooms(prev => prev.filter(room => room._id !== roomId) )
+                                setRooms(prev => prev.filter(room => room.id !== roomId) )
 
                             }
                             else{
@@ -150,7 +150,7 @@ const RoomList = ({ house }) => {
                                 gap: 3
                             }}>
                                 {/* <Button variant="contained" onClick={handleEditButtonClick}>Sửa thông tin</Button> */}
-                                <Button variant="contained" color="error" onClick={(e) => handleDeleteButtonClick(e,room._id,room.name)}>Xoá</Button>
+                                <Button variant="contained" color="error" onClick={(e) => handleDeleteButtonClick(e,room.id,room.name)}>Xoá</Button>
 
                             </Box>
                         </Box>
@@ -183,9 +183,9 @@ const RoomList = ({ house }) => {
                             gap: 3,
                             mt: 3
                         }}>
-                            <Button variant="contained" onClick={() => handleOpen(room._id)}>Thông tin phòng</Button>
+                            <Button variant="contained" onClick={() => handleOpen(room.id)}>Thông tin phòng</Button>
                             {room?.members?.length === 0 ? "" : (
-                                <Button variant="contained" color="warning" onClick={() => handleOpenBill(room._id)}>Tạo hoá đơn</Button>
+                                <Button variant="contained" color="warning" onClick={() => handleOpenBill(room.id)}>Tạo hoá đơn</Button>
                             )}
 
                         </Box>

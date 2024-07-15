@@ -17,14 +17,13 @@ import {
 import * as React from "react";
 import RoomList from "./RoomList";
 const CommonRooms = ({ houseData }) => {
-  const [rowsPerPage, setRowsPerPage] = React.useState(5);
-  const [page, setPage] = React.useState(0);
+  
   const roomsData = useSelector((state) => state.room.rooms);
   
   const data = [
     {
       category: "Tên Chủ Nhà",
-      content: houseData ? houseData.hostId.name : "Không có Dữ Liệu",
+      content: houseData ? houseData.account.name : "Không có Dữ Liệu",
     },
     {
       category: "Trạng Thái ",
@@ -36,26 +35,18 @@ const CommonRooms = ({ houseData }) => {
     },
     {
       category: "Email",
-      content: houseData ? houseData.hostId.email : "Không có Dữ Liệu",
+      content: houseData ? houseData.account.email : "Không có Dữ Liệu",
     },
     {
       category: "Số Điện Thoại",
-      content: houseData ? houseData.hostId.phone : "Không có Dữ Liệu",
+      content: houseData ? houseData.account.phone : "Không có Dữ Liệu",
     },
     {
       category: "Số Lượng Phòng",
       content: roomsData ? roomsData?.length : "Không có Dữ Liệu",
     },
-    // Thêm dữ liệu danh mục và nội dung tương ứng ở đây
   ];
-  // React.useEffect(()=> {
-  //   if(houseData){
-  //     const houseId = houseData._id;
-  //     console.log(houseId,"houseId");
-  //     dispatch(fetchRooms({houseId}));
-  //   }
-  // },[houseData])
-  // Thêm dữ liệu danh mục và nội dung tương ứng ở đây
+  
   return (
     <Box>
       <Box

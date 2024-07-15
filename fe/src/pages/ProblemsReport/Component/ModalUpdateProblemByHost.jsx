@@ -36,7 +36,7 @@ const ModalUpdateProblem = ({ problemsId, Room, Status, onUpdateStatus }) => {
       setUpdate(res.data.data.status)
       // console.log("update",update);
       handleClose();
-      // console.log("res.data.data.id",res.data.data._id);
+      // console.log("res.data.data.id",res.data.data.id);
     } catch (error) {
       toast.warning(error.response.data.error);
       console.log(error);

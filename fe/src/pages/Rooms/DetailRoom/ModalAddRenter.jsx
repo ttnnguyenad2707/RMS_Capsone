@@ -87,11 +87,11 @@ const ModalAddRenter = ({ setRooms,handleClose, open, room, setMembers }) => {
       formData.set("gender", values.gender);
       formData.set("dob", values.dob);
       formData.set("note", values.note);
-      await addMember(room._id, formData).then((data) => {
+      await addMember(room.id, formData).then((data) => {
         setMembers((prev) => [
           ...prev,
           {
-            _id: data.data.data._id,
+            id: data.data.data.id,
             name: values.name,
             phone: values.phone,
             cccd: values.cccd,
@@ -106,11 +106,11 @@ const ModalAddRenter = ({ setRooms,handleClose, open, room, setMembers }) => {
         
         setRooms(prevRooms => {
           const updatedRooms = prevRooms.map((prevRoom) => {
-            if (prevRoom._id === room._id) {
+            if (prevRoom.id === room.id) {
               return {
                 ...prevRoom,
                 members: [...prevRoom.members, {
-                  _id: data.data.data._id,
+                  id: data.data.data.id,
                   name: values.name,
                   phone: values.phone,
                   cccd: values.cccd,

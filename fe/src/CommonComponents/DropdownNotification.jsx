@@ -71,7 +71,7 @@ const DropdownNotification = () => {
                             py: 3
                         }}
                         key={index}
-                        onClick={() => handleNotificationClick(notification?.link, notification?._id)}
+                        onClick={() => handleNotificationClick(notification?.link, notification?.id)}
                     >
                         <Box sx={{
                             display: "flex",

@@ -14,7 +14,7 @@ const RoomsPage = () => {
   const selectHouse = (housesId) => {
     console.log(housesId,"housesId");
     setHouseId(housesId);
-    const selectHouse = houses.find((h) => h._id === housesId);
+    const selectHouse = houses.find((h) => h.id === housesId);
     setHouseSelect(selectHouse);
   };
   React.useEffect(() => {

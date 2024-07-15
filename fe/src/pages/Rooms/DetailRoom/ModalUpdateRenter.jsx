@@ -31,7 +31,7 @@ const ModalUpdateRenter = ({ handleClose, open, room, setMembers, memberId }) =>
             setImagePreview(null);
             setInitialValues(null);
             setIsLoading(true);
-            await getMember(memberId, room._id).then(data => {
+            await getMember(memberId, room.id).then(data => {
                 setInitialValues({
                     name: data.data.data.name,
                     phone: data.data.data.phone,
@@ -79,10 +79,10 @@ const ModalUpdateRenter = ({ handleClose, open, room, setMembers, memberId }) =>
             formData.set("gender", values.gender)
             formData.set("dob", values.dob)
             formData.set("note", values.note)
-            await updateInfoMember(room._id, formData).then(data => {
+            await updateInfoMember(room.id, formData).then(data => {
                 setMembers(prevMembers => {
                     const updatedMembers = prevMembers.map(member => {
-                        if (member._id === memberId) {
+                        if (member.id === memberId) {
                             return data.data.data;
                         }
                         return member;

@@ -93,10 +93,10 @@ const UtilitiesTab = ({
   useEffect(() => {
     if (defaultUtils && typeUtil === "update" && dataUtil) {
       const dataUtils = defaultUtils.map((u) => {
-        const foundUtil = dataUtil.find((u2) => u._id === u2._id);
+        const foundUtil = dataUtil.find((u2) => u.id === u2.id);
         return {
           name: u.name,
-          value: u._id,
+          value: u.id,
           isCheck: foundUtil ? true : false,
         };
       });
@@ -105,7 +105,7 @@ const UtilitiesTab = ({
       const dataUtils = defaultUtils.map((u) => {
         return {
           name: u.name,
-          value: u._id,
+          value: u.id,
           isCheck: false,
         };
       });
@@ -115,10 +115,10 @@ const UtilitiesTab = ({
   useEffect(() => {
     if (ortherUtil && typeUtil === "update" && dataOrtherUtil) {
       const dataUtils = ortherUtil.map((u) => {
-        const foundUtil = dataOrtherUtil.find((u2) => u._id === u2._id);
+        const foundUtil = dataOrtherUtil.find((u2) => u.id === u2.id);
         return {
           name: u.name,
-          value: u._id,
+          value: u.id,
           isCheck: foundUtil ? true : false,
         };
       });
@@ -127,7 +127,7 @@ const UtilitiesTab = ({
       const dataUtils = ortherUtil.map((u) => {
         return {
           name: u.name,
-          value: u._id,
+          value: u.id,
           isCheck: false,
         };
       });

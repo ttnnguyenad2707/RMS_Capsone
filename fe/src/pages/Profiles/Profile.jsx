@@ -12,7 +12,7 @@ const Profile = () => {
   const userData = useSelector((state) => state.user.data); //state là rootReducer trong store ,counter cái tên đăng kí trong rootReducer
   
   // if (userData) {
-  //   var userID = userData._id;
+  //   var userID = userData.id;
   // }
   // console.log("userData1", userData.avatar);
   

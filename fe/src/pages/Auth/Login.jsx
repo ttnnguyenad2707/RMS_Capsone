@@ -40,9 +40,9 @@ const Login = () => {
 
   const handleSubmit = async (values) => {
     try {
-      //  console.log(values);
+      
       const res = await loginService(values);
-      console.log("res login", res.data.data);
+      
 
       dispatch(login(res.data.data));
       toast.success(res.data.message);
@@ -54,7 +54,7 @@ const Login = () => {
       }
     } catch (error) {
       toast.warning(error.response.data.error);
-      console.log(error);
+      
     }
   };
 

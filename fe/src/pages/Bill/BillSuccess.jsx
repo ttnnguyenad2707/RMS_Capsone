@@ -16,14 +16,14 @@ import { formatMoney } from '../../Utils';
 const BillSuccess = () => {
     const { billId } = useParams();
     const [bill, setBill] = useState({})
-    console.log(bill)
+    
     useEffect(() => {
         async function fetch() {
             confirmBill(billId,{paymentMethod:"Banking"}).then(res => {
                 
                 getBill(billId).then(data => {
                     setBill(data.data.data)
-                    Notification("Success","Thanh Toán hoá đơn phòng " + data.data.data.roomId.name + " Thành công ","")
+                    Notification("Success","Thanh Toán hoá đơn phòng " + data.data.data.room.name + " Thành công ","")
                 })
             })
         }
@@ -92,12 +92,12 @@ const BillSuccess = () => {
                                 </TableHead>
                                 <TableBody>
 
-                                    {bill?.priceList?.map((priceItem, index) => (
+                                    {bill?.priceitembill?.map((priceItem, index) => (
                                         <TableRow key={index}>
                                             <TableCell>{index + 1}</TableCell>
-                                            <TableCell align="left">{priceItem?.base?.name}</TableCell>
+                                            <TableCell align="left">{priceItem?.defaultprice?.name}</TableCell>
                                             <TableCell align="left">{formatMoney(priceItem?.unitPrice)}</TableCell>
-                                            <TableCell align="left">{priceItem?.base?.unit}</TableCell>
+                                            <TableCell align="left">{priceItem?.defaultprice?.unit}</TableCell>
                                             <TableCell align="left">{priceItem?.startUnit}</TableCell>
                                             <TableCell align="left">{priceItem?.endUnit}</TableCell>
                                             <TableCell align="right">{formatMoney(priceItem?.totalUnit)}</TableCell>
