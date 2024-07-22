@@ -12,6 +12,9 @@ const AccountController = {
     changePassword: asyncHandler(async (req, res) => {
         await AccountService.changePassword(req, res);
     }),
+    scanIdCard : asyncHandler(async (req, res) => {
+        await AccountService.scanIdCard(req, res);
+    }),
     
 }
 export default AccountController

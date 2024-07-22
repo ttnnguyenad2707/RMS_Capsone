@@ -44,7 +44,6 @@ const ModalNews = ({ handleClose, open, typeModal, houseID, dataNews }) => {
     setIsLoading(true);
     e.preventDefault();
     const formData = new FormData();
-    console.log(selectedImages)
     // Kiểm tra điều kiện trước khi tải lên
     if (selectedImages.length === 0) {
       Notification("Error","Không có tệp tin được chọn.")

@@ -16,6 +16,7 @@ import billRoute from "./Bill.route.js";
 import RoomController from "../controllers/Room.controller.js";
 import notificationRoute from "./notification.router.js";
 import statisticRoute from "./statistic.route.js";
+import contractRoute from "./Contract.route.js";
 
 const indexRouter = express.Router();
 
@@ -33,5 +34,6 @@ indexRouter.use("/bill",verifyToken,billRoute)
 indexRouter.use("/downloadTemplate",RoomController.downloadTemplate)
 indexRouter.use("/notification",verifyToken,notificationRoute)
 indexRouter.use("/statistic",verifyToken,statisticRoute)
+indexRouter.use("/contract",verifyToken,contractRoute)
 
 export default indexRouter;

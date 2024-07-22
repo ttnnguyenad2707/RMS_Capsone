@@ -33,10 +33,11 @@ model account {
   paymentgateway    paymentgateway?
   problem           problem[]
   recipients        recipients[]
+  contract          contract[]
 }
 
 model bill {
-  id            Int               @id @default(autoincrement())
+  id            Int                @id @default(autoincrement())
   roomId        Int?
   billCode      Float?
   roomPrice     Float
@@ -44,12 +45,12 @@ model bill {
   total         Float
   note          String
   paymentLink   String?
-  isPaid        Boolean @default(false)
-  paymentMethod  bill_paymentMethod @default(None)
+  isPaid        Boolean            @default(false)
+  paymentMethod bill_paymentMethod @default(None)
   evidence      String?
-  createdAt     DateTime          @default(now())
+  createdAt     DateTime           @default(now())
   updatedAt     DateTime?
-  room          room?             @relation(fields: [roomId], references: [id], map: "Bill_roomId_fkey")
+  room          room?              @relation(fields: [roomId], references: [id], map: "Bill_roomId_fkey")
   priceitembill priceitembill[]
 
   @@index([roomId], map: "Bill_roomId_fkey")
@@ -63,7 +64,7 @@ model comment {
   createdAt DateTime  @default(now())
   updatedAt DateTime?
   deletedAt DateTime?
-  deleted Boolean @default(false)
+  deleted   Boolean   @default(false)
   account   account   @relation(fields: [createdId], references: [id], map: "Comment_createdId_fkey")
   news      news?     @relation(fields: [newsId], references: [id], map: "Comment_newsId_fkey")
 
@@ -72,17 +73,24 @@ model comment {
 }
 
 model contract {
-  id           Int          @id @default(autoincrement())
-  roomId       Int?
-  signatory    Int          @unique(map: "Contract_signatory_key")
-  startDate    DateTime     @default(now())
-  endDate      DateTime
-  isExpired    Boolean
-  note         String
-  createdAt    DateTime     @default(now())
-  updatedAt    DateTime?
-  room         room?        @relation(fields: [roomId], references: [id], map: "Contract_roomId_fkey")
-  members members @relation(fields: [signatory], references: [id], map: "Contract_signatory_fkey")
+  id        Int       @id @default(autoincrement())
+  roomId    Int?
+  currentAddress String?
+  roomPrice Float?
+  roomDeposit Float?
+  roomPriceElectric Float?
+  roomPriceWater Float?
+  signatory Int?
+  startDate DateTime  @default(now())
+  endDate   DateTime
+  isExpired Boolean   @default(false)
+  note      String
+  createdAt DateTime  @default(now())
+  updatedAt DateTime?
+  creatorId Int
+  creator   account   @relation(fields: [creatorId], references: [id])
+  room      room?     @relation(fields: [roomId], references: [id], map: "Contract_roomId_fkey")
+  members   members?  @relation(fields: [signatory], references: [id], map: "Contract_signatory_fkey")
 
   @@index([roomId], map: "Contract_roomId_fkey")
 }
@@ -97,7 +105,7 @@ model defaultprice {
 
 model house {
   id                    Int                     @id @default(autoincrement())
-  name                  String  @unique
+  name                  String                  @unique
   status                Boolean
   locationId            Int                     @unique(map: "House_locationId_key")
   electricPrice         Int
@@ -119,7 +127,14 @@ model house {
 }
 
 model identifycard {
+  id             Int     @id @default(autoincrement())
   identifyNumber String
+  identifyName   String
+  dob            String
+  gender         String
+  address        String
+  issueDate      String
+  issueLoc       String
   imageFrontSide String
   imageBackSide  String
   accountId      Int     @unique(map: "IdentifyCard_accountId_key")
@@ -145,32 +160,28 @@ model locationschema {
 }
 
 model members {
-  id              Int                 @id @default(autoincrement())
+  id              Int              @id @default(autoincrement())
   name            String?
-  phone           String?
-  dob             String?
-  gender          members_gender @default(none)
-  avatar          String?
-  email           String?
-  district        String?
-  ward            String?
-  province        String?
-  detailLocation  String?
   cccd            String?
-  issueDateCCCD   DateTime?
-  placeIssueCCCD  String?
+  dob             String?
+  gender          String?
+  address         String?
+  issueDate       String?
+  issueLoc        String?
   imageFront      String?
   imageBack       String?
+  phone           String?
+  avatar          String?
   note            String?
   roomId          Int
-  isOut           Boolean             @default(false)
-  createdAt       DateTime            @default(now())
+  isOut           Boolean          @default(false)
+  createdAt       DateTime         @default(now())
   updatedAt       DateTime?
-  deleted         Boolean?            @default(false)
+  deleted         Boolean?         @default(false)
   deletedAt       DateTime?
   outDate         DateTime?
-  contract        contract?
-  room            room                @relation(fields: [roomId], references: [id], map: "members_roomId_fkey")
+  contract        contract[]
+  room            room             @relation(fields: [roomId], references: [id], map: "members_roomId_fkey")
   temporyresident temporyresident?
 
   @@index([roomId], map: "members_roomId_fkey")
@@ -184,11 +195,11 @@ model news {
   content    String
   comment    comment[]
   imagesnews imagesnews[]
-  createdAt       DateTime            @default(now())
-  updatedAt       DateTime?
-  deleted         Boolean?            @default(false)
-  deletedAt       DateTime?
-  author    account?     @relation(fields: [authorId], references: [id], map: "News_authorId_fkey")
+  createdAt  DateTime     @default(now())
+  updatedAt  DateTime?
+  deleted    Boolean?     @default(false)
+  deletedAt  DateTime?
+  author     account?     @relation(fields: [authorId], references: [id], map: "News_authorId_fkey")
   house      house?       @relation(fields: [houseId], references: [id], map: "News_houseId_fkey")
 
   @@index([authorId], map: "News_authorId_fkey")
@@ -196,26 +207,26 @@ model news {
 }
 
 model notification {
-  id          Int               @id @default(autoincrement())
-  sender      Int
-  message     String
-  type        notification_type
-  link        String
-  createdAt   DateTime          @default(now())
-  updatedAt   DateTime?
-  account     account           @relation(fields: [sender], references: [id], map: "Notification_sender_fkey")
-  recipients  recipients[]      
+  id         Int               @id @default(autoincrement())
+  sender     Int
+  message    String
+  type       notification_type
+  link       String
+  createdAt  DateTime          @default(now())
+  updatedAt  DateTime?
+  account    account           @relation(fields: [sender], references: [id], map: "Notification_sender_fkey")
+  recipients recipients[]
 
   @@index([sender], map: "Notification_sender_fkey")
 }
 
 model recipients {
-  id            Int       @id @default(autoincrement())
-  userId          Int
-  isRead        Boolean
-  notificationId  Int
-  account       account   @relation(fields: [userId], references: [id], map: "Recipients_user_fkey")
-  notification  notification @relation(fields: [notificationId], references: [id], map: "Recipients_notification_fkey")
+  id             Int          @id @default(autoincrement())
+  userId         Int
+  isRead         Boolean
+  notificationId Int
+  account        account      @relation(fields: [userId], references: [id], map: "Recipients_user_fkey")
+  notification   notification @relation(fields: [notificationId], references: [id], map: "Recipients_notification_fkey")
 
   @@index([notificationId], map: "Recipients_notification_fkey")
   @@index([userId], map: "Recipients_user_fkey")
@@ -289,16 +300,14 @@ model problem {
   creatorId Int
   createdAt DateTime       @default(now())
   updatedAt DateTime?
-  deleted      Boolean?           @default(false)
-  deletedAt     DateTime?
+  deleted   Boolean?       @default(false)
+  deletedAt DateTime?
   account   account        @relation(fields: [creatorId], references: [id], map: "Problem_creatorId_fkey")
   room      room           @relation(fields: [roomId], references: [id], map: "Problem_roomId_fkey")
 
   @@index([creatorId], map: "Problem_creatorId_fkey")
   @@index([roomId], map: "Problem_roomId_fkey")
 }
-
-
 
 model room {
   id                   Int                    @id @default(autoincrement())
@@ -318,7 +327,7 @@ model room {
   account              account?
   bill                 bill[]
   contract             contract[]
-  members         members[]
+  members              members[]
   problem              problem[]
   house                house                  @relation(fields: [houseId], references: [id], map: "Room_houseId_fkey")
   roomdefaultutilities roomdefaultutilities[]
@@ -328,13 +337,13 @@ model room {
 }
 
 model temporyresident {
-  id           Int          @id @default(autoincrement())
-  memberId     Int          @unique(map: "TemporyResident_memberId_key")
-  pathFile     String
-  createdAt    DateTime     @default(now())
-  updatedAt    DateTime?
-  isExpired    Boolean
-  members members @relation(fields: [memberId], references: [id], map: "TemporyResident_memberId_fkey")
+  id        Int       @id @default(autoincrement())
+  memberId  Int       @unique(map: "TemporyResident_memberId_key")
+  pathFile  String
+  createdAt DateTime  @default(now())
+  updatedAt DateTime?
+  isExpired Boolean
+  members   members   @relation(fields: [memberId], references: [id], map: "TemporyResident_memberId_fkey")
 }
 
 model defaultutilities {
@@ -417,13 +426,6 @@ enum room_status {
   Empty
   Full
   Available
-}
-
-enum members_gender {
-  male
-  female
-  none
-  other
 }
 
 enum room_roomType {

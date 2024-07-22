@@ -7,6 +7,9 @@ import Image from "../models/Upload.model.js";
 import { v2 as cloudinary } from "cloudinary";
 import BillsModel from "../models/Bills.model.js";
 import prisma from "../utils/prismaClient.js";
+import FormData from 'form-data';
+import axios from "axios";
+
 
 const RoomService = {
     addRoom: async (req) => {
@@ -209,7 +212,16 @@ const RoomService = {
                     where,
                     orderBy: { createdAt: "desc" },
                     include: {
-                        house: true,members: true,house: {include:{pricelistitem:true,pricelistitem: {include: {defaultprice:true}}}}
+                        house: true,
+                        members: true,
+                        house: {
+                            include: {
+                                pricelistitem: true,
+                                pricelistitem: {
+                                    include: { defaultprice: true },
+                                },
+                            },
+                        },
                     },
                 });
                 return data;
@@ -220,7 +232,16 @@ const RoomService = {
                     take: limitPerPage,
                     orderBy: { createdAt: "desc" },
                     include: {
-                        house: true,members: true,house: {include:{pricelistitem:true,pricelistitem: {include: {defaultprice:true}}}}
+                        house: true,
+                        members: true,
+                        house: {
+                            include: {
+                                pricelistitem: true,
+                                pricelistitem: {
+                                    include: { defaultprice: true },
+                                },
+                            },
+                        },
                     },
                 });
                 return {
@@ -373,13 +394,22 @@ const RoomService = {
             }
 
             // Handle image upload
-            let imageData;
-            if (req.file) {
-                const result = await cloudinary.uploader.upload(req.file.path);
+            let imageData,imageBackUrl,imageFrontUrl;
+            if (req.files.avatar) {
+                const result = await cloudinary.uploader.upload(req.files.avatar[0].path);
                 imageData = result.secure_url;
             } else {
                 imageData =
                     "https://quanlynhatro.com/frontend3/assets/img/placeholder.png";
+            }
+            if (!req.files.imageFront || !req.files.imageBack) {
+                throw new Error("Both images (imageFront and imageBack) are required");
+            }
+            else{
+                const imageFront = await cloudinary.uploader.upload(req.files.imageFront[0].path);
+                imageFrontUrl = imageFront.secure_url;
+                const imageBack = await cloudinary.uploader.upload(req.files.imageBack[0].path);
+                imageBackUrl = imageBack.secure_url;
             }
 
             // Create a new member
@@ -389,14 +419,60 @@ const RoomService = {
                     phone,
                     cccd,
                     avatar: imageData,
+                    imageFront: imageFrontUrl,
+                    imageBack:imageBackUrl,
                     roomId: parseInt(roomId),
                 },
             });
 
             return newMember;
         } catch (error) {
-            throw new Error(error.toString());
+            throw error;
         }
+    },
+    scanIdMember: async (req) => {
+        try {
+            if (!req.files || !req.files.imageFront || !req.files.imageBack) {
+                throw new Error("Both images (imageFront and imageBack) are required");
+            }
+            const formFront = new FormData();
+            formFront.append("image",req.files.imageFront[0].buffer,{
+                filename: req.files.imageFront[0].originalname,
+                contentType: req.files.imageFront[0].minetype
+            })
+            const formBack = new FormData();
+            formBack.append("image",req.files.imageBack[0].buffer,{
+                filename: req.files.imageBack[0].originalname,
+                contentType: req.files.imageBack[0].minetype
+            })
+            const [responseFront,responseBack] = await Promise.all([
+                axios.post('https://api.fpt.ai/vision/idr/vnm', formFront, {
+                    headers: {
+                      ...formFront.getHeaders(),
+                      Accept: 'application/json',
+                      api_key: 'OjBTWquTWYqaRuKJu3JX8KCW3f9vHYox',
+                    },
+                  }),
+                  axios.post('https://api.fpt.ai/vision/idr/vnm', formBack, {
+                    headers: {
+                      ...formBack.getHeaders(),
+                      Accept: 'application/json',
+                      api_key: 'OjBTWquTWYqaRuKJu3JX8KCW3f9vHYox',
+                    },
+                  })
+            ])
+            const dataIdentifyCardFront = responseFront.data.data[0];
+            const dataIdentifyCardBack = responseBack.data.data[0];
+            return {
+                identifyName: dataIdentifyCardFront.name,
+                cccd: dataIdentifyCardFront.id,
+                dob: dataIdentifyCardFront.dob,
+                gender: dataIdentifyCardFront.sex,
+                address: dataIdentifyCardFront.address,
+                issueDate: dataIdentifyCardBack.issue_date,
+                issueLoc: dataIdentifyCardBack.issue_loc,
+            }
+        } catch (error) {}
     },
     removeMember: async (req) => {
         try {
@@ -489,7 +565,6 @@ const RoomService = {
             // Fetch the room and include its members
             const room = await prisma.room.findUnique({
                 where: { id: parseInt(roomId) },
-                
             });
 
             // Check if the room exists
@@ -502,7 +577,7 @@ const RoomService = {
                 where: { id: parseInt(memberId) },
                 include: { room: true },
             });
-            
+
             // Check if the member exists
             if (!member) {
                 throw new Error("Member not found in the room");
@@ -516,7 +591,7 @@ const RoomService = {
     countRoomsByMembership: async (req) => {
         try {
             const { houseId } = req.params;
-            
+
             // Fetch all rooms with their members for the given houseId
             const rooms = await prisma.room.findMany({
                 where: {
@@ -527,10 +602,10 @@ const RoomService = {
                     members: true,
                 },
             });
-    
+
             let countWithMembers = 0;
             let countWithoutMembers = 0;
-    
+
             rooms.forEach((room) => {
                 if (room.members && room.members.length > 0) {
                     countWithMembers++;
@@ -538,7 +613,7 @@ const RoomService = {
                     countWithoutMembers++;
                 }
             });
-    
+
             return {
                 totalRooms: rooms.length,
                 withMembers: countWithMembers,
@@ -555,36 +630,36 @@ const RoomService = {
             const rooms = await prisma.room.findMany({
                 where: {
                     houseId: parseInt(houseId),
-                    deleted: false
+                    deleted: false,
                 },
                 include: {
                     house: {
                         select: {
-                            id:true,
-                            name: true
-                        }
+                            id: true,
+                            name: true,
+                        },
                     },
-                    members: true
+                    members: true,
                 },
             });
-    
+
             const newData = [];
-    
+
             for (let room of rooms) {
                 let bill = null;
                 if (month) {
                     const [mm, yyyy] = month.split("-");
                     const startOfMonth = new Date(yyyy, mm - 1, 1);
                     const endOfMonth = new Date(yyyy, mm, 0);
-    
+
                     bill = await prisma.bill.findFirst({
                         where: {
                             roomId: room.id,
                             createdAt: {
                                 gte: startOfMonth,
-                                lt: endOfMonth
-                            }
-                        }
+                                lt: endOfMonth,
+                            },
+                        },
                     });
                 } else {
                     bill = await prisma.bill.findFirst({
@@ -592,13 +667,13 @@ const RoomService = {
                             roomId: room.id,
                         },
                         orderBy: {
-                            createdAt: 'desc'
-                        }
+                            createdAt: "desc",
+                        },
                     });
                 }
                 newData.push({
                     room: room,
-                    bill: bill || null
+                    bill: bill || null,
                 });
             }
             return newData;
